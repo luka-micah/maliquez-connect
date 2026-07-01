@@ -242,7 +242,7 @@ const Home = () => {
             </div>
           </form>
 
-          <div className="flex flex-wrap justify-center gap-4 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+          <div className="flex flex-wrap justify-center gap-4 mb-24 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
             <button
               onClick={() => scrollToSection('sectors')}
               className="px-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white rounded-xl border border-white/10 transition-all font-medium flex items-center gap-2"
@@ -272,7 +272,7 @@ const Home = () => {
       </section>
 
       {/* ─── STATS ─── */}
-      <section id="stats" className="relative -mt-20 z-20 max-w-6xl mx-auto px-4">
+      <section id="stats" className="relative -mt-12 md:-mt-20 z-20 max-w-6xl mx-auto px-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {stats.map((stat, i) => (
             <div
