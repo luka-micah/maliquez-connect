@@ -20,7 +20,6 @@ export const authenticate = async (req: AuthRequest, _res: Response, next: NextF
       throw ApiError.unauthorized('User not found or inactive');
     }
 
-    req.user = user as any;
     req.userId = user.id;
     req.userRole = user.role;
     next();
@@ -34,10 +33,10 @@ export const authenticate = async (req: AuthRequest, _res: Response, next: NextF
 
 export const authorize = (...roles: string[]) => {
   return (req: AuthRequest, _res: Response, next: NextFunction) => {
-    if (!req.user) {
+    if (!req.userId) {
       return next(ApiError.unauthorized('Authentication required'));
     }
-    if (!roles.includes(req.userRole!)) {
+    if (!req.userRole || !roles.includes(req.userRole)) {
       return next(ApiError.forbidden('You do not have permission to perform this action'));
     }
     next();
@@ -46,10 +45,10 @@ export const authorize = (...roles: string[]) => {
 
 export const authorizeMinRole = (minRole: string) => {
   return (req: AuthRequest, _res: Response, next: NextFunction) => {
-    if (!req.user) {
+    if (!req.userId) {
       return next(ApiError.unauthorized('Authentication required'));
     }
-    if (ROLE_HIERARCHY[req.userRole!] < ROLE_HIERARCHY[minRole]) {
+    if (!req.userRole || ROLE_HIERARCHY[req.userRole] < ROLE_HIERARCHY[minRole]) {
       return next(ApiError.forbidden('You do not have permission to perform this action'));
     }
     next();

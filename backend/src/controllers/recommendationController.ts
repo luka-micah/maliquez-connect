@@ -1,14 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
+import { Prisma, Sector } from '@prisma/client';
 import prisma from '../config/prisma.js';
 import ApiResponse from '../utils/ApiResponse.js';
 import { LISTING_STATUS } from '../constants/listingStatus.js';
 import { parsePagination } from '../utils/helpers.js';
-
-interface AuthRequest extends Request {
-  user?: any;
-  userId?: string;
-  userRole?: string;
-}
+import type { AuthRequest } from '../types/index.js';
 
 interface ScoredListing {
   id: string;
@@ -53,7 +49,7 @@ const calculateScore = (listing: {
 
   if (listing.verified === 'VERIFIED') score += 25;
 
-  const pricing = listing.pricing as Record<string, any> | null;
+  const pricing = listing.pricing as Record<string, unknown> | null;
   if (pricing?.minimum) {
     if (Number(pricing.minimum) <= 10000) score += 15;
     else if (Number(pricing.minimum) <= 50000) score += 10;
@@ -78,7 +74,7 @@ const getReason = (listing: {
   if (listing.verified === 'VERIFIED') reasons.push('Verified provider');
   if (listing.reviewCount > 50) reasons.push('Popular choice');
 
-  const pricing = listing.pricing as Record<string, any> | null;
+  const pricing = listing.pricing as Record<string, unknown> | null;
   if (pricing?.minimum && Number(pricing.minimum) <= 10000) reasons.push('Affordable pricing');
 
   return reasons.length > 0 ? reasons.join(', ') : 'Recommended match';
@@ -89,8 +85,8 @@ export const getRecommendations = async (req: AuthRequest, res: Response, next: 
     const { sector, limit = 10 } = req.query;
     const takeLimit = Number(limit);
 
-    const where: any = { status: LISTING_STATUS.APPROVED };
-    if (sector) where.sector = sector as string;
+    const where: Prisma.ListingWhereInput = { status: LISTING_STATUS.APPROVED };
+    if (sector) where.sector = String(sector) as Sector;
 
     const listings = await prisma.listing.findMany({
       where,
@@ -137,8 +133,8 @@ export const getRecommendationsByBudget = async (req: AuthRequest, res: Response
   try {
     const { budget, state, sector } = req.query;
 
-    const where: any = { status: LISTING_STATUS.APPROVED };
-    if (sector) where.sector = sector as string;
+    const where: Prisma.ListingWhereInput = { status: LISTING_STATUS.APPROVED };
+    if (sector) where.sector = String(sector) as Sector;
 
     const listings = await prisma.listing.findMany({
       where,
@@ -150,8 +146,8 @@ export const getRecommendationsByBudget = async (req: AuthRequest, res: Response
     });
 
     const filtered = listings.filter((listing) => {
-      const location = listing.location as Record<string, any> | null;
-      const pricing = listing.pricing as Record<string, any> | null;
+      const location = listing.location as Record<string, unknown> | null;
+      const pricing = listing.pricing as Record<string, unknown> | null;
 
       if (state && location?.state) {
         if (!String(location.state).toLowerCase().includes(String(state).toLowerCase())) return false;
@@ -164,7 +160,7 @@ export const getRecommendationsByBudget = async (req: AuthRequest, res: Response
     const top = filtered.slice(0, 10);
 
     const result = top.map((l) => {
-      const pricing = l.pricing as Record<string, any> | null;
+      const pricing = l.pricing as Record<string, unknown> | null;
       const reason =
         budget && pricing?.minimum && Number(pricing.minimum) <= Number(budget)
           ? `Within budget (${pricing.currency || 'NGN'} ${pricing.minimum})`

@@ -187,7 +187,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="overflow-hidden">
+    <div>
       {/* ─── HERO ─── */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary-900 via-primary-800 to-indigo-900 animate-gradient" />
@@ -329,7 +329,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ─── SECTORS ─── */}
+      {/* ─── SECTORS (Sticky Card) ─── */}
       <section id="sectors" className="py-24 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4">
           <ScrollReveal className="text-center mb-16">
@@ -340,31 +340,50 @@ const Home = () => {
             </p>
           </ScrollReveal>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {sectors.map(({ name, icon: Icon, color, gradient, sector, description, count }) => (
-              <ScrollReveal key={sector} className="group">
+          <div className="relative" style={{ height: '2200px' }}>
+            {sectors.map(({ name, icon: Icon, gradient, sector, description, count }, i) => (
+              <div
+                key={sector}
+                className="sticky h-72 md:h-56"
+                style={{ top: `${80 + i * 96}px`, zIndex: 1 + i }}
+              >
                 <Link
                   to={`/search?sector=${sector}`}
-                  className="block bg-white rounded-2xl p-6 border border-gray-100 hover:border-transparent transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 overflow-hidden relative"
+                  className="group block bg-white rounded-2xl border border-gray-100 hover:border-transparent transition-all duration-500 hover:shadow-2xl overflow-hidden relative h-full"
                 >
-                  <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-                  <div className="relative z-10">
-                    <div className={`inline-flex items-center justify-center w-14 h-14 bg-gray-50 ${color} rounded-xl mb-4 group-hover:bg-white/20 group-hover:text-white transition-all duration-300`}>
-                      <Icon className="w-7 h-7" />
+                  <div className="flex h-full">
+                    {/* LEFT: Details */}
+                    <div className="flex-1 p-6 md:p-8 flex flex-col justify-center relative z-10 min-w-0">
+                      <div className="flex items-center gap-3 md:gap-4 mb-2 md:mb-3">
+                        <div className="inline-flex items-center justify-center w-11 h-11 md:w-12 md:h-12 bg-primary-50 text-primary-600 rounded-xl flex-shrink-0 transition-all duration-300">
+                          <Icon className="w-5 h-5 md:w-6 md:h-6" />
+                        </div>
+                        <div className="min-w-0">
+                          <h3 className="text-lg md:text-xl font-bold text-gray-900 truncate">{name}</h3>
+                          <p className="text-xs md:text-sm text-gray-500 truncate">{description}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between mt-auto md:mt-4">
+                        <div>
+                          <div className="text-xl md:text-2xl font-bold text-primary-600">{count}</div>
+                          <div className="text-xs md:text-sm text-gray-400">providers</div>
+                        </div>
+                        <span className="w-9 h-9 md:w-10 md:h-10 bg-gray-100 group-hover:bg-primary-100 rounded-full flex items-center justify-center group-hover:text-primary-600 transition-all duration-300 flex-shrink-0">
+                          <FiArrowRight className="w-4 h-4 md:w-5 md:h-5" />
+                        </span>
+                      </div>
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-white transition-colors duration-300">{name}</h3>
-                    <p className="text-gray-500 text-sm mt-2 group-hover:text-white/80 transition-colors duration-300">{description}</p>
-                    <div className="flex items-center justify-between mt-4">
-                      <span className="text-sm font-semibold text-primary-600 group-hover:text-white transition-colors duration-300">
-                        {count} providers
-                      </span>
-                      <span className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-white/20 group-hover:text-white transition-all duration-300">
-                        <FiArrowRight className="w-4 h-4" />
-                      </span>
+
+                    {/* RIGHT: Image / Visual */}
+                    <div className={`hidden sm:flex w-36 md:w-48 lg:w-56 bg-gradient-to-br ${gradient} items-center justify-center flex-shrink-0 relative overflow-hidden`}>
+                      <div className="absolute inset-0 bg-black/10" />
+                      <Icon className="w-20 h-20 md:w-28 md:h-28 lg:w-32 lg:h-32 text-white/20" />
+                      <div className="absolute -bottom-6 -right-6 w-36 h-36 bg-white/5 rounded-full blur-2xl" />
+                      <div className="absolute -top-6 -left-6 w-24 h-24 bg-white/5 rounded-full blur-2xl" />
                     </div>
                   </div>
                 </Link>
-              </ScrollReveal>
+              </div>
             ))}
           </div>
         </div>

@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { Prisma } from '@prisma/client';
 import { Response, NextFunction } from 'express';
 import prisma from '../config/prisma.js';
 import ApiError from '../utils/ApiError.js';
@@ -41,7 +42,7 @@ export const register = async (req: AuthRequest, res: Response, next: NextFuncti
       };
     }
 
-    const user = await prisma.user.create({ data: userData as any });
+    const user = await prisma.user.create({ data: userData as Prisma.UserCreateInput });
     const tokens = generateTokens(user.id, user.role);
 
     await prisma.user.update({
@@ -175,7 +176,7 @@ export const updateProfile = async (req: AuthRequest, res: Response, next: NextF
 
     const updatedUser = await prisma.user.update({
       where: { id: user.id },
-      data: updateData as any,
+      data: updateData as Prisma.UserUpdateInput,
     });
 
     const { password: _, refreshToken: __, passwordResetToken: ___, passwordResetExpires: ____, ...safeUser } = updatedUser;

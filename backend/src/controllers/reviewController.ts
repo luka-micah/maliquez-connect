@@ -65,7 +65,7 @@ export const createReview = async (req: AuthRequest, res: Response, next: NextFu
         user: { connect: { id: listing.ownerId } },
         title: 'New Review',
         message: `Your listing "${listing.title}" received a new review`,
-        type: 'REVIEW' as any,
+        type: 'REVIEW',
         referenceId: listing.id,
         referenceModel: 'Listing',
       },

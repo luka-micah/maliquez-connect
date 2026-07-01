@@ -1,4 +1,5 @@
 import { Response, NextFunction } from 'express';
+import { Prisma } from '@prisma/client';
 import prisma from '../config/prisma.js';
 import ApiError from '../utils/ApiError.js';
 import ApiResponse from '../utils/ApiResponse.js';
@@ -70,8 +71,8 @@ export const updateCategory = async (req: AuthRequest, res: Response, next: Next
     await invalidateCache('categories:*');
 
     res.json(ApiResponse.success(category, 'Category updated'));
-  } catch (error: any) {
-    if (error.code === 'P2025') {
+  } catch (error: unknown) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return next(ApiError.notFound('Category not found'));
     }
     next(error);
@@ -87,8 +88,8 @@ export const deleteCategory = async (req: AuthRequest, res: Response, next: Next
     await invalidateCache('categories:*');
 
     res.json(ApiResponse.success(null, 'Category deleted'));
-  } catch (error: any) {
-    if (error.code === 'P2025') {
+  } catch (error: unknown) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return next(ApiError.notFound('Category not found'));
     }
     next(error);

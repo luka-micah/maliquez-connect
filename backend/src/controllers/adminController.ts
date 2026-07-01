@@ -1,4 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
+import { Prisma, Role, UserStatus, ListingStatus, Sector } from '@prisma/client';
+import { Response, NextFunction } from 'express';
 import prisma from '../config/prisma.js';
 import ApiResponse from '../utils/ApiResponse.js';
 import ApiError from '../utils/ApiError.js';
@@ -6,22 +7,17 @@ import { calculatePagination, parsePagination } from '../utils/helpers.js';
 import { LISTING_STATUS, REVIEW_STATUS } from '../constants/listingStatus.js';
 import { ROLES } from '../constants/roles.js';
 import { invalidateCache } from '../config/redis.js';
-
-interface AuthRequest extends Request {
-  user?: any;
-  userId?: string;
-  userRole?: string;
-}
+import type { AuthRequest } from '../types/index.js';
 
 export const getUsers = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { role, status, search } = req.query;
     const { page, limit, skip } = parsePagination(req.query as { page?: string; limit?: string });
 
-    const where: any = {};
+    const where: Prisma.UserWhereInput = {};
 
-    if (role) where.role = role as string;
-    if (status) where.status = status as string;
+    if (role) where.role = role as Role;
+    if (status) where.status = status as UserStatus;
     if (search) {
       where.OR = [
         { firstName: { contains: search as string, mode: 'insensitive' } },
@@ -50,7 +46,7 @@ export const getProviders = async (req: AuthRequest, res: Response, next: NextFu
     const { verificationStatus } = req.query;
     const { page, limit, skip } = parsePagination(req.query as { page?: string; limit?: string });
 
-    const where: any = { role: ROLES.PROVIDER };
+    const where: Prisma.UserWhereInput = { role: ROLES.PROVIDER };
 
     const allProviders = await prisma.user.findMany({
       where,
@@ -59,7 +55,7 @@ export const getProviders = async (req: AuthRequest, res: Response, next: NextFu
 
     const filtered = allProviders.filter((provider) => {
       if (verificationStatus) {
-        const profile = provider.providerProfile as Record<string, any> | null;
+        const profile = provider.providerProfile as Record<string, unknown> | null;
         if (!profile || profile.verificationStatus !== verificationStatus) return false;
       }
       return true;
@@ -80,9 +76,9 @@ export const getAdminListings = async (req: AuthRequest, res: Response, next: Ne
     const { status, sector } = req.query;
     const { page, limit, skip } = parsePagination(req.query as { page?: string; limit?: string });
 
-    const where: any = {};
-    if (status) where.status = status as string;
-    if (sector) where.sector = sector as string;
+    const where: Prisma.ListingWhereInput = {};
+    if (status) where.status = String(status) as ListingStatus;
+    if (sector) where.sector = String(sector) as Sector;
 
     const total = await prisma.listing.count({ where });
     const listings = await prisma.listing.findMany({
@@ -112,7 +108,7 @@ export const approveListing = async (req: AuthRequest, res: Response, next: Next
 
     const updated = await prisma.listing.update({
       where: { id: req.params.id },
-      data: { status: LISTING_STATUS.APPROVED as any },
+      data: { status: 'APPROVED' },
     });
 
     await prisma.notification.create({
@@ -120,7 +116,7 @@ export const approveListing = async (req: AuthRequest, res: Response, next: Next
         user: { connect: { id: listing.ownerId } },
         title: 'Listing Approved',
         message: `Your listing "${listing.title}" has been approved`,
-        type: 'APPROVAL' as any,
+        type: 'APPROVAL',
         referenceId: listing.id,
         referenceModel: 'Listing',
       },
@@ -143,7 +139,7 @@ export const suspendListing = async (req: AuthRequest, res: Response, next: Next
 
     const updated = await prisma.listing.update({
       where: { id: req.params.id },
-      data: { status: LISTING_STATUS.SUSPENDED as any },
+      data: { status: 'SUSPENDED' },
     });
 
     await prisma.notification.create({
@@ -151,7 +147,7 @@ export const suspendListing = async (req: AuthRequest, res: Response, next: Next
         user: { connect: { id: listing.ownerId } },
         title: 'Listing Suspended',
         message: `Your listing "${listing.title}" has been suspended`,
-        type: 'APPROVAL' as any,
+        type: 'APPROVAL',
         referenceId: listing.id,
         referenceModel: 'Listing',
       },
@@ -209,7 +205,7 @@ export const getPendingListings = async (req: AuthRequest, res: Response, next: 
   try {
     const { page, limit, skip } = parsePagination(req.query as { page?: string; limit?: string });
 
-    const where: any = { status: LISTING_STATUS.PENDING };
+    const where: Prisma.ListingWhereInput = { status: LISTING_STATUS.PENDING };
 
     const total = await prisma.listing.count({ where });
     const listings = await prisma.listing.findMany({
@@ -235,11 +231,11 @@ export const getAdminDashboard = async (_req: AuthRequest, res: Response, next: 
     const [totalUsers, totalProviders, totalListings, totalReviews, pendingListings, pendingReviews] =
       await Promise.all([
         prisma.user.count(),
-        prisma.user.count({ where: { role: ROLES.PROVIDER as any } }),
+        prisma.user.count({ where: { role: 'PROVIDER' } }),
         prisma.listing.count(),
         prisma.review.count(),
-        prisma.listing.count({ where: { status: LISTING_STATUS.PENDING as any } }),
-        prisma.review.count({ where: { status: REVIEW_STATUS.PENDING as any } }),
+        prisma.listing.count({ where: { status: 'PENDING' } }),
+        prisma.review.count({ where: { status: 'PENDING' } }),
       ]);
 
     res.json(

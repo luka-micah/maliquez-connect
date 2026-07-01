@@ -1,15 +1,11 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
+import { Prisma, Sector } from '@prisma/client';
 import prisma from '../config/prisma.js';
 import ApiResponse from '../utils/ApiResponse.js';
 import { LISTING_STATUS } from '../constants/listingStatus.js';
 import { calculatePagination, parsePagination } from '../utils/helpers.js';
 import { getCachedData, cacheData } from '../config/redis.js';
-
-interface AuthRequest extends Request {
-  user?: any;
-  userId?: string;
-  userRole?: string;
-}
+import type { AuthRequest } from '../types/index.js';
 
 export const search = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -28,7 +24,7 @@ export const search = async (req: AuthRequest, res: Response, next: NextFunction
 
     const { page, limit, skip } = parsePagination(req.query as { page?: string; limit?: string });
 
-    const where: any = { status: LISTING_STATUS.APPROVED };
+    const where: Prisma.ListingWhereInput = { status: LISTING_STATUS.APPROVED };
 
     if (q) {
       where.OR = [
@@ -37,19 +33,19 @@ export const search = async (req: AuthRequest, res: Response, next: NextFunction
       ];
     }
 
-    if (sector) where.sector = sector as string;
+    if (sector) where.sector = String(sector) as Sector;
     if (category) where.categoryId = category as string;
     if (minRating) where.averageRating = { gte: Number(minRating) };
 
     const sortStr = sort as string;
     const sortField = sortStr.startsWith('-') ? sortStr.slice(1) : sortStr;
     const sortOrder = sortStr.startsWith('-') ? 'desc' : 'asc';
-    const orderBy: any = {};
-    if (['averageRating', 'createdAt', 'reviewCount', 'title'].includes(sortField)) {
-      orderBy[sortField] = sortOrder;
-    } else {
-      orderBy.averageRating = 'desc';
-    }
+    const orderBy: Prisma.ListingOrderByWithRelationInput = {};
+    if (sortField === 'averageRating') orderBy.averageRating = sortOrder;
+    else if (sortField === 'createdAt') orderBy.createdAt = sortOrder;
+    else if (sortField === 'reviewCount') orderBy.reviewCount = sortOrder;
+    else if (sortField === 'title') orderBy.title = sortOrder;
+    else orderBy.averageRating = 'desc';
 
     const allListings = await prisma.listing.findMany({
       where,
@@ -61,8 +57,8 @@ export const search = async (req: AuthRequest, res: Response, next: NextFunction
     });
 
     const filtered = allListings.filter((listing) => {
-      const location = listing.location as Record<string, any> | null;
-      const pricing = listing.pricing as Record<string, any> | null;
+      const location = listing.location as Record<string, unknown> | null;
+      const pricing = listing.pricing as Record<string, unknown> | null;
 
       if (state && location?.state) {
         if (!String(location.state).toLowerCase().includes(String(state).toLowerCase())) return false;

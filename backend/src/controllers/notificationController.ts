@@ -1,13 +1,8 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import prisma from '../config/prisma.js';
 import ApiResponse from '../utils/ApiResponse.js';
 import { calculatePagination, parsePagination } from '../utils/helpers.js';
-
-interface AuthRequest extends Request {
-  user?: any;
-  userId?: string;
-  userRole?: string;
-}
+import type { AuthRequest } from '../types/index.js';
 
 export const getNotifications = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {

@@ -1,3 +1,4 @@
+import { Prisma, Sector, ListingStatus } from '@prisma/client';
 import prisma from '../config/prisma.js';
 import ApiError from '../utils/ApiError.js';
 import ApiResponse from '../utils/ApiResponse.js';
@@ -37,14 +38,14 @@ export const getListings = async (req: AuthRequest, res: Response, next: NextFun
       sort = '-createdAt',
     } = req.query as Record<string, string>;
 
-    const where: Record<string, unknown> = { status: LISTING_STATUS.APPROVED };
+    const where: Prisma.ListingWhereInput = { status: LISTING_STATUS.APPROVED };
 
-    if (sector) where.sector = sector;
+    if (sector) where.sector = String(sector) as Sector;
     if (category) where.categoryId = category;
     if (minRating) where.averageRating = { gte: Number(minRating) };
 
     let listings = await prisma.listing.findMany({
-      where: where as any,
+      where,
       include: {
         category: { select: { name: true, slug: true } },
         owner: { select: { firstName: true, lastName: true, email: true, avatar: true } },
@@ -151,9 +152,12 @@ export const createListing = async (req: AuthRequest, res: Response, next: NextF
       data.slug = slugify(data.title as string);
     }
 
-    if (req.files && (req.files as any[]).length > 0) {
-      if (!Array.isArray(data.images)) data.images = [];
-      data.images.push(...(req.files as any[]).map((f: any) => f.path));
+    if (req.files && (req.files as Express.Multer.File[]).length > 0) {
+      const currentImages = data.images as string[] | undefined;
+      if (!Array.isArray(currentImages)) {
+        (data.images as string[]) = [];
+      }
+      (data.images as string[]).push(...(req.files as Express.Multer.File[]).map((f) => f.path));
     }
 
     const listing = await prisma.listing.create({ data: data as any });
@@ -203,13 +207,14 @@ export const updateListing = async (req: AuthRequest, res: Response, next: NextF
       }
     }
 
-    if (req.files && (req.files as any[]).length > 0) {
+    const files = req.files as Express.Multer.File[] | undefined;
+    if (files && files.length > 0) {
       const existingImages = Array.isArray(existing.images) ? existing.images : [];
-      const newImages = Array.isArray(data.images) ? data.images : [];
-      data.images = [
+      const newImages = Array.isArray(data.images) ? (data.images as string[]) : [];
+      (data as Record<string, unknown>).images = [
         ...existingImages,
         ...newImages,
-        ...(req.files as any[]).map((f: any) => f.path),
+        ...files.map((f) => f.path),
       ];
     }
 
@@ -252,18 +257,18 @@ export const getMyListings = async (req: AuthRequest, res: Response, next: NextF
     const { page, limit, skip } = parsePagination(req.query as Record<string, string>);
     const { status } = req.query as Record<string, string>;
 
-    const where: Record<string, unknown> = { ownerId: req.userId };
-    if (status) where.status = status;
+    const where: Prisma.ListingWhereInput = { ownerId: req.userId };
+    if (status) where.status = status as ListingStatus;
 
     const [listings, total] = await Promise.all([
       prisma.listing.findMany({
-        where: where as any,
+        where,
         include: { category: { select: { name: true, slug: true } } },
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
       }),
-      prisma.listing.count({ where: where as any }),
+      prisma.listing.count({ where }),
     ]);
 
     const pagination = calculatePagination(page, limit, total);
