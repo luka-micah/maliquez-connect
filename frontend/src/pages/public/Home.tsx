@@ -1,0 +1,551 @@
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { AxiosResponse } from 'axios';
+import { searchApi } from '../../api/authApi';
+import ListingCard from '../../components/common/ListingCard';
+import {
+  FiSearch, FiBookOpen, FiHeart, FiHome, FiTruck,
+  FiStar, FiTrendingUp, FiShield, FiThumbsUp, FiUsers, FiAward,
+  FiBarChart2, FiArrowUp, FiArrowRight, FiCheckCircle, FiZap,
+  FiCompass, FiRefreshCw,
+} from 'react-icons/fi';
+import { ApiResponse, Listing } from '../../types';
+
+function ScrollReveal({ children, className = '', style, ...props }: {
+  children: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+  [key: string]: unknown;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add('revealed');
+          observer.unobserve(el);
+        }
+      },
+      { threshold: 0.15 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={ref} className={`animate-reveal ${className}`} style={style} {...props}>
+      {children}
+    </div>
+  );
+}
+
+function Counter({ end, suffix = '', duration = 2000 }: { end: number; suffix?: string; duration?: number }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+  const counted = useRef(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !counted.current) {
+          counted.current = true;
+          const startTime = performance.now();
+
+          const tick = (now: number) => {
+            const elapsed = now - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            setCount(Math.floor(eased * end));
+            if (progress < 1) requestAnimationFrame(tick);
+          };
+
+          requestAnimationFrame(tick);
+          observer.unobserve(el);
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [end, duration]);
+
+  return (
+    <span ref={ref}>
+      {count.toLocaleString()}{suffix}
+    </span>
+  );
+}
+
+interface Sector {
+  name: string;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+  gradient: string;
+  sector: string;
+  description: string;
+  count: string;
+}
+
+const sectors: Sector[] = [
+  {
+    name: 'Education', icon: FiBookOpen, color: 'text-blue-500', gradient: 'from-blue-500 to-blue-600',
+    sector: 'EDUCATION', description: 'Schools, tutors, and learning centers', count: '240+',
+  },
+  {
+    name: 'Healthcare', icon: FiHeart, color: 'text-red-500', gradient: 'from-red-500 to-red-600',
+    sector: 'HEALTHCARE', description: 'Hospitals, clinics, and wellness', count: '180+',
+  },
+  {
+    name: 'Hospitality', icon: FiHome, color: 'text-amber-500', gradient: 'from-amber-500 to-amber-600',
+    sector: 'HOSPITALITY', description: 'Hotels, restaurants, and travel', count: '320+',
+  },
+  {
+    name: 'Logistics', icon: FiTruck, color: 'text-green-500', gradient: 'from-green-500 to-green-600',
+    sector: 'LOGISTICS', description: 'Shipping, freight, and delivery', count: '150+',
+  },
+];
+
+const steps = [
+  { icon: FiSearch, title: 'Search', description: 'Browse thousands of verified service providers in your area' },
+  { icon: FiBarChart2, title: 'Compare', description: 'Compare ratings, pricing, and features side by side' },
+  { icon: FiThumbsUp, title: 'Decide', description: 'Make confident choices backed by real user reviews' },
+];
+
+const features = [
+  { icon: FiShield, title: 'Verified Providers', description: 'Every listing is vetted for authenticity and quality' },
+  { icon: FiStar, title: 'Real Reviews', description: 'Honest feedback from real users you can trust' },
+  { icon: FiTrendingUp, title: 'Smart Comparisons', description: 'Side-by-side analysis to find your perfect match' },
+  { icon: FiZap, title: 'AI Recommendations', description: 'Personalized suggestions based on your preferences' },
+  { icon: FiUsers, title: 'Community Driven', description: 'Join thousands making smarter decisions together' },
+  { icon: FiAward, title: 'Quality Assured', description: 'Only top-rated providers make the cut' },
+];
+
+const testimonials = [
+  {
+    name: 'Sarah Johnson', role: 'Parent', avatar: 'SJ',
+    text: 'Found the perfect tutor for my daughter in minutes. The comparison feature is a game-changer!',
+    rating: 5,
+  },
+  {
+    name: 'Michael Chen', role: 'Small Business Owner', avatar: 'MC',
+    text: 'Maliquez Connect helped me find a reliable logistics partner. Saved me hours of research.',
+    rating: 5,
+  },
+  {
+    name: 'Emily Rodriguez', role: 'Healthcare Seeker', avatar: 'ER',
+    text: 'The reviews are authentic and detailed. Finally a platform I can trust for important decisions.',
+    rating: 5,
+  },
+];
+
+const stats = [
+  { icon: FiCompass, end: 890, label: 'Listings', suffix: '+' },
+  { icon: FiUsers, end: 12500, label: 'Active Users', suffix: '+' },
+  { icon: FiStar, end: 4200, label: 'Reviews', suffix: '+' },
+  { icon: FiAward, end: 98, label: 'Satisfaction Rate', suffix: '%' },
+];
+
+const Home = () => {
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  const { data: trendingRes, isLoading, error } = useQuery<AxiosResponse<ApiResponse<Listing[]>>>({
+    queryKey: ['trending'],
+    queryFn: () => searchApi.getTrending(),
+  });
+
+  const trending: Listing[] = trendingRes?.data?.data || [];
+
+  useEffect(() => {
+    const handleScroll = () => setShowBackToTop(window.scrollY > 600);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  const scrollToSection = useCallback((id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  }, []);
+
+  return (
+    <div className="overflow-hidden">
+      {/* ─── HERO ─── */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-900 via-primary-800 to-indigo-900 animate-gradient" />
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-40" />
+
+        <div className="absolute top-1/4 left-10 w-72 h-72 bg-primary-400/10 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-1/4 right-10 w-96 h-96 bg-indigo-400/10 rounded-full blur-3xl animate-float-delayed" />
+        <div className="absolute top-1/3 right-1/4 w-48 h-48 bg-blue-300/10 rounded-full blur-2xl animate-float-slow" />
+
+        <div className="absolute top-20 left-1/4 w-4 h-4 bg-primary-300/40 rounded-full animate-float" />
+        <div className="absolute top-40 right-1/3 w-3 h-3 bg-indigo-300/40 rounded-full animate-float-delayed" />
+        <div className="absolute bottom-32 left-1/3 w-5 h-5 bg-blue-300/30 rounded-full animate-float-slow" />
+        <div className="absolute bottom-20 right-1/4 w-3 h-3 bg-primary-200/40 rounded-full animate-float" style={{ animationDelay: '3s' }} />
+
+        <div className="relative z-10 max-w-5xl mx-auto px-4 text-center">
+          <div className="animate-fade-in-up">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 backdrop-blur-sm rounded-full text-primary-200 text-sm mb-8 border border-white/10">
+              <FiZap className="w-4 h-4 text-yellow-400" />
+              Decision Intelligence Platform
+            </div>
+          </div>
+
+          <h1 className="text-5xl md:text-7xl font-extrabold text-white leading-tight mb-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+            Discover.
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary-300 to-indigo-300">
+              Compare. Decide.
+            </span>
+          </h1>
+
+          <p className="text-lg md:text-xl text-primary-100/80 max-w-2xl mx-auto mb-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+            The smartest way to find and compare top-rated service providers across Education, Healthcare, Hospitality, and Logistics.
+          </p>
+
+          <form onSubmit={handleSearch} className="max-w-2xl mx-auto mb-8 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+            <div className="relative group">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search for services, providers, or categories..."
+                className="w-full px-6 py-4 pr-36 rounded-2xl text-gray-900 text-lg shadow-2xl focus:ring-2 focus:ring-primary-400 focus:outline-none bg-white/95 backdrop-blur-sm group-hover:bg-white transition-colors"
+              />
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2">
+                <button
+                  type="submit"
+                  className="px-6 py-2.5 bg-primary-600 text-white rounded-xl hover:bg-primary-500 transition-all font-medium flex items-center gap-2 shadow-lg"
+                >
+                  <FiSearch className="w-5 h-5" />
+                  <span className="hidden sm:inline">Search</span>
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <div className="flex flex-wrap justify-center gap-4 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+            <button
+              onClick={() => scrollToSection('sectors')}
+              className="px-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white rounded-xl border border-white/10 transition-all font-medium flex items-center gap-2"
+            >
+              <FiCompass className="w-4 h-4" />
+              Browse Sectors
+            </button>
+            <Link
+              to="/register"
+              className="px-6 py-3 bg-white text-primary-700 hover:bg-primary-50 rounded-xl transition-all font-semibold flex items-center gap-2 shadow-lg"
+            >
+              Get Started
+              <FiArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+
+        <button
+          onClick={() => scrollToSection('stats')}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/50 hover:text-white/80 transition-colors animate-float"
+          aria-label="Scroll down"
+        >
+          <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center p-1">
+            <div className="w-1.5 h-3 bg-white/60 rounded-full" />
+          </div>
+        </button>
+      </section>
+
+      {/* ─── STATS ─── */}
+      <section id="stats" className="relative -mt-20 z-20 max-w-6xl mx-auto px-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {stats.map((stat, i) => (
+            <div
+              key={stat.label}
+              className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 text-center hover:-translate-y-1 transition-all duration-300 animate-fade-in-up"
+              style={{ animationDelay: `${i * 0.1}s` }}
+            >
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-primary-50 text-primary-600 rounded-xl mb-3">
+                <stat.icon className="w-6 h-6" />
+              </div>
+              <div className="text-3xl font-bold text-gray-900">
+                <Counter end={stat.end} suffix={stat.suffix} />
+              </div>
+              <div className="text-sm text-gray-500 mt-1">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ─── HOW IT WORKS ─── */}
+      <section className="py-24 bg-white">
+        <div className="max-w-6xl mx-auto px-4">
+          <ScrollReveal className="text-center mb-16">
+            <span className="text-primary-600 font-semibold text-sm tracking-wider uppercase">Simple Process</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-3">How It Works</h2>
+            <p className="text-gray-500 mt-3 max-w-xl mx-auto">
+              Three simple steps to make your best decision yet
+            </p>
+          </ScrollReveal>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {steps.map((step, i) => (
+              <ScrollReveal key={step.title} className="relative" style={{ animationDelay: `${i * 0.15}s` }}>
+                <div className="group relative overflow-hidden rounded-2xl border border-gray-100 bg-white p-8 transition-all hover:shadow-xl hover:-translate-y-0.5 h-full">
+                  <div className="absolute -top-6 -right-6 text-7xl font-extrabold text-primary-50 select-none leading-none">
+                    {String(i + 1).padStart(2, '0')}
+                  </div>
+                  <div className="relative z-10 flex flex-col items-center text-center gap-4">
+                    <div className="w-14 h-14 bg-gradient-to-br from-primary-500 to-primary-700 text-white rounded-2xl flex items-center justify-center flex-shrink-0 shadow-md">
+                      <step.icon className="w-7 h-7" />
+                    </div>
+                    <div>
+                      <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary-100 text-primary-700 text-xs font-bold mr-2 align-middle">
+                        {i + 1}
+                      </span>
+                      <h3 className="inline text-xl font-bold text-gray-900 align-middle">{step.title}</h3>
+                      <p className="text-gray-500 mt-3 leading-relaxed">{step.description}</p>
+                    </div>
+                  </div>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── SECTORS ─── */}
+      <section id="sectors" className="py-24 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <ScrollReveal className="text-center mb-16">
+            <span className="text-primary-600 font-semibold text-sm tracking-wider uppercase">Categories</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-3">Browse by Sector</h2>
+            <p className="text-gray-500 mt-3 max-w-xl mx-auto">
+              Explore top-rated providers across four key industries
+            </p>
+          </ScrollReveal>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {sectors.map(({ name, icon: Icon, color, gradient, sector, description, count }) => (
+              <ScrollReveal key={sector} className="group">
+                <Link
+                  to={`/search?sector=${sector}`}
+                  className="block bg-white rounded-2xl p-6 border border-gray-100 hover:border-transparent transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 overflow-hidden relative"
+                >
+                  <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                  <div className="relative z-10">
+                    <div className={`inline-flex items-center justify-center w-14 h-14 bg-gray-50 ${color} rounded-xl mb-4 group-hover:bg-white/20 group-hover:text-white transition-all duration-300`}>
+                      <Icon className="w-7 h-7" />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-white transition-colors duration-300">{name}</h3>
+                    <p className="text-gray-500 text-sm mt-2 group-hover:text-white/80 transition-colors duration-300">{description}</p>
+                    <div className="flex items-center justify-between mt-4">
+                      <span className="text-sm font-semibold text-primary-600 group-hover:text-white transition-colors duration-300">
+                        {count} providers
+                      </span>
+                      <span className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-white/20 group-hover:text-white transition-all duration-300">
+                        <FiArrowRight className="w-4 h-4" />
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── TRENDING LISTINGS ─── */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <ScrollReveal className="flex flex-col md:flex-row md:items-end justify-between mb-12">
+            <div>
+              <span className="text-primary-600 font-semibold text-sm tracking-wider uppercase">Trending Now</span>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-3">Popular Listings</h2>
+              <p className="text-gray-500 mt-2">Most viewed and highly rated providers this week</p>
+            </div>
+            <Link
+              to="/search"
+              className="mt-4 md:mt-0 inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-semibold group"
+            >
+              View All
+              <FiArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </ScrollReveal>
+
+          {isLoading && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="card animate-pulse">
+                  <div className="h-48 bg-gray-200 rounded-t-lg" />
+                  <div className="p-4 space-y-3">
+                    <div className="h-4 bg-gray-200 rounded w-3/4" />
+                    <div className="h-3 bg-gray-200 rounded w-1/2" />
+                    <div className="h-3 bg-gray-200 rounded w-2/3" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {error && (
+            <div className="text-center py-16">
+              <FiRefreshCw className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-500">Failed to load trending listings. Please try again later.</p>
+            </div>
+          )}
+
+          {!isLoading && !error && trending.length === 0 && (
+            <div className="text-center py-16">
+              <FiCompass className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-500">No trending listings available at the moment.</p>
+            </div>
+          )}
+
+          {!isLoading && !error && trending.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {trending.slice(0, 8).map((listing, i) => (
+                <div
+                  key={listing._id}
+                  className="animate-fade-in-up"
+                  style={{ animationDelay: `${i * 0.08}s` }}
+                >
+                  <ListingCard listing={listing} />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ─── FEATURES ─── */}
+      <section className="py-24 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <ScrollReveal className="text-center mb-16">
+            <span className="text-primary-600 font-semibold text-sm tracking-wider uppercase">Why Choose Us</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-3">Everything You Need</h2>
+            <p className="text-gray-500 mt-3 max-w-xl mx-auto">
+              We make finding the right service provider effortless and reliable
+            </p>
+          </ScrollReveal>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map((feat, i) => (
+              <ScrollReveal
+                key={feat.title}
+                className="bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                style={{ transitionDelay: `${i * 0.05}s` }}
+              >
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-primary-50 text-primary-600 rounded-xl mb-4">
+                  <feat.icon className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">{feat.title}</h3>
+                <p className="text-gray-500 text-sm">{feat.description}</p>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── TESTIMONIALS ─── */}
+      <section className="py-24 bg-white">
+        <div className="max-w-6xl mx-auto px-4">
+          <ScrollReveal className="text-center mb-16">
+            <span className="text-primary-600 font-semibold text-sm tracking-wider uppercase">Testimonials</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-3">What Our Users Say</h2>
+            <p className="text-gray-500 mt-3 max-w-xl mx-auto">
+              Real stories from real people who found what they needed
+            </p>
+          </ScrollReveal>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {testimonials.map((t, i) => (
+              <ScrollReveal
+                key={t.name}
+                className="bg-gray-50 rounded-2xl p-8 border border-gray-100 hover:shadow-lg transition-all duration-300"
+                style={{ animationDelay: `${i * 0.1}s` }}
+              >
+                <div className="flex gap-1 mb-4">
+                  {Array.from({ length: t.rating }).map((_, j) => (
+                    <FiStar key={j} className="w-5 h-5 text-yellow-400 fill-current" />
+                  ))}
+                </div>
+                <p className="text-gray-600 mb-6 leading-relaxed">"{t.text}"</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-primary-100 text-primary-700 rounded-full flex items-center justify-center text-sm font-bold">
+                    {t.avatar}
+                  </div>
+                  <div>
+                    <div className="font-semibold text-gray-900">{t.name}</div>
+                    <div className="text-sm text-gray-500">{t.role}</div>
+                  </div>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── CTA ─── */}
+      <section className="relative py-24 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-900 via-primary-800 to-indigo-900 animate-gradient" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-primary-400/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-indigo-400/10 rounded-full blur-3xl" />
+
+        <ScrollReveal className="relative z-10 max-w-4xl mx-auto px-4 text-center">
+          <FiAward className="w-16 h-16 text-primary-300 mx-auto mb-6" />
+          <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-4">
+            Ready to Grow Your Business?
+          </h2>
+          <p className="text-lg text-primary-100/80 mb-10 max-w-2xl mx-auto">
+            Join thousands of providers already reaching new customers through Maliquez Connect. List your services for free and start getting discovered today.
+          </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link
+              to="/register"
+              className="px-8 py-4 bg-white text-primary-700 hover:bg-primary-50 rounded-2xl font-bold text-lg transition-all shadow-2xl flex items-center gap-2"
+            >
+              <FiCheckCircle className="w-5 h-5" />
+              Get Started Free
+            </Link>
+            <Link
+              to="/search"
+              className="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white rounded-2xl font-semibold text-lg transition-all border border-white/10 flex items-center gap-2"
+            >
+              <FiSearch className="w-5 h-5" />
+              Browse as Guest
+            </Link>
+          </div>
+        </ScrollReveal>
+      </section>
+
+      {/* ─── BACK TO TOP ─── */}
+      <button
+        onClick={scrollToTop}
+        className={`fixed bottom-8 right-8 z-50 w-12 h-12 bg-primary-600 text-white rounded-xl shadow-lg hover:bg-primary-500 transition-all duration-300 flex items-center justify-center ${
+          showBackToTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
+        }`}
+        aria-label="Back to top"
+      >
+        <FiArrowUp className="w-5 h-5" />
+      </button>
+    </div>
+  );
+};
+
+export default Home;
