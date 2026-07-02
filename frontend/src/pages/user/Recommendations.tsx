@@ -88,8 +88,8 @@ const Recommendations = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
               {recommendations.map((rec: Recommendation) => (
                 <Link
-                  key={rec._id}
-                  to={`/listings/${(rec.listing as Listing)._id || rec.listing}`}
+                  key={rec.id}
+                  to={`/listings/${(rec.listing as Listing).id || rec.listing}`}
                   className="card p-5 hover:shadow-md transition-shadow block"
                 >
                   <h3 className="font-semibold text-gray-900 mb-2">
@@ -187,8 +187,8 @@ const Recommendations = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">
               {budgetRecommendations.map((rec: Recommendation) => (
                 <Link
-                  key={rec._id}
-                  to={`/listings/${(rec.listing as Listing)._id || rec.listing}`}
+                  key={rec.id}
+                  to={`/listings/${(rec.listing as Listing).id || rec.listing}`}
                   className="card p-5 hover:shadow-md transition-shadow block"
                 >
                   <h3 className="font-semibold text-gray-900 mb-2">

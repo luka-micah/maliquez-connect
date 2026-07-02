@@ -141,7 +141,7 @@ const AdminListings = () => {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {listings.map((listing: Listing) => (
-                  <tr key={listing._id} className="hover:bg-gray-50">
+                  <tr key={listing.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 text-sm font-medium text-gray-900 max-w-[200px] truncate">
                       {listing.title}
                     </td>
@@ -159,7 +159,7 @@ const AdminListings = () => {
                       <div className="flex items-center justify-end gap-2">
                         {listing.status === 'PENDING' && (
                           <button
-                            onClick={() => approveMutation.mutate(listing._id)}
+                            onClick={() => approveMutation.mutate(listing.id)}
                             disabled={approveMutation.isPending}
                             className="btn-sm text-green-600 hover:text-green-800 flex items-center gap-1"
                           >
@@ -168,7 +168,7 @@ const AdminListings = () => {
                         )}
                         {listing.status !== 'SUSPENDED' && (
                           <button
-                            onClick={() => suspendMutation.mutate(listing._id)}
+                            onClick={() => suspendMutation.mutate(listing.id)}
                             disabled={suspendMutation.isPending}
                             className="btn-sm text-red-600 hover:text-red-800 flex items-center gap-1"
                           >

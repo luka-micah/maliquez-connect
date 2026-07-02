@@ -94,24 +94,29 @@ interface Sector {
   sector: string;
   description: string;
   count: string;
+  image: string;
 }
 
 const sectors: Sector[] = [
   {
     name: 'Education', icon: FiBookOpen, color: 'text-blue-500', gradient: 'from-blue-500 to-blue-600',
     sector: 'EDUCATION', description: 'Schools, tutors, and learning centers', count: '240+',
+    image: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&q=80',
   },
   {
     name: 'Healthcare', icon: FiHeart, color: 'text-red-500', gradient: 'from-red-500 to-red-600',
     sector: 'HEALTHCARE', description: 'Hospitals, clinics, and wellness', count: '180+',
+    image: 'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=600&q=80',
   },
   {
     name: 'Hospitality', icon: FiHome, color: 'text-amber-500', gradient: 'from-amber-500 to-amber-600',
     sector: 'HOSPITALITY', description: 'Hotels, restaurants, and travel', count: '320+',
+    image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80',
   },
   {
     name: 'Logistics', icon: FiTruck, color: 'text-green-500', gradient: 'from-green-500 to-green-600',
     sector: 'LOGISTICS', description: 'Shipping, freight, and delivery', count: '150+',
+    image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600&q=80',
   },
 ];
 
@@ -202,61 +207,94 @@ const Home = () => {
         <div className="absolute bottom-32 left-1/3 w-5 h-5 bg-blue-300/30 rounded-full animate-float-slow" />
         <div className="absolute bottom-20 right-1/4 w-3 h-3 bg-primary-200/40 rounded-full animate-float" style={{ animationDelay: '3s' }} />
 
-        <div className="relative z-10 max-w-5xl mx-auto px-4 text-center">
-          <div className="animate-fade-in-up">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 backdrop-blur-sm rounded-full text-primary-200 text-sm mb-8 border border-white/10">
-              <FiZap className="w-4 h-4 text-yellow-400" />
-              Decision Intelligence Platform
-            </div>
-          </div>
+        <div className="relative z-10 max-w-6xl mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch min-h-[70vh]">
+            {/* Left: Hero Content */}
+            <div className="text-center lg:text-left flex flex-col justify-center">
+              <div className="animate-fade-in-up">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 backdrop-blur-sm rounded-full text-primary-200 text-sm mb-8 border border-white/10">
+                  <FiZap className="w-4 h-4 text-yellow-400" />
+                  Decision Intelligence Platform
+                </div>
+              </div>
 
-          <h1 className="text-5xl md:text-7xl font-extrabold text-white leading-tight mb-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-            Discover.
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary-300 to-indigo-300">
-              Compare. Decide.
-            </span>
-          </h1>
+              <h1 className="text-5xl md:text-7xl font-extrabold text-white leading-tight mb-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+                Discover.
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary-300 to-indigo-300">
+                  Compare. Decide.
+                </span>
+              </h1>
 
-          <p className="text-lg md:text-xl text-primary-100/80 max-w-2xl mx-auto mb-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            The smartest way to find and compare top-rated service providers across Education, Healthcare, Hospitality, and Logistics.
-          </p>
+              <p className="text-lg md:text-xl text-primary-100/80 max-w-xl mb-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+                The smartest way to find and compare top-rated service providers across Education, Healthcare, Hospitality, and Logistics.
+              </p>
 
-          <form onSubmit={handleSearch} className="max-w-2xl mx-auto mb-8 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-            <div className="relative group">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search for services, providers, or categories..."
-                className="w-full px-6 py-4 pr-36 rounded-2xl text-gray-900 text-lg shadow-2xl focus:ring-2 focus:ring-primary-400 focus:outline-none bg-white/95 backdrop-blur-sm group-hover:bg-white transition-colors"
-              />
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2">
+              <form onSubmit={handleSearch} className="max-w-xl mb-8 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+                <div className="relative group">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search for services, providers, or categories..."
+                    className="w-full px-6 py-4 pr-36 rounded-2xl text-gray-900 text-lg shadow-2xl focus:ring-2 focus:ring-primary-400 focus:outline-none bg-white/95 backdrop-blur-sm group-hover:bg-white transition-colors"
+                  />
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2">
+                    <button
+                      type="submit"
+                      className="px-6 py-2.5 bg-primary-600 text-white rounded-xl hover:bg-primary-500 transition-all font-medium flex items-center gap-2 shadow-lg"
+                    >
+                      <FiSearch className="w-5 h-5" />
+                      <span className="hidden sm:inline">Search</span>
+                    </button>
+                  </div>
+                </div>
+              </form>
+
+              <div className="flex flex-wrap justify-center lg:justify-start gap-4 mb-24 lg:mb-0 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
                 <button
-                  type="submit"
-                  className="px-6 py-2.5 bg-primary-600 text-white rounded-xl hover:bg-primary-500 transition-all font-medium flex items-center gap-2 shadow-lg"
+                  onClick={() => scrollToSection('sectors')}
+                  className="px-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white rounded-xl border border-white/10 transition-all font-medium flex items-center gap-2"
                 >
-                  <FiSearch className="w-5 h-5" />
-                  <span className="hidden sm:inline">Search</span>
+                  <FiCompass className="w-4 h-4" />
+                  Browse Sectors
                 </button>
+                <Link
+                  to="/register"
+                  className="px-6 py-3 bg-white text-primary-700 hover:bg-primary-50 rounded-xl transition-all font-semibold flex items-center gap-2 shadow-lg"
+                >
+                  Get Started
+                  <FiArrowRight className="w-4 h-4" />
+                </Link>
               </div>
             </div>
-          </form>
 
-          <div className="flex flex-wrap justify-center gap-4 mb-24 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-            <button
-              onClick={() => scrollToSection('sectors')}
-              className="px-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white rounded-xl border border-white/10 transition-all font-medium flex items-center gap-2"
-            >
-              <FiCompass className="w-4 h-4" />
-              Browse Sectors
-            </button>
-            <Link
-              to="/register"
-              className="px-6 py-3 bg-white text-primary-700 hover:bg-primary-50 rounded-xl transition-all font-semibold flex items-center gap-2 shadow-lg"
-            >
-              Get Started
-              <FiArrowRight className="w-4 h-4" />
-            </Link>
+            {/* Right: How It Works */}
+            <div className="animate-fade-in-up h-full flex" style={{ animationDelay: '0.5s' }}>
+              <div className="flex-1 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/10 p-8 md:p-10 flex flex-col">
+                <div className="flex items-center gap-2 mb-10">
+                  <FiZap className="w-5 h-5 text-yellow-400" />
+                  <h3 className="text-white font-bold text-lg">How It Works</h3>
+                </div>
+                <div className="flex-1 flex flex-col justify-evenly">
+                  {steps.map((step, i) => (
+                    <div key={step.title} className="flex items-start gap-4 group">
+                      <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-primary-400 to-primary-600 text-white rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+                        <step.icon className="w-6 h-6" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="w-6 h-6 rounded-full bg-white/20 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
+                            {i + 1}
+                          </span>
+                          <h4 className="text-white font-semibold">{step.title}</h4>
+                        </div>
+                        <p className="text-primary-200 text-sm leading-relaxed">{step.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -272,7 +310,7 @@ const Home = () => {
       </section>
 
       {/* ─── STATS ─── */}
-      <section id="stats" className="relative -mt-12 md:-mt-20 z-20 max-w-6xl mx-auto px-4">
+      <section id="stats" className="relative mt-0 md:-mt-4 z-20 max-w-6xl mx-auto px-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {stats.map((stat, i) => (
             <div
@@ -292,102 +330,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ─── HOW IT WORKS ─── */}
-      <section className="py-24 bg-white">
-        <div className="max-w-6xl mx-auto px-4">
-          <ScrollReveal className="text-center mb-16">
-            <span className="text-primary-600 font-semibold text-sm tracking-wider uppercase">Simple Process</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-3">How It Works</h2>
-            <p className="text-gray-500 mt-3 max-w-xl mx-auto">
-              Three simple steps to make your best decision yet
-            </p>
-          </ScrollReveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {steps.map((step, i) => (
-              <ScrollReveal key={step.title} className="relative" style={{ animationDelay: `${i * 0.15}s` }}>
-                <div className="group relative overflow-hidden rounded-2xl border border-gray-100 bg-white p-8 transition-all hover:shadow-xl hover:-translate-y-0.5 h-full">
-                  <div className="absolute -top-6 -right-6 text-7xl font-extrabold text-primary-50 select-none leading-none">
-                    {String(i + 1).padStart(2, '0')}
-                  </div>
-                  <div className="relative z-10 flex flex-col items-center text-center gap-4">
-                    <div className="w-14 h-14 bg-gradient-to-br from-primary-500 to-primary-700 text-white rounded-2xl flex items-center justify-center flex-shrink-0 shadow-md">
-                      <step.icon className="w-7 h-7" />
-                    </div>
-                    <div>
-                      <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary-100 text-primary-700 text-xs font-bold mr-2 align-middle">
-                        {i + 1}
-                      </span>
-                      <h3 className="inline text-xl font-bold text-gray-900 align-middle">{step.title}</h3>
-                      <p className="text-gray-500 mt-3 leading-relaxed">{step.description}</p>
-                    </div>
-                  </div>
-                </div>
-              </ScrollReveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── SECTORS (Sticky Card) ─── */}
-      <section id="sectors" className="py-24 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4">
-          <ScrollReveal className="text-center mb-16">
-            <span className="text-primary-600 font-semibold text-sm tracking-wider uppercase">Categories</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-3">Browse by Sector</h2>
-            <p className="text-gray-500 mt-3 max-w-xl mx-auto">
-              Explore top-rated providers across four key industries
-            </p>
-          </ScrollReveal>
-
-          <div className="relative" style={{ height: '2200px' }}>
-            {sectors.map(({ name, icon: Icon, gradient, sector, description, count }, i) => (
-              <div
-                key={sector}
-                className="sticky h-72 md:h-56"
-                style={{ top: `${80 + i * 96}px`, zIndex: 1 + i }}
-              >
-                <Link
-                  to={`/search?sector=${sector}`}
-                  className="group block bg-white rounded-2xl border border-gray-100 hover:border-transparent transition-all duration-500 hover:shadow-2xl overflow-hidden relative h-full"
-                >
-                  <div className="flex h-full">
-                    {/* LEFT: Details */}
-                    <div className="flex-1 p-6 md:p-8 flex flex-col justify-center relative z-10 min-w-0">
-                      <div className="flex items-center gap-3 md:gap-4 mb-2 md:mb-3">
-                        <div className="inline-flex items-center justify-center w-11 h-11 md:w-12 md:h-12 bg-primary-50 text-primary-600 rounded-xl flex-shrink-0 transition-all duration-300">
-                          <Icon className="w-5 h-5 md:w-6 md:h-6" />
-                        </div>
-                        <div className="min-w-0">
-                          <h3 className="text-lg md:text-xl font-bold text-gray-900 truncate">{name}</h3>
-                          <p className="text-xs md:text-sm text-gray-500 truncate">{description}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between mt-auto md:mt-4">
-                        <div>
-                          <div className="text-xl md:text-2xl font-bold text-primary-600">{count}</div>
-                          <div className="text-xs md:text-sm text-gray-400">providers</div>
-                        </div>
-                        <span className="w-9 h-9 md:w-10 md:h-10 bg-gray-100 group-hover:bg-primary-100 rounded-full flex items-center justify-center group-hover:text-primary-600 transition-all duration-300 flex-shrink-0">
-                          <FiArrowRight className="w-4 h-4 md:w-5 md:h-5" />
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* RIGHT: Image / Visual */}
-                    <div className={`hidden sm:flex w-36 md:w-48 lg:w-56 bg-gradient-to-br ${gradient} items-center justify-center flex-shrink-0 relative overflow-hidden`}>
-                      <div className="absolute inset-0 bg-black/10" />
-                      <Icon className="w-20 h-20 md:w-28 md:h-28 lg:w-32 lg:h-32 text-white/20" />
-                      <div className="absolute -bottom-6 -right-6 w-36 h-36 bg-white/5 rounded-full blur-2xl" />
-                      <div className="absolute -top-6 -left-6 w-24 h-24 bg-white/5 rounded-full blur-2xl" />
-                    </div>
-                  </div>
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ─── TRENDING LISTINGS ─── */}
       <section className="py-24 bg-white">
@@ -440,7 +383,7 @@ const Home = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {trending.slice(0, 8).map((listing, i) => (
                 <div
-                  key={listing._id}
+                  key={listing.id}
                   className="animate-fade-in-up"
                   style={{ animationDelay: `${i * 0.08}s` }}
                 >
@@ -449,6 +392,69 @@ const Home = () => {
               ))}
             </div>
           )}
+        </div>
+      </section>
+
+      {/* ─── SECTORS (Sticky Card) ─── */}
+      <section id="sectors" className="py-24 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <ScrollReveal className="text-center mb-16">
+            <span className="text-primary-600 font-semibold text-sm tracking-wider uppercase">Categories</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-3">Browse by Sector</h2>
+            <p className="text-gray-500 mt-3 max-w-xl mx-auto">
+              Explore top-rated providers across four key industries
+            </p>
+          </ScrollReveal>
+
+          <div className="relative" style={{ height: '2200px' }}>
+            {sectors.map(({ name, icon: Icon, gradient, sector, description, count, image }, i) => (
+              <div
+                key={sector}
+                className="sticky h-72 md:h-56"
+                style={{ top: `${80 + i * 96}px`, zIndex: 1 + i }}
+              >
+                <Link
+                  to={`/search?sector=${sector}`}
+                  className="group block bg-white rounded-2xl border border-gray-100 hover:border-transparent transition-all duration-500 hover:shadow-2xl overflow-hidden relative h-full"
+                >
+                  <div className="flex h-full">
+                    {/* LEFT: Details */}
+                    <div className="flex-1 p-6 md:p-8 flex flex-col justify-center relative z-10 min-w-0">
+                      <div className="flex items-center gap-3 md:gap-4 mb-2 md:mb-3">
+                        <div className="inline-flex items-center justify-center w-11 h-11 md:w-12 md:h-12 bg-primary-50 text-primary-600 rounded-xl flex-shrink-0 transition-all duration-300">
+                          <Icon className="w-5 h-5 md:w-6 md:h-6" />
+                        </div>
+                        <div className="min-w-0">
+                          <h3 className="text-lg md:text-xl font-bold text-gray-900 truncate">{name}</h3>
+                          <p className="text-xs md:text-sm text-gray-500 truncate">{description}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between mt-auto md:mt-4">
+                        <div>
+                          <div className="text-xl md:text-2xl font-bold text-primary-600">{count}</div>
+                          <div className="text-xs md:text-sm text-gray-400">providers</div>
+                        </div>
+                        <span className="w-9 h-9 md:w-10 md:h-10 bg-gray-100 group-hover:bg-primary-100 rounded-full flex items-center justify-center group-hover:text-primary-600 transition-all duration-300 flex-shrink-0">
+                          <FiArrowRight className="w-4 h-4 md:w-5 md:h-5" />
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* RIGHT: Image / Visual */}
+                    <div className="hidden sm:flex w-48 md:w-64 lg:w-80 flex-shrink-0 relative overflow-hidden">
+                      <img
+                        src={image}
+                        alt={name}
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-l from-black/40 to-transparent" />
+                      <Icon className="relative z-10 w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 mx-auto my-auto text-white/30" />
+                    </div>
+                  </div>
+                </Link>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

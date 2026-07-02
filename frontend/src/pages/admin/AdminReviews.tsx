@@ -109,11 +109,11 @@ const AdminReviews = () => {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {reviews.map((review: Review) => (
-                  <tr key={review._id} className="hover:bg-gray-50">
+                  <tr key={review.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 text-sm font-medium text-gray-900 max-w-[160px] truncate">
                       {(review as any).listing?.title || review.listing || '—'}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-500">{review.user?.firstName ? `${review.user.firstName} ${review.user.lastName}` : review.user?._id || '—'}</td>
+                    <td className="px-4 py-3 text-sm text-gray-500">{review.user?.firstName ? `${review.user.firstName} ${review.user.lastName}` : review.user?.id || '—'}</td>
                     <td className="px-4 py-3">{renderStars(review.rating)}</td>
                     <td className="px-4 py-3 text-sm text-gray-500 max-w-[240px] truncate">
                       {review.review || '—'}
@@ -132,7 +132,7 @@ const AdminReviews = () => {
                       <div className="flex items-center justify-end gap-2">
                         {review.status !== 'APPROVED' && (
                           <button
-                            onClick={() => moderateMutation.mutate({ id: review._id, status: 'APPROVED' })}
+                            onClick={() => moderateMutation.mutate({ id: review.id, status: 'APPROVED' })}
                             disabled={moderateMutation.isPending}
                             className="btn-sm text-green-600 hover:text-green-800 flex items-center gap-1"
                           >
@@ -141,7 +141,7 @@ const AdminReviews = () => {
                         )}
                         {review.status !== 'REJECTED' && (
                           <button
-                            onClick={() => moderateMutation.mutate({ id: review._id, status: 'REJECTED' })}
+                            onClick={() => moderateMutation.mutate({ id: review.id, status: 'REJECTED' })}
                             disabled={moderateMutation.isPending}
                             className="btn-sm text-red-600 hover:text-red-800 flex items-center gap-1"
                           >

@@ -1,5 +1,5 @@
 export interface User {
-  _id: string;
+  id: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -26,7 +26,7 @@ export interface ProviderProfile {
 }
 
 export interface Category {
-  _id: string;
+  id: string;
   name: string;
   slug?: string;
   description?: string;
@@ -74,7 +74,7 @@ export interface DayHours {
 }
 
 export interface Listing {
-  _id: string;
+  id: string;
   title: string;
   slug?: string;
   description: string;
@@ -98,8 +98,8 @@ export interface Listing {
 }
 
 export interface Review {
-  _id: string;
-  user: { _id: string; firstName: string; lastName: string; avatar?: string };
+  id: string;
+  user: { id: string; firstName: string; lastName: string; avatar?: string };
   listing: string;
   rating: number;
   review?: string;
@@ -110,14 +110,14 @@ export interface Review {
 }
 
 export interface Favorite {
-  _id: string;
+  id: string;
   user: string;
   listing: Listing;
   createdAt: string;
 }
 
 export interface Comparison {
-  _id: string;
+  id: string;
   user: string;
   listings: Listing[];
   fields: ComparisonFields;
@@ -138,7 +138,7 @@ export interface ComparisonFields {
 }
 
 export interface Recommendation {
-  _id: string;
+  id: string;
   user: string;
   listing: string | Listing;
   reason?: string;
@@ -147,7 +147,7 @@ export interface Recommendation {
 }
 
 export interface SearchHistory {
-  _id: string;
+  id: string;
   user: string;
   keyword?: string;
   filters?: Record<string, string>;
@@ -155,7 +155,7 @@ export interface SearchHistory {
 }
 
 export interface Notification {
-  _id: string;
+  id: string;
   user: string;
   title: string;
   message: string;

@@ -3,6 +3,15 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --brand-main: #d84696;
+    --brand-dark: #2E1422;
+    --brand-highlight: #8c3869;
+    --brand-secondary: #937E85;
+    --brand-accent: #CDC2C4;
+    --brand-white: #FFFFFF;
+  }
+
   body {
     @apply bg-gray-50 text-gray-900 antialiased;
   }
@@ -174,10 +183,10 @@
 
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(111, 44, 145, 0.4);
+    box-shadow: 0 0 0 0 rgba(140, 56, 105, 0.4);
   }
   50% {
-    box-shadow: 0 0 0 20px rgba(111, 44, 145, 0);
+    box-shadow: 0 0 0 20px rgba(140, 56, 105, 0);
   }
 }
 

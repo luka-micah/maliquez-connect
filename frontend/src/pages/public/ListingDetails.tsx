@@ -206,7 +206,7 @@ const ListingDetails = () => {
                   {!reviewsLoading && reviews.length > 0 && (
                     <div className="space-y-4">
                       {reviews.map((review) => (
-                        <ReviewCard key={review._id} review={review} />
+                        <ReviewCard key={review.id} review={review} />
                       ))}
                     </div>
                   )}

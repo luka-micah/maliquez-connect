@@ -14,7 +14,7 @@ const ReviewCard = ({ review, onHelpful, onReport }: ReviewCardProps) => {
 
   const handleHelpful = () => {
     if (!helped && onHelpful) {
-      onHelpful(review._id);
+      onHelpful(review.id);
       setHelpfulCount((c) => c + 1);
       setHelped(true);
     }
@@ -54,7 +54,7 @@ const ReviewCard = ({ review, onHelpful, onReport }: ReviewCardProps) => {
           Helpful ({helpfulCount})
         </button>
         {onReport && (
-          <button onClick={() => onReport(review._id)} className="flex items-center gap-1 text-sm text-gray-400 hover:text-red-500">
+          <button onClick={() => onReport(review.id)} className="flex items-center gap-1 text-sm text-gray-400 hover:text-red-500">
             <FiFlag className="w-4 h-4" /> Report
           </button>
         )}

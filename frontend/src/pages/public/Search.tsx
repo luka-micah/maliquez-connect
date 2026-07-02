@@ -148,7 +148,7 @@ const Search = () => {
               >
                 <option value="">All Categories</option>
                 {(categoriesRes?.data?.data || []).map((cat: Category) => (
-                  <option key={cat._id} value={cat._id}>{cat.name}</option>
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
                 ))}
               </select>
             </div>
@@ -271,7 +271,7 @@ const Search = () => {
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                 {listings.map((listing) => (
-                  <ListingCard key={listing._id} listing={listing} />
+                  <ListingCard key={listing.id} listing={listing} />
                 ))}
               </div>
               {pagination && (

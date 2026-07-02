@@ -12,7 +12,7 @@ const ListingCard = ({ listing, onFavorite }: ListingCardProps) => {
 
   return (
     <div className="card hover:shadow-md transition-shadow">
-      <Link to={`/listings/${listing._id}`}>
+      <Link to={`/listings/${listing.id}`}>
         <div className="relative h-48 overflow-hidden">
           <img src={imageUrl} alt={listing.title} className="w-full h-full object-cover" />
           {listing.verified === 'VERIFIED' && (
@@ -23,13 +23,13 @@ const ListingCard = ({ listing, onFavorite }: ListingCardProps) => {
       <div className="p-4">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <Link to={`/listings/${listing._id}`}>
+            <Link to={`/listings/${listing.id}`}>
               <h3 className="font-semibold text-gray-900 hover:text-primary-600">{listing.title}</h3>
             </Link>
             <p className="text-xs text-gray-500 mt-1">{(listing.category as Category)?.name} &middot; {listing.sector}</p>
           </div>
           {onFavorite && (
-            <button onClick={() => onFavorite(listing._id)} className="text-gray-400 hover:text-red-500">
+            <button onClick={() => onFavorite(listing.id)} className="text-gray-400 hover:text-red-500">
               <FiHeart className="w-5 h-5" />
             </button>
           )}

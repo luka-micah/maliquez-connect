@@ -119,10 +119,10 @@ const Compare = () => {
               <tr>
                 <th className="p-3 text-left text-sm font-medium text-gray-500 w-40 bg-gray-50 border border-gray-200">Feature</th>
                 {listings.map((listing) => (
-                  <th key={listing._id} className="p-3 text-center bg-gray-50 border border-gray-200 min-w-[200px]">
+                  <th key={listing.id} className="p-3 text-center bg-gray-50 border border-gray-200 min-w-[200px]">
                     <div className="relative">
                       <button
-                        onClick={() => removeFromCompare(listing._id)}
+                        onClick={() => removeFromCompare(listing.id)}
                         className="absolute -top-1 -right-1 p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full"
                       >
                         <FiX className="w-4 h-4" />
@@ -136,8 +136,8 @@ const Compare = () => {
               <tr>
                 <td className="p-3 text-sm font-medium text-gray-700 bg-gray-50 border border-gray-200">Image</td>
                 {listings.map((listing) => (
-                  <td key={listing._id} className="p-3 border border-gray-200">
-                    <Link to={`/listings/${listing._id}`}>
+                  <td key={listing.id} className="p-3 border border-gray-200">
+                    <Link to={`/listings/${listing.id}`}>
                       <img
                         src={listing.images?.[0] || 'https://via.placeholder.com/300x200?text=No+Image'}
                         alt={listing.title}
@@ -151,8 +151,8 @@ const Compare = () => {
               <tr>
                 <td className="p-3 text-sm font-medium text-gray-700 bg-gray-50 border border-gray-200">Title</td>
                 {listings.map((listing) => (
-                  <td key={listing._id} className="p-3 border border-gray-200">
-                    <Link to={`/listings/${listing._id}`} className="font-semibold text-gray-900 hover:text-primary-600">
+                  <td key={listing.id} className="p-3 border border-gray-200">
+                    <Link to={`/listings/${listing.id}`} className="font-semibold text-gray-900 hover:text-primary-600">
                       {listing.title}
                     </Link>
                   </td>
@@ -162,7 +162,7 @@ const Compare = () => {
               <tr>
                 <td className="p-3 text-sm font-medium text-gray-700 bg-gray-50 border border-gray-200">Sector</td>
                 {listings.map((listing) => (
-                  <td key={listing._id} className="p-3 border border-gray-200">
+                  <td key={listing.id} className="p-3 border border-gray-200">
                     <span className="px-2 py-1 bg-primary-100 text-primary-700 rounded text-xs font-medium">
                       {listing.sector}
                     </span>
@@ -173,7 +173,7 @@ const Compare = () => {
               <tr>
                 <td className="p-3 text-sm font-medium text-gray-700 bg-gray-50 border border-gray-200">Category</td>
                 {listings.map((listing) => (
-                  <td key={listing._id} className="p-3 border border-gray-200 text-sm text-gray-600">
+                  <td key={listing.id} className="p-3 border border-gray-200 text-sm text-gray-600">
                     {typeof listing.category === 'object' ? listing.category?.name || '-' : listing.category || '-'}
                   </td>
                 ))}
@@ -182,7 +182,7 @@ const Compare = () => {
               <tr>
                 <td className="p-3 text-sm font-medium text-gray-700 bg-gray-50 border border-gray-200">Rating</td>
                 {listings.map((listing) => (
-                  <td key={listing._id} className="p-3 border border-gray-200">
+                  <td key={listing.id} className="p-3 border border-gray-200">
                     <div className="flex flex-col items-center gap-1">
                       <StarRating rating={Math.round(listing.averageRating || 0)} readonly size="sm" />
                       <span className="text-sm text-gray-500">({listing.reviewCount || 0})</span>
@@ -194,7 +194,7 @@ const Compare = () => {
               <tr>
                 <td className="p-3 text-sm font-medium text-gray-700 bg-gray-50 border border-gray-200">Location</td>
                 {listings.map((listing) => (
-                  <td key={listing._id} className="p-3 border border-gray-200">
+                  <td key={listing.id} className="p-3 border border-gray-200">
                     {listing.location ? (
                       <div className="flex items-center justify-center gap-1 text-sm text-gray-600">
                         <FiMapPin className="w-3.5 h-3.5" />
@@ -210,7 +210,7 @@ const Compare = () => {
               <tr>
                 <td className="p-3 text-sm font-medium text-gray-700 bg-gray-50 border border-gray-200">Pricing</td>
                 {listings.map((listing) => (
-                  <td key={listing._id} className="p-3 border border-gray-200 text-center">
+                  <td key={listing.id} className="p-3 border border-gray-200 text-center">
                     {listing.pricing?.minimum ? (
                       <span className="font-semibold text-primary-600">
                         {listing.pricing.currency || '$'}{listing.pricing.minimum.toLocaleString()}
@@ -230,7 +230,7 @@ const Compare = () => {
               <tr>
                 <td className="p-3 text-sm font-medium text-gray-700 bg-gray-50 border border-gray-200">Verified</td>
                 {listings.map((listing) => (
-                  <td key={listing._id} className="p-3 border border-gray-200 text-center">
+                  <td key={listing.id} className="p-3 border border-gray-200 text-center">
                     {listing.verified === 'VERIFIED' ? (
                       <span className="inline-flex items-center gap-1 text-green-600 text-sm">
                         <FiCheck className="w-4 h-4" /> Verified
@@ -246,7 +246,7 @@ const Compare = () => {
                 <tr>
                   <td className="p-3 text-sm font-medium text-gray-700 bg-gray-50 border border-gray-200">Features</td>
                   {listings.map((listing) => (
-                    <td key={listing._id} className="p-3 border border-gray-200">
+                    <td key={listing.id} className="p-3 border border-gray-200">
                       <div className="flex flex-wrap gap-1 justify-center">
                         {(listing.features || []).length > 0 ? (
                           listing.features.map((f: string, i: number) => (
@@ -266,9 +266,9 @@ const Compare = () => {
               <tr>
                 <td className="p-3 bg-gray-50 border border-gray-200" />
                 {listings.map((listing) => (
-                  <td key={listing._id} className="p-3 border border-gray-200 text-center">
+                  <td key={listing.id} className="p-3 border border-gray-200 text-center">
                     <button
-                      onClick={() => removeFromCompare(listing._id)}
+                      onClick={() => removeFromCompare(listing.id)}
                       className="px-4 py-2 text-sm text-red-600 border border-red-200 rounded-lg hover:bg-red-50"
                     >
                       Remove

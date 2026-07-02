@@ -64,7 +64,7 @@ const ListingFormModal = ({ isOpen, onClose, listing, categories }: ListingFormM
       ? {
           title: listing.title || '',
           description: listing.description || '',
-          category: typeof listing.category === 'object' ? listing.category?._id || '' : listing.category || '',
+          category: typeof listing.category === 'object' ? listing.category?.id || '' : listing.category || '',
           sector: listing.sector || '',
           contactPhone: listing.contact?.phone || '',
           contactEmail: listing.contact?.email || '',
@@ -102,7 +102,7 @@ const ListingFormModal = ({ isOpen, onClose, listing, categories }: ListingFormM
   });
 
   const updateMutation = useMutation<any, any, FormData>({
-    mutationFn: (formData: FormData) => listingApi.update(listing!._id, formData),
+    mutationFn: (formData: FormData) => listingApi.update(listing!.id, formData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['my-listings'] });
       toast.success('Listing updated successfully');
@@ -195,7 +195,7 @@ const ListingFormModal = ({ isOpen, onClose, listing, categories }: ListingFormM
               >is 
                 <option value="">Select category</option>
                 {categories?.map((cat: Category) => (
-                  <option key={cat._id} value={cat._id}>{cat.name}</option>
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
                 ))}
               </select>
               {errors.category && <p className="text-red-500 text-sm mt-1">{errors.category.message}</p>}
@@ -422,7 +422,7 @@ const ProviderListings = () => {
               </thead>
               <tbody>
                 {listings.map((listing: Listing) => (
-                  <tr key={listing._id} className="border-b border-gray-100 hover:bg-gray-50">
+                  <tr key={listing.id} className="border-b border-gray-100 hover:bg-gray-50">
                     <td className="px-4 py-3 text-sm font-medium text-gray-900">{listing.title}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{typeof listing.category === 'object' ? listing.category?.name : listing.category || '—'}</td>
                     <td className="px-4 py-3">{statusBadge(listing.status)}</td>
@@ -444,7 +444,7 @@ const ProviderListings = () => {
                           <FiEdit2 className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => setDeleteId(listing._id)}
+                          onClick={() => setDeleteId(listing.id)}
                           className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                         >
                           <FiTrash2 className="w-4 h-4" />

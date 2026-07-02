@@ -6,6 +6,171 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id                   String           @id @default(cuid())
+  firstName            String
+  lastName             String
+  email                String           @unique
+  phone                String?
+  password             String
+  avatar               String?
+  role                 Role             @default(USER)
+  isVerified           Boolean          @default(false)
+  status               UserStatus       @default(ACTIVE)
+  providerProfile      Json?
+  refreshToken         String?
+  passwordResetToken   String?
+  passwordResetExpires DateTime?
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+  comparisons          Comparison[]
+  favorites            Favorite[]
+  listings             Listing[]
+  notifications        Notification[]
+  recommendations      Recommendation[]
+  reviews              Review[]
+  searchHistories      SearchHistory[]
+
+  @@map("users")
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String?   @unique
+  description String?
+  icon        String?
+  status      String    @default("ACTIVE")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  listings    Listing[]
+
+  @@map("categories")
+}
+
+model Listing {
+  id              String             @id @default(cuid())
+  title           String
+  slug            String?            @unique
+  description     String
+  categoryId      String
+  ownerId         String
+  sector          Sector
+  contact         Json?
+  location        Json?
+  images          String[]
+  features        String[]
+  pricing         Json?
+  operatingHours  Json?
+  averageRating   Float              @default(0)
+  reviewCount     Int                @default(0)
+  verified        VerificationStatus @default(UNVERIFIED)
+  status          ListingStatus      @default(PENDING)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  favorites       Favorite[]
+  category        Category           @relation(fields: [categoryId], references: [id])
+  owner           User               @relation(fields: [ownerId], references: [id])
+  recommendations Recommendation[]
+  reviews         Review[]
+
+  @@index([status])
+  @@index([sector])
+  @@index([categoryId])
+  @@index([ownerId])
+  @@index([averageRating])
+  @@map("listings")
+}
+
+model Review {
+  id           String       @id @default(cuid())
+  userId       String
+  listingId    String
+  rating       Int
+  review       String?
+  helpfulCount Int          @default(0)
+  status       ReviewStatus @default(APPROVED)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  listing      Listing      @relation(fields: [listingId], references: [id])
+  user         User         @relation(fields: [userId], references: [id])
+
+  @@unique([userId, listingId])
+  @@index([listingId])
+  @@index([userId])
+  @@map("reviews")
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  listingId String
+  createdAt DateTime @default(now())
+  listing   Listing  @relation(fields: [listingId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, listingId])
+  @@index([userId])
+  @@map("favorites")
+}
+
+model Comparison {
+  id         String   @id @default(cuid())
+  userId     String
+  listingIds String[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("comparisons")
+}
+
+model Recommendation {
+  id        String   @id @default(cuid())
+  userId    String
+  listingId String
+  reason    String?
+  score     Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  listing   Listing  @relation(fields: [listingId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([score])
+  @@map("recommendations")
+}
+
+model SearchHistory {
+  id        String   @id @default(cuid())
+  userId    String
+  keyword   String?
+  filters   Json?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("search_histories")
+}
+
+model Notification {
+  id             String           @id @default(cuid())
+  userId         String
+  title          String
+  message        String
+  read           Boolean          @default(false)
+  type           NotificationType @default(SYSTEM)
+  referenceId    String?
+  referenceModel String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  user           User             @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([userId, read])
+  @@map("notifications")
+}
 
 enum Role {
   USER
@@ -50,188 +215,4 @@ enum NotificationType {
   REVIEW
   SYSTEM
   APPROVAL
-}
-
-model User {
-  id                   String          @id @default(cuid())
-  firstName            String
-  lastName             String
-  email                String          @unique
-  phone                String?
-  password             String
-  avatar               String?
-  role                 Role            @default(USER)
-  isVerified           Boolean         @default(false)
-  status               UserStatus      @default(ACTIVE)
-  providerProfile      Json?
-  refreshToken         String?
-  passwordResetToken   String?
-  passwordResetExpires DateTime?
-
-  listings       Listing[]
-  reviews        Review[]
-  favorites      Favorite[]
-  comparisons    Comparison[]
-  recommendations Recommendation[]
-  searchHistories SearchHistory[]
-  notifications  Notification[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("users")
-}
-
-model Category {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  slug        String?  @unique
-  description String?
-  icon        String?
-  status      String   @default("ACTIVE")
-
-  listings Listing[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("categories")
-}
-
-model Listing {
-  id            String        @id @default(cuid())
-  title         String
-  slug          String?       @unique
-  description   String
-  categoryId    String
-  ownerId       String
-  sector        Sector
-  contact       Json?
-  location      Json?
-  images        String[]
-  features      String[]
-  pricing       Json?
-  operatingHours Json?
-  averageRating Float         @default(0)
-  reviewCount   Int           @default(0)
-  verified      VerificationStatus @default(UNVERIFIED)
-  status        ListingStatus @default(PENDING)
-
-  category      Category      @relation(fields: [categoryId], references: [id])
-  owner         User          @relation(fields: [ownerId], references: [id])
-  reviews       Review[]
-  favorites     Favorite[]
-  recommendations Recommendation[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([status])
-  @@index([sector])
-  @@index([categoryId])
-  @@index([ownerId])
-  @@index([averageRating])
-  @@map("listings")
-}
-
-model Review {
-  id           String       @id @default(cuid())
-  userId       String
-  listingId    String
-  rating       Int
-  review       String?
-  helpfulCount Int          @default(0)
-  status       ReviewStatus @default(APPROVED)
-
-  user         User         @relation(fields: [userId], references: [id])
-  listing      Listing      @relation(fields: [listingId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([userId, listingId])
-  @@index([listingId])
-  @@index([userId])
-  @@map("reviews")
-}
-
-model Favorite {
-  id        String  @id @default(cuid())
-  userId    String
-  listingId String
-
-  user      User    @relation(fields: [userId], references: [id])
-  listing   Listing @relation(fields: [listingId], references: [id])
-
-  createdAt DateTime @default(now())
-
-  @@unique([userId, listingId])
-  @@index([userId])
-  @@map("favorites")
-}
-
-model Comparison {
-  id        String   @id @default(cuid())
-  userId    String
-  listingIds String[]
-
-  user      User     @relation(fields: [userId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([userId])
-  @@map("comparisons")
-}
-
-model Recommendation {
-  id        String   @id @default(cuid())
-  userId    String
-  listingId String
-  reason    String?
-  score     Float    @default(0)
-
-  user      User     @relation(fields: [userId], references: [id])
-  listing   Listing  @relation(fields: [listingId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([userId])
-  @@index([score])
-  @@map("recommendations")
-}
-
-model SearchHistory {
-  id        String   @id @default(cuid())
-  userId    String
-  keyword   String?
-  filters   Json?
-
-  user      User     @relation(fields: [userId], references: [id])
-
-  createdAt DateTime @default(now())
-
-  @@index([userId])
-  @@map("search_histories")
-}
-
-model Notification {
-  id             String           @id @default(cuid())
-  userId         String
-  title          String
-  message        String
-  read           Boolean          @default(false)
-  type           NotificationType @default(SYSTEM)
-  referenceId    String?
-  referenceModel String?
-
-  user           User             @relation(fields: [userId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([userId])
-  @@index([userId, read])
-  @@map("notifications")
 }

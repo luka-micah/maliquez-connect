@@ -133,7 +133,7 @@ const AdminUsers = () => {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {users.map((user: User) => (
-                  <tr key={user._id} className="hover:bg-gray-50">
+                  <tr key={user.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 text-sm font-medium text-gray-900">{`${user.firstName} ${user.lastName}`}</td>
                     <td className="px-4 py-3 text-sm text-gray-500">{user.email}</td>
                     <td className="px-4 py-3">
@@ -151,7 +151,7 @@ const AdminUsers = () => {
                       <button
                         onClick={() =>
                           updateStatusMutation.mutate({
-                            id: user._id,
+                            id: user.id,
                             status: user.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE',
                           })
                         }

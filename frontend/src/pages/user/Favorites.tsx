@@ -35,9 +35,9 @@ const Favorites = () => {
   const pagination = (favoritesRes?.data?.pagination || { page: 1 }) as PaginationType;
 
   const handleRemove = (listingId: string) => {
-    const fav = Array.isArray(favorites) ? favorites.find((f: Favorite) => f.listing?._id === listingId) : null;
-    if (fav?._id) {
-      removeMutation.mutate(fav._id);
+    const fav = Array.isArray(favorites) ? favorites.find((f: Favorite) => f.listing?.id === listingId) : null;
+    if (fav?.id) {
+      removeMutation.mutate(fav.id);
     }
   };
 
@@ -95,10 +95,10 @@ const Favorites = () => {
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
             {favorites.map((fav: Favorite) => (
-              <div key={fav._id} className="relative group">
+              <div key={fav.id} className="relative group">
                 <ListingCard listing={fav.listing} onFavorite={handleRemove} />
                 <button
-                  onClick={() => handleRemove(fav.listing?._id)}
+                  onClick={() => handleRemove(fav.listing?.id)}
                   disabled={removeMutation.isPending}
                   className="absolute top-2 right-2 p-2 bg-white/90 rounded-full shadow-sm text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
                   title="Remove from favorites"

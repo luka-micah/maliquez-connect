@@ -10,7 +10,7 @@ import { ApiResponse, User, Pagination as PaginationType } from '../../types';
 const verificationOptions: string[] = ['', 'PENDING', 'VERIFIED', 'REJECTED'];
 
 interface ProviderListItem {
-  _id: string;
+  id: string;
   businessName?: string;
   name?: string;
   email: string;
@@ -91,7 +91,7 @@ const AdminProviders = () => {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {providers.map((provider: ProviderListItem) => (
-                  <tr key={provider._id} className="hover:bg-gray-50">
+                  <tr key={provider.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 text-sm font-medium text-gray-900">{provider.businessName || '—'}</td>
                     <td className="px-4 py-3 text-sm text-gray-700">{provider.name}</td>
                     <td className="px-4 py-3 text-sm text-gray-500">{provider.email}</td>
@@ -107,7 +107,7 @@ const AdminProviders = () => {
                     <td className="px-4 py-3 text-sm text-gray-500">{formatDate(provider.createdAt)}</td>
                     <td className="px-4 py-3 text-right">
                       <Link
-                        to={`/admin/providers/analytics/${provider._id}`}
+                        to={`/admin/providers/analytics/${provider.id}`}
                         className="btn-sm inline-flex items-center gap-1 text-primary-600 hover:text-primary-800"
                       >
                         <FiEye className="w-4 h-4" /> View Analytics

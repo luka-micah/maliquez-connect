@@ -17,7 +17,7 @@ const ProviderReviews = () => {
   });
 
   const listings: Listing[] = listingsRes?.data?.data || [];
-  const listingIds: string[] = listings.map((l: Listing) => l._id);
+  const listingIds: string[] = listings.map((l: Listing) => l.id);
 
   const { data: allReviewsRes, isLoading: reviewsLoading, error: reviewsError } = useQuery({
     queryKey: ['provider-reviews', listingIds],
@@ -100,7 +100,7 @@ const ProviderReviews = () => {
       {reviews.length > 0 && (
         <div className="space-y-4">
           {reviews.map((review: ReviewWithListing) => (
-            <div key={review._id} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div key={review.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
               {review.listingTitle && (
                 <div className="px-4 pt-4 pb-0">
                   <span className="text-xs font-medium text-primary-600 bg-primary-50 px-2 py-0.5 rounded-full">

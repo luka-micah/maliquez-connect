@@ -80,8 +80,8 @@ const Categories = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((category: Category) => (
             <Link
-              key={category._id}
-              to={`/search?category=${category._id}`}
+              key={category.id}
+              to={`/search?category=${category.id}`}
               className="card p-6 hover:shadow-md transition-shadow group"
             >
               <h3 className="text-lg font-semibold text-gray-900 group-hover:text-primary-600 transition-colors">

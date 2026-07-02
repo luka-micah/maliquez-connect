@@ -88,7 +88,7 @@ const AdminCategories = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (editing) {
-      updateMutation.mutate({ id: editing._id, body: form });
+      updateMutation.mutate({ id: editing.id, body: form });
     } else {
       createMutation.mutate(form);
     }
@@ -141,7 +141,7 @@ const AdminCategories = () => {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {categories.map((cat: Category) => (
-                  <tr key={cat._id} className="hover:bg-gray-50">
+                  <tr key={cat.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 text-sm font-medium text-gray-900">{cat.name}</td>
                     <td className="px-4 py-3 text-sm text-gray-500 max-w-[300px] truncate">
                       {cat.description || '—'}
@@ -232,7 +232,7 @@ const AdminCategories = () => {
             <div className="flex justify-end gap-3">
               <button onClick={() => setDeleteConfirm(null)} className="btn-secondary">Cancel</button>
               <button
-                onClick={() => deleteMutation.mutate(deleteConfirm._id)}
+                onClick={() => deleteMutation.mutate(deleteConfirm.id)}
                 disabled={deleteMutation.isPending}
                 className="btn-danger"
               >
