@@ -310,7 +310,7 @@ const Home = () => {
       </section>
 
       {/* ─── STATS ─── */}
-      <section id="stats" className="relative mt-0 md:-mt-4 z-20 max-w-6xl mx-auto px-4">
+      <section id="stats" className="relative mt-8 md:mt-12 z-20 max-w-6xl mx-auto px-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {stats.map((stat, i) => (
             <div
