@@ -4,30 +4,28 @@
 
 @layer base {
   :root {
-    --brand-main: #d84696;
-    --brand-dark: #2E1422;
-    --brand-highlight: #8c3869;
-    --brand-secondary: #937E85;
-    --brand-accent: #CDC2C4;
+    --brand-main: #6F2DBD;
+    --brand-dark: #4B1D87;
+    --brand-highlight: #EDE4FF;
     --brand-white: #FFFFFF;
   }
 
   body {
-    @apply bg-gray-50 text-gray-900 antialiased;
+    @apply bg-primary-50 text-gray-600 antialiased;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply bg-primary-600 text-white px-4 py-2 rounded-xl hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-secondary {
-    @apply bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors;
+    @apply bg-white border border-primary-600 text-primary-600 px-4 py-2 rounded-xl hover:bg-primary-50 transition-colors;
   }
 
   .btn-outline {
-    @apply border border-primary-600 text-primary-600 px-4 py-2 rounded-lg hover:bg-primary-50 transition-colors;
+    @apply border border-primary-600 text-primary-600 px-4 py-2 rounded-xl hover:bg-primary-50 transition-colors;
   }
 
   .btn-danger {
@@ -35,7 +33,7 @@
   }
 
   .input-field {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+    @apply w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent;
   }
 
   .card {
@@ -59,7 +57,7 @@
   }
 
   .badge-info {
-    @apply badge bg-blue-100 text-blue-800;
+    @apply badge bg-primary-100 text-primary-700;
   }
 
   .star-rating {
@@ -183,10 +181,10 @@
 
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(140, 56, 105, 0.4);
+    box-shadow: 0 0 0 0 rgba(111, 45, 189, 0.4);
   }
   50% {
-    box-shadow: 0 0 0 20px rgba(140, 56, 105, 0);
+    box-shadow: 0 0 0 20px rgba(111, 45, 189, 0);
   }
 }
 

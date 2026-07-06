@@ -91,9 +91,9 @@ const Search = () => {
           value={localQ}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLocalQ(e.target.value)}
           placeholder="Search listings..."
-          className="w-full px-5 py-3 pl-12 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
+          className="w-full px-5 py-3 pl-12 rounded-2xl border border-gray-300 focus:ring-2 focus:ring-primary-600 focus:border-primary-600 focus:outline-none"
         />
-        <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+        <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-500 w-5 h-5" />
         <button
           type="submit"
           className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1.5 bg-primary-600 text-white rounded-md text-sm hover:bg-primary-700"

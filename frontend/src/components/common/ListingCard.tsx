@@ -24,7 +24,7 @@ const ListingCard = ({ listing, onFavorite }: ListingCardProps) => {
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <Link to={`/listings/${listing.id}`}>
-              <h3 className="font-semibold text-gray-900 hover:text-primary-600">{listing.title}</h3>
+              <h3 className="font-semibold text-primary-700 hover:text-primary-800">{listing.title}</h3>
             </Link>
             <p className="text-xs text-gray-500 mt-1">{(listing.category as Category)?.name} &middot; {listing.sector}</p>
           </div>

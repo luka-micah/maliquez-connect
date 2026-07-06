@@ -16,6 +16,7 @@ const baseSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters'),
   confirmPassword: z.string().min(1, 'Please confirm your password'),
   role: z.enum(['USER', 'PROVIDER']),
+  agreeToTerms: z.boolean().refine(val => val === true, 'You must agree to the Terms and Conditions and Privacy Policy'),
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'Passwords do not match',
   path: ['confirmPassword'],
@@ -31,7 +32,195 @@ type BaseSchemaType = z.infer<typeof baseSchema>;
 interface RegisterFormData extends BaseSchemaType {
   businessName?: string;
   businessType?: string;
+  agreeToTerms: boolean;
 }
+
+const termsText = `Terms and Conditions for Maliquez Connect
+Last Updated: 1st June 2026
+
+Welcome to Maliquez Connect. These Terms and Conditions ("Terms") govern your use of the Maliquez Connect mobile application and related services. By accessing or using our platform, you agree to these Terms.
+
+1. About Maliquez Connect
+
+Maliquez Connect is an information and discovery platform that connects users with service providers, including but not limited to schools, hospitals, hotels, restaurants, and other registered businesses. Our goal is to help users make informed decisions through reviews, ratings, and business information.
+
+2. Acceptance of Terms
+
+By creating an account or using Maliquez Connect, you confirm that you have read, understood, and agreed to these Terms. If you do not agree, please do not use the platform.
+
+3. User Accounts
+
+Users agree to:
+
+- Provide accurate and current information during registration.
+- Keep login credentials secure.
+- Be responsible for all activities carried out under their account.
+- Notify us immediately of any unauthorized use of their account.
+
+4. Business Registration
+
+Businesses registering on Maliquez Connect agree to:
+
+- Provide truthful and accurate business information.
+- Keep their information updated.
+- Ensure they have the legal authority to represent their business.
+- Not post misleading, fraudulent, or false information.
+
+Maliquez Connect reserves the right to remove or suspend business listings that violate these Terms.
+
+5. Reviews and Ratings
+
+Users may post reviews and ratings based on genuine experiences. Reviews must:
+
+- Be honest and factual.
+- Not contain abusive, defamatory, hateful, discriminatory, or offensive language.
+- Not include false accusations or misleading information.
+- Not promote illegal activities.
+
+Maliquez Connect reserves the right to remove reviews that violate these guidelines.
+
+6. Information Accuracy
+
+We strive to provide accurate information. However:
+
+- Business information is provided by registered businesses or users.
+- We do not guarantee that all information is complete, current, or accurate.
+- Users should independently verify important information before making decisions.
+
+7. Prohibited Use
+
+Users may not:
+
+- Use the platform for illegal purposes.
+- Impersonate another person or business.
+- Upload harmful software or malicious code.
+- Attempt unauthorized access to our systems.
+- Manipulate ratings or reviews.
+- Harass or threaten other users.
+
+8. Intellectual Property
+
+All content, logos, trademarks, software, and designs associated with Maliquez Connect are owned by or licensed to Maliquez Connect. Users may not copy, modify, distribute, or reproduce our content without written permission.
+
+9. Privacy
+
+Your use of Maliquez Connect is also governed by our Privacy Policy, which explains how we collect, use, and protect your personal information.
+
+10. Third-Party Services
+
+Maliquez Connect may include links to third-party websites or services. We are not responsible for the content, products, services, or privacy practices of those third parties.
+
+11. Disclaimer
+
+Maliquez Connect provides information to assist users in making informed decisions. We do not:
+
+- Guarantee the quality or availability of services provided by listed businesses.
+- Endorse every business listed on the platform.
+- Accept responsibility for disputes between users and businesses.
+
+Users interact with businesses at their own risk.
+
+12. Limitation of Liability
+
+To the fullest extent permitted by law, Maliquez Connect shall not be liable for any direct, indirect, incidental, or consequential damages resulting from use of the platform, reliance on information provided, or interactions between users and businesses.
+
+13. Account Suspension or Termination
+
+We reserve the right to suspend or terminate any account that violates these Terms, engages in fraudulent or harmful activities, or misuses the platform.
+
+14. Changes to These Terms
+
+We may update these Terms from time to time. Continued use of the platform after changes are published constitutes acceptance of the revised Terms.
+
+15. Governing Law
+
+These Terms shall be governed by and interpreted in accordance with the laws of the Federal Republic of Nigeria, without regard to conflict of law principles.
+
+16. Contact Us
+
+If you have questions regarding these Terms, please contact us:
+
+Maliquez Connect
+Email: info@maliquez.com
+Phone: 07032495905
+Address: 112 Ebitu Ukiwe street, Jabi, Abuja.`;
+
+const privacyText = `Privacy Policy for Maliquez Connect
+Effective Date: 1st July 2026
+Last Updated: 29th June 2026
+
+Maliquez Connect ("we," "our," or "us") respects your privacy and is committed to protecting your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use the Maliquez Connect mobile application and related services.
+
+By using Maliquez Connect, you agree to the collection and use of information in accordance with this Privacy Policy.
+
+1. Information We Collect
+
+We may collect the following types of information:
+
+Personal Information
+
+When you register or use our services, we may collect: Full name, Email address, Phone number, Profile photo (optional), Business information (for registered businesses).
+
+Usage Information
+
+We may automatically collect: Device type, Operating system, App version, IP address, Device identifiers, Date and time of access, Features used within the app.
+
+Location Information
+
+With your permission, we may collect your location to help you discover nearby schools, hospitals, hotels, restaurants, and other businesses. You can disable location access at any time through your device settings.
+
+Reviews and User Content
+
+Any reviews, ratings, comments, photos, or other content you post may be publicly visible to other users.
+
+2. How We Use Your Information
+
+We use your information to: Create and manage your account, Display your profile and business listings, Help users discover nearby businesses and services, Improve our services and user experience, Respond to customer support requests, Send important notifications about your account, Prevent fraud, abuse, and unauthorized access, Comply with legal obligations.
+
+3. Sharing Your Information
+
+We do not sell your personal information. We may share your information: With businesses when necessary to provide services you request, With trusted service providers who help us operate the app, When required by law or legal process, To protect the rights, safety, or security of Maliquez Connect, our users, or others.
+
+4. Cookies and Similar Technologies
+
+Our app may use cookies or similar technologies to: Remember your preferences, Improve app performance, Analyze usage patterns, Enhance security.
+
+5. Data Security
+
+We implement reasonable administrative, technical, and physical safeguards to protect your personal information from unauthorized access, disclosure, alteration, or destruction. However, no internet transmission or electronic storage method is completely secure, and we cannot guarantee absolute security.
+
+6. Data Retention
+
+We retain your information only for as long as necessary to: Provide our services, Meet legal and regulatory obligations, Resolve disputes, Enforce our agreements.
+
+7. Your Rights
+
+Depending on your location and applicable laws, you may have the right to: Access your personal information, Correct inaccurate information, Delete your account and personal information, Withdraw consent where applicable, Request a copy of your personal data. To exercise these rights, contact us using the details below.
+
+8. Children's Privacy
+
+Maliquez Connect is not intended for children under the age of 13. We do not knowingly collect personal information from children under 13. If we become aware that such information has been collected, we will take steps to delete it promptly.
+
+9. Third-Party Services
+
+Our app may contain links to third-party websites or integrate third-party services, such as maps, payment providers, analytics, or authentication services. These third parties have their own privacy policies, and we are not responsible for their practices.
+
+10. International Data Transfers
+
+Your information may be processed or stored in countries other than your own where our service providers operate. We take reasonable steps to ensure your data is protected in accordance with applicable laws.
+
+11. Changes to This Privacy Policy
+
+We may update this Privacy Policy from time to time. We will post the updated version in the app and update the "Last Updated" date. Continued use of the app after changes become effective constitutes your acceptance of the revised Privacy Policy.
+
+12. Contact Us
+
+If you have any questions, concerns, or requests regarding this Privacy Policy, please contact us:
+
+Maliquez Connect
+Email: info@maliquez.com
+Phone: 07032495905
+Address: 112 Ebitu Ukiwe street, Jabi, Abuja.`;
 
 const Register = () => {
   const navigate = useNavigate();
@@ -39,6 +228,8 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const [showTerms, setShowTerms] = useState<boolean>(false);
+  const [showPrivacy, setShowPrivacy] = useState<boolean>(false);
 
   const {
     register,
@@ -57,6 +248,7 @@ const Register = () => {
       businessName: '',
       businessType: '',
       role: 'USER',
+      agreeToTerms: false,
     },
   });
 
@@ -120,7 +312,7 @@ const Register = () => {
                   id="firstName"
                   type="text"
                   {...register('firstName')}
-                  className={`w-full pl-11 pr-4 py-3 rounded-lg border ${errors.firstName ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-primary-500'
+                  className={`w-full pl-11 pr-4 py-3 rounded-lg border ${errors.firstName ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-primary-600'
                     } focus:border-transparent focus:outline-none focus:ring-2`}
                   placeholder="John"
                 />
@@ -138,7 +330,7 @@ const Register = () => {
                   id="lastName"
                   type="text"
                   {...register('lastName')}
-                  className={`w-full pl-11 pr-4 py-3 rounded-lg border ${errors.lastName ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-primary-500'
+                  className={`w-full pl-11 pr-4 py-3 rounded-lg border ${errors.lastName ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-primary-600'
                     } focus:border-transparent focus:outline-none focus:ring-2`}
                   placeholder="Doe"
                 />
@@ -157,7 +349,7 @@ const Register = () => {
                 id="email"
                 type="email"
                 {...register('email')}
-                className={`w-full pl-11 pr-4 py-3 rounded-lg border ${errors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-primary-500'
+                className={`w-full pl-11 pr-4 py-3 rounded-lg border ${errors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-primary-600'
                   } focus:border-transparent focus:outline-none focus:ring-2`}
                 placeholder="you@example.com"
               />
@@ -175,7 +367,7 @@ const Register = () => {
                 id="phone"
                 type="tel"
                 {...register('phone')}
-                className={`w-full pl-11 pr-4 py-3 rounded-lg border ${errors.phone ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-primary-500'
+                className={`w-full pl-11 pr-4 py-3 rounded-lg border ${errors.phone ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-primary-600'
                   } focus:border-transparent focus:outline-none focus:ring-2`}
                 placeholder="+1 (555) 123-4567"
               />
@@ -194,7 +386,7 @@ const Register = () => {
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   {...register('password')}
-                  className={`w-full pl-11 pr-12 py-3 rounded-lg border ${errors.password ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-primary-500'
+                  className={`w-full pl-11 pr-12 py-3 rounded-lg border ${errors.password ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-primary-600'
                     } focus:border-transparent focus:outline-none focus:ring-2`}
                   placeholder="Min. 6 characters"
                 />
@@ -219,7 +411,7 @@ const Register = () => {
                   id="confirmPassword"
                   type={showConfirmPassword ? 'text' : 'password'}
                   {...register('confirmPassword')}
-                  className={`w-full pl-11 pr-12 py-3 rounded-lg border ${errors.confirmPassword ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-primary-500'
+                  className={`w-full pl-11 pr-12 py-3 rounded-lg border ${errors.confirmPassword ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-primary-600'
                     } focus:border-transparent focus:outline-none focus:ring-2`}
                   placeholder="Repeat password"
                 />
@@ -271,7 +463,7 @@ const Register = () => {
                   id="businessName"
                   type="text"
                   {...register('businessName')}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent focus:outline-none"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-600 focus:border-transparent focus:outline-none"
                   placeholder="Your business name"
                 />
                 {errors.businessName && <p className="text-red-500 text-sm mt-1">{errors.businessName.message}</p>}
@@ -284,7 +476,7 @@ const Register = () => {
                 <select
                   id="businessType"
                   {...register('businessType')}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent focus:outline-none"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-600 focus:border-transparent focus:outline-none"
                 >
                   <option value="">Select business type</option>
                   <option value="EDUCATION">Education</option>
@@ -297,6 +489,26 @@ const Register = () => {
             </>
           )}
 
+          <div className="flex items-start gap-3">
+            <input
+              id="agreeToTerms"
+              type="checkbox"
+              {...register('agreeToTerms')}
+              className="mt-1 w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-600"
+            />
+            <label htmlFor="agreeToTerms" className="text-sm text-gray-600">
+              I agree to the{' '}
+              <button type="button" onClick={() => setShowTerms(true)} className="text-primary-600 hover:text-primary-700 font-medium underline">
+                Terms and Conditions
+              </button>{' '}
+              and{' '}
+              <button type="button" onClick={() => setShowPrivacy(true)} className="text-primary-600 hover:text-primary-700 font-medium underline">
+                Privacy Policy
+              </button>
+            </label>
+          </div>
+          {errors.agreeToTerms && <p className="text-red-500 text-sm">{errors.agreeToTerms.message}</p>}
+
           <button
             type="submit"
             disabled={submitting}
@@ -305,6 +517,42 @@ const Register = () => {
             {submitting ? 'Creating account...' : 'Create Account'}
           </button>
         </form>
+
+        {showTerms && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={() => setShowTerms(false)}>
+            <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto p-6 md:p-8" onClick={e => e.stopPropagation()}>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-gray-900">Terms and Conditions</h2>
+                <button onClick={() => setShowTerms(false)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+              </div>
+              <pre className="text-sm text-gray-600 whitespace-pre-wrap font-sans leading-relaxed">{termsText}</pre>
+              <button
+                onClick={() => setShowTerms(false)}
+                className="mt-6 w-full py-3 bg-primary-600 text-white rounded-xl font-medium hover:bg-primary-700 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
+
+        {showPrivacy && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={() => setShowPrivacy(false)}>
+            <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto p-6 md:p-8" onClick={e => e.stopPropagation()}>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-gray-900">Privacy Policy</h2>
+                <button onClick={() => setShowPrivacy(false)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+              </div>
+              <pre className="text-sm text-gray-600 whitespace-pre-wrap font-sans leading-relaxed">{privacyText}</pre>
+              <button
+                onClick={() => setShowPrivacy(false)}
+                className="mt-6 w-full py-3 bg-primary-600 text-white rounded-xl font-medium hover:bg-primary-700 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
 
         <p className="text-center text-gray-500 mt-6">
           Already have an account?{' '}

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 import { categoryApi } from '../../api/authApi';
-import { FiSearch, FiChevronRight } from 'react-icons/fi';
+import { FiSearch, FiChevronRight, FiFolder } from 'react-icons/fi';
 import { ApiResponse, Category } from '../../types';
 
 const Categories = () => {
@@ -37,9 +37,9 @@ const Categories = () => {
           value={search}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
           placeholder="Search categories..."
-          className="w-full px-5 py-3 pl-12 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
+          className="w-full px-5 py-3 pl-12 rounded-2xl border border-gray-300 focus:ring-2 focus:ring-primary-600 focus:border-primary-600 focus:outline-none"
         />
-        <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+        <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-500 w-5 h-5" />
       </div>
 
       {isLoading && (
@@ -82,9 +82,12 @@ const Categories = () => {
             <Link
               key={category.id}
               to={`/search?category=${category.id}`}
-              className="card p-6 hover:shadow-md transition-shadow group"
+              className="bg-white rounded-2xl p-6 border border-gray-100 hover:bg-primary-100 hover:shadow-xl transition-all duration-300 group"
             >
-              <h3 className="text-lg font-semibold text-gray-900 group-hover:text-primary-600 transition-colors">
+              <div className="w-12 h-12 bg-primary-50 text-primary-600 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary-700 group-hover:text-white transition-all duration-300">
+                <FiFolder className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-semibold text-brand-darkText group-hover:text-primary-700 transition-colors">
                 {category.name}
               </h3>
               {category.description && (

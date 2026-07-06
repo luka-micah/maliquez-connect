@@ -78,7 +78,7 @@ const Login = () => {
                   },
                 })}
                 className={`w-full pl-11 pr-4 py-3 rounded-lg border ${
-                  errors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-primary-500'
+                  errors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-primary-600'
                 } focus:border-transparent focus:outline-none focus:ring-2`}
                 placeholder="you@example.com"
               />
@@ -97,7 +97,7 @@ const Login = () => {
                 type={showPassword ? 'text' : 'password'}
                 {...register('password', { required: 'Password is required' })}
                 className={`w-full pl-11 pr-12 py-3 rounded-lg border ${
-                  errors.password ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-primary-500'
+                  errors.password ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-primary-600'
                 } focus:border-transparent focus:outline-none focus:ring-2`}
                 placeholder="Enter your password"
               />

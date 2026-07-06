@@ -194,38 +194,30 @@ const Home = () => {
   return (
     <div>
       {/* ─── HERO ─── */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-900 via-primary-800 to-indigo-900 animate-gradient" />
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-40" />
-
-        <div className="absolute top-1/4 left-10 w-72 h-72 bg-primary-400/10 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-1/4 right-10 w-96 h-96 bg-indigo-400/10 rounded-full blur-3xl animate-float-delayed" />
-        <div className="absolute top-1/3 right-1/4 w-48 h-48 bg-blue-300/10 rounded-full blur-2xl animate-float-slow" />
-
-        <div className="absolute top-20 left-1/4 w-4 h-4 bg-primary-300/40 rounded-full animate-float" />
-        <div className="absolute top-40 right-1/3 w-3 h-3 bg-indigo-300/40 rounded-full animate-float-delayed" />
-        <div className="absolute bottom-32 left-1/3 w-5 h-5 bg-blue-300/30 rounded-full animate-float-slow" />
-        <div className="absolute bottom-20 right-1/4 w-3 h-3 bg-primary-200/40 rounded-full animate-float" style={{ animationDelay: '3s' }} />
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden py-12 md:py-0 bg-white">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-100/60 via-white to-primary-50/40" />
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary-100/40 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-primary-50/60 rounded-full blur-3xl animate-float-delayed" />
+        <div className="absolute top-1/3 left-1/4 w-72 h-72 bg-primary-100/30 rounded-full blur-2xl animate-float-slow" />
 
         <div className="relative z-10 max-w-6xl mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch min-h-[70vh]">
             {/* Left: Hero Content */}
             <div className="text-center lg:text-left flex flex-col justify-center">
               <div className="animate-fade-in-up">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 backdrop-blur-sm rounded-full text-primary-200 text-sm mb-8 border border-white/10">
-                  <FiZap className="w-4 h-4 text-yellow-400" />
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary-100 rounded-full text-primary-700 text-xs md:text-sm mb-8 font-medium">
+                  <FiZap className="w-4 h-4 text-primary-600" />
                   Decision Intelligence Platform
                 </div>
               </div>
 
-              <h1 className="text-5xl md:text-7xl font-extrabold text-white leading-tight mb-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-                Discover.
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary-300 to-indigo-300">
-                  Compare. Decide.
-                </span>
+              <h1 className="text-5xl md:text-7xl font-extrabold text-brand-darkText leading-tight mb-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+                <span className="text-primary-600">Search.</span>
+                <span className="block text-primary-600">Connect.</span>
+                <span className="block text-primary-600">Discover.</span>
               </h1>
 
-              <p className="text-lg md:text-xl text-primary-100/80 max-w-xl mb-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+              <p className="text-lg md:text-xl text-gray-600 max-w-xl mb-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
                 The smartest way to find and compare top-rated service providers across Education, Healthcare, Hospitality, and Logistics.
               </p>
 
@@ -236,12 +228,12 @@ const Home = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search for services, providers, or categories..."
-                    className="w-full px-6 py-4 pr-36 rounded-2xl text-gray-900 text-lg shadow-2xl focus:ring-2 focus:ring-primary-400 focus:outline-none bg-white/95 backdrop-blur-sm group-hover:bg-white transition-colors"
+                    className="w-full px-6 py-4 pr-36 rounded-2xl text-gray-900 text-lg shadow-lg focus:ring-2 focus:ring-primary-600 focus:outline-none bg-white border border-gray-200 transition-colors"
                   />
                   <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2">
                     <button
                       type="submit"
-                      className="px-6 py-2.5 bg-primary-600 text-white rounded-xl hover:bg-primary-500 transition-all font-medium flex items-center gap-2 shadow-lg"
+                      className="px-6 py-2.5 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-all font-medium flex items-center gap-2 shadow-lg"
                     >
                       <FiSearch className="w-5 h-5" />
                       <span className="hidden sm:inline">Search</span>
@@ -251,44 +243,44 @@ const Home = () => {
               </form>
 
               <div className="flex flex-wrap justify-center lg:justify-start gap-4 mb-24 lg:mb-0 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-                <button
-                  onClick={() => scrollToSection('sectors')}
-                  className="px-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white rounded-xl border border-white/10 transition-all font-medium flex items-center gap-2"
-                >
-                  <FiCompass className="w-4 h-4" />
-                  Browse Sectors
-                </button>
                 <Link
                   to="/register"
-                  className="px-6 py-3 bg-white text-primary-700 hover:bg-primary-50 rounded-xl transition-all font-semibold flex items-center gap-2 shadow-lg"
+                  className="px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-all font-semibold flex items-center gap-2 shadow-lg"
                 >
                   Get Started
                   <FiArrowRight className="w-4 h-4" />
                 </Link>
+                <button
+                  onClick={() => scrollToSection('sectors')}
+                  className="px-6 py-3 bg-white text-primary-600 rounded-xl border border-primary-600 hover:bg-primary-50 transition-all font-medium flex items-center gap-2"
+                >
+                  <FiCompass className="w-4 h-4" />
+                  Browse Sectors
+                </button>
               </div>
             </div>
 
             {/* Right: How It Works */}
             <div className="animate-fade-in-up h-full flex" style={{ animationDelay: '0.5s' }}>
-              <div className="flex-1 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/10 p-8 md:p-10 flex flex-col">
-                <div className="flex items-center gap-2 mb-10">
-                  <FiZap className="w-5 h-5 text-yellow-400" />
-                  <h3 className="text-white font-bold text-lg">How It Works</h3>
-                </div>
-                <div className="flex-1 flex flex-col justify-evenly">
+              <div className="flex-1 bg-white rounded-2xl border border-gray-200 p-6 md:p-10 flex flex-col shadow-lg">
+                {/* <div className="flex items-center gap-2 mb-6 md:mb-10">
+                  <FiZap className="w-5 h-5 text-primary-600" />
+                  <h3 className="text-brand-darkText font-bold text-base md:text-lg">How It Works</h3>
+                </div> */}
+                <div className="flex-1 flex flex-col gap-4 md:justify-evenly">
                   {steps.map((step, i) => (
-                    <div key={step.title} className="flex items-start gap-4 group">
-                      <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-primary-400 to-primary-600 text-white rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
-                        <step.icon className="w-6 h-6" />
+                    <div key={step.title} className="flex items-start gap-3 md:gap-4 group">
+                      <div className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 bg-primary-600 text-white rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+                        <step.icon className="w-5 h-5 md:w-6 md:h-6" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="w-6 h-6 rounded-full bg-white/20 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
+                        <div className="flex items-center gap-2 mb-0.5 md:mb-1">
+                          <span className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-primary-100 text-primary-700 text-[10px] md:text-xs font-bold flex items-center justify-center flex-shrink-0">
                             {i + 1}
                           </span>
-                          <h4 className="text-white font-semibold">{step.title}</h4>
+                          <h4 className="text-brand-darkText font-semibold text-sm md:text-base">{step.title}</h4>
                         </div>
-                        <p className="text-primary-200 text-sm leading-relaxed">{step.description}</p>
+                        <p className="text-gray-500 text-xs md:text-sm leading-relaxed">{step.description}</p>
                       </div>
                     </div>
                   ))}
@@ -300,11 +292,11 @@ const Home = () => {
 
         <button
           onClick={() => scrollToSection('stats')}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/50 hover:text-white/80 transition-colors animate-float"
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-gray-400 hover:text-primary-600 transition-colors animate-float"
           aria-label="Scroll down"
         >
-          <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center p-1">
-            <div className="w-1.5 h-3 bg-white/60 rounded-full" />
+          <div className="w-6 h-10 border-2 border-gray-300 rounded-full flex justify-center p-1">
+            <div className="w-1.5 h-3 bg-gray-400 rounded-full" />
           </div>
         </button>
       </section>
@@ -415,13 +407,13 @@ const Home = () => {
               >
                 <Link
                   to={`/search?sector=${sector}`}
-                  className="group block bg-white rounded-2xl border border-gray-100 hover:border-transparent transition-all duration-500 hover:shadow-2xl overflow-hidden relative h-full"
+                  className="group block bg-white rounded-2xl border border-gray-100 hover:bg-primary-100 transition-all duration-500 hover:shadow-2xl overflow-hidden relative h-full"
                 >
                   <div className="flex h-full">
                     {/* LEFT: Details */}
                     <div className="flex-1 p-6 md:p-8 flex flex-col justify-center relative z-10 min-w-0">
                       <div className="flex items-center gap-3 md:gap-4 mb-2 md:mb-3">
-                        <div className="inline-flex items-center justify-center w-11 h-11 md:w-12 md:h-12 bg-primary-50 text-primary-600 rounded-xl flex-shrink-0 transition-all duration-300">
+                        <div className="inline-flex items-center justify-center w-11 h-11 md:w-12 md:h-12 bg-primary-50 text-primary-600 rounded-xl flex-shrink-0 group-hover:bg-primary-700 group-hover:text-white transition-all duration-300">
                           <Icon className="w-5 h-5 md:w-6 md:h-6" />
                         </div>
                         <div className="min-w-0">
@@ -528,12 +520,12 @@ const Home = () => {
 
       {/* ─── CTA ─── */}
       <section className="relative py-24 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-900 via-primary-800 to-indigo-900 animate-gradient" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-700 via-primary-600 to-purple-500 animate-gradient" />
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary-400/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-indigo-400/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-primary-200/10 rounded-full blur-3xl" />
 
         <ScrollReveal className="relative z-10 max-w-4xl mx-auto px-4 text-center">
-          <FiAward className="w-16 h-16 text-primary-300 mx-auto mb-6" />
+          <FiAward className="w-16 h-16 text-primary-200 mx-auto mb-6" />
           <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-4">
             Ready to Grow Your Business?
           </h2>
@@ -550,7 +542,7 @@ const Home = () => {
             </Link>
             <Link
               to="/search"
-              className="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white rounded-2xl font-semibold text-lg transition-all border border-white/10 flex items-center gap-2"
+              className="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white rounded-2xl font-semibold text-lg transition-all border border-white/20 flex items-center gap-2"
             >
               <FiSearch className="w-5 h-5" />
               Browse as Guest
@@ -562,9 +554,8 @@ const Home = () => {
       {/* ─── BACK TO TOP ─── */}
       <button
         onClick={scrollToTop}
-        className={`fixed bottom-8 right-8 z-50 w-12 h-12 bg-primary-600 text-white rounded-xl shadow-lg hover:bg-primary-500 transition-all duration-300 flex items-center justify-center ${
-          showBackToTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
-        }`}
+        className={`fixed bottom-8 right-8 z-50 w-12 h-12 bg-primary-600 text-white rounded-xl shadow-lg hover:bg-primary-500 transition-all duration-300 flex items-center justify-center ${showBackToTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
+          }`}
         aria-label="Back to top"
       >
         <FiArrowUp className="w-5 h-5" />
