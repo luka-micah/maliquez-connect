@@ -22,8 +22,13 @@ import adminRoutes from './routes/adminRoutes.js';
 const app = express();
 
 app.use(helmet());
+const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
+  .split(',')
+  .map(o => o.trim())
+  .map(o => o.startsWith('http') ? o : `https://${o}`);
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: allowedOrigins,
   credentials: true,
 }));
 app.use(morgan('dev'));
