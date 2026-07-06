@@ -22,7 +22,12 @@ import adminRoutes from './routes/adminRoutes.js';
 const app = express();
 
 app.use(helmet());
-const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
+const clientUrl = process.env.CLIENT_URL || (
+  process.env.NODE_ENV === 'production'
+    ? 'https://maliquez-connect.vercel.app,https://www.maliquez.com,https://maliquez.com'
+    : 'http://localhost:5173'
+);
+const allowedOrigins = clientUrl
   .split(',')
   .map(o => o.trim().replace(/\/+$/, ''))
   .map(o => o.startsWith('http') ? o : `https://${o}`);
