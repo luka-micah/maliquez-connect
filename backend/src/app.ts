@@ -24,7 +24,7 @@ const app = express();
 app.use(helmet());
 const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
   .split(',')
-  .map(o => o.trim())
+  .map(o => o.trim().replace(/\/+$/, ''))
   .map(o => o.startsWith('http') ? o : `https://${o}`);
 
 app.use(cors({
