@@ -518,6 +518,43 @@ const Home = () => {
         </div>
       </section>
 
+      {/* ─── ABOUT ─── */}
+      <section className="py-24 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <ScrollReveal>
+              <span className="text-primary-600 font-semibold text-sm tracking-wider uppercase">About Us</span>
+              <h2 className="text-3xl md:text-4xl font-bold text-brand-darkText mt-3 mb-6">
+                Your Trusted Platform for <span className="text-primary-600">Smarter Decisions</span>
+              </h2>
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                Maliquez Connect is a decision intelligence platform that helps individuals and businesses find, compare, and choose the best service providers across Education, Healthcare, Hospitality, and Logistics. We believe in transparent information, verified listings, and empowering users to make confident choices.
+              </p>
+              <Link
+                to="/about"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-xl font-semibold hover:bg-primary-700 transition-colors shadow-lg"
+              >
+                Learn More
+                <FiArrowRight className="w-4 h-4" />
+              </Link>
+            </ScrollReveal>
+            <ScrollReveal className="grid grid-cols-2 gap-4">
+              {[
+                { count: '890+', label: 'Verified Listings' },
+                { count: '12K+', label: 'Active Users' },
+                { count: '4.2K+', label: 'Honest Reviews' },
+                { count: '98%', label: 'Satisfaction Rate' },
+              ].map((stat) => (
+                <div key={stat.label} className="bg-white rounded-2xl p-6 border border-gray-100 text-center">
+                  <div className="text-2xl font-bold text-primary-600">{stat.count}</div>
+                  <div className="text-sm text-gray-500 mt-1">{stat.label}</div>
+                </div>
+              ))}
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
       {/* ─── CTA ─── */}
       <section className="relative py-24 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary-700 via-primary-600 to-purple-500 animate-gradient" />

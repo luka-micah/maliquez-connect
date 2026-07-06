@@ -12,6 +12,7 @@ import Compare from '../pages/public/Compare';
 import Categories from '../pages/public/Categories';
 import Login from '../pages/public/Login';
 import Register from '../pages/public/Register';
+import About from '../pages/public/About';
 
 import UserProfile from '../pages/user/UserProfile';
 import Favorites from '../pages/user/Favorites';
@@ -42,6 +43,7 @@ const AppRoutes = () => (
       <Route path="/categories" element={<Categories />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/about" element={<About />} />
     </Route>
 
     <Route element={<ProtectedRoute><UserLayout /></ProtectedRoute>}>
