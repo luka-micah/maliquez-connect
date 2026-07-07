@@ -27,7 +27,7 @@ const StarRating = ({ rating = 0, onRate, readonly = false, size = 'md' }: StarR
           <FiStar
             className={`${sizeClass} ${
               star <= (hover || rating)
-                ? 'text-yellow-400 fill-current'
+                ? 'text-[#F4B400] fill-current'
                 : 'text-gray-300'
             }`}
           />

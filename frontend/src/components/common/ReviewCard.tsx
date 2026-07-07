@@ -22,7 +22,7 @@ const ReviewCard = ({ review, onHelpful, onReport }: ReviewCardProps) => {
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
-      <FiStar key={i} className={`w-4 h-4 ${i < rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} />
+      <FiStar key={i} className={`w-4 h-4 ${i < rating ? 'text-[#F4B400] fill-current' : 'text-gray-300'}`} />
     ));
   };
 

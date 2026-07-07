@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { FiFacebook, FiTwitter, FiInstagram, FiLinkedin } from 'react-icons/fi';
 
 const Footer = () => (
-  <footer className="bg-primary-700 text-white">
+  <footer className="bg-primary-900 text-white">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         <div>
@@ -28,26 +28,26 @@ const Footer = () => (
         <div>
           <h4 className="text-white font-semibold mb-4">Quick Links</h4>
           <ul className="space-y-2 text-sm">
-            <li><Link to="/search" className="text-primary-100 hover:text-white transition-colors">Search</Link></li>
-            <li><Link to="/categories" className="text-primary-100 hover:text-white transition-colors">Categories</Link></li>
-            <li><Link to="/compare" className="text-primary-100 hover:text-white transition-colors">Compare</Link></li>
-            <li><Link to="/about" className="text-primary-100 hover:text-white transition-colors">About Us</Link></li>
+            <li><Link to="/search" className="text-primary-200 hover:text-white transition-colors">Search</Link></li>
+            <li><Link to="/categories" className="text-primary-200 hover:text-white transition-colors">Categories</Link></li>
+            <li><Link to="/compare" className="text-primary-200 hover:text-white transition-colors">Compare</Link></li>
+            <li><Link to="/about" className="text-primary-200 hover:text-white transition-colors">About Us</Link></li>
           </ul>
         </div>
         <div>
           <h4 className="text-white font-semibold mb-4">Sectors</h4>
           <ul className="space-y-2 text-sm">
-            <li><Link to="/search?sector=Education" className="text-primary-100 hover:text-white transition-colors">Education</Link></li>
-            <li><Link to="/search?sector=Healthcare" className="text-primary-100 hover:text-white transition-colors">Healthcare</Link></li>
-            <li><Link to="/search?sector=Hospitality" className="text-primary-100 hover:text-white transition-colors">Hospitality</Link></li>
-            <li><Link to="/search?sector=Logistics" className="text-primary-100 hover:text-white transition-colors">Logistics</Link></li>
+            <li><Link to="/search?sector=Education" className="text-primary-200 hover:text-white transition-colors">Education</Link></li>
+            <li><Link to="/search?sector=Healthcare" className="text-primary-200 hover:text-white transition-colors">Healthcare</Link></li>
+            <li><Link to="/search?sector=Hospitality" className="text-primary-200 hover:text-white transition-colors">Hospitality</Link></li>
+            <li><Link to="/search?sector=Logistics" className="text-primary-200 hover:text-white transition-colors">Logistics</Link></li>
           </ul>
         </div>
         <div>
           <h4 className="text-white font-semibold mb-4">Support</h4>
           <ul className="space-y-2 text-sm">
-            <li><Link to="/login" className="text-primary-100 hover:text-white transition-colors">Login</Link></li>
-            <li><Link to="/register" className="text-primary-100 hover:text-white transition-colors">Register</Link></li>
+            <li><Link to="/login" className="text-primary-200 hover:text-white transition-colors">Login</Link></li>
+            <li><Link to="/register" className="text-primary-200 hover:text-white transition-colors">Register</Link></li>
           </ul>
         </div>
       </div>

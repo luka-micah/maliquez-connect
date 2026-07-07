@@ -428,7 +428,7 @@ const ProviderListings = () => {
                     <td className="px-4 py-3">{statusBadge(listing.status)}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1 text-sm">
-                        <FiStar className="w-4 h-4 text-yellow-400 fill-current" />
+                        <FiStar className="w-4 h-4 text-[#F4B400] fill-current" />
                         <span>{listing.averageRating?.toFixed(1) || '0.0'}</span>
                       </div>
                     </td>

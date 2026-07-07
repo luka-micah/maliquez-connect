@@ -131,7 +131,7 @@ const ListingDetails = () => {
             </div>
             <div className="flex items-center gap-4 mt-4">
               <div className="flex items-center gap-1">
-                <FiStar className="w-5 h-5 text-yellow-400 fill-current" />
+                <FiStar className="w-5 h-5 text-[#F4B400] fill-current" />
                 <span className="text-lg font-semibold">{listing.averageRating?.toFixed(1) || '0.0'}</span>
                 <span className="text-gray-400 text-sm">({listing.reviewCount || 0} reviews)</span>
               </div>

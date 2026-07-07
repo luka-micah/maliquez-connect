@@ -99,22 +99,22 @@ interface Sector {
 
 const sectors: Sector[] = [
   {
-    name: 'Education', icon: FiBookOpen, color: 'text-blue-500', gradient: 'from-blue-500 to-blue-600',
+    name: 'Education', icon: FiBookOpen, color: 'text-primary-600', gradient: 'from-primary-600 to-primary-700',
     sector: 'EDUCATION', description: 'Schools, tutors, and learning centers', count: '240+',
     image: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&q=80',
   },
   {
-    name: 'Healthcare', icon: FiHeart, color: 'text-red-500', gradient: 'from-red-500 to-red-600',
+    name: 'Healthcare', icon: FiHeart, color: 'text-primary-600', gradient: 'from-primary-600 to-primary-700',
     sector: 'HEALTHCARE', description: 'Hospitals, clinics, and wellness', count: '180+',
     image: 'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=600&q=80',
   },
   {
-    name: 'Hospitality', icon: FiHome, color: 'text-amber-500', gradient: 'from-amber-500 to-amber-600',
+    name: 'Hospitality', icon: FiHome, color: 'text-primary-600', gradient: 'from-primary-600 to-primary-700',
     sector: 'HOSPITALITY', description: 'Hotels, restaurants, and travel', count: '320+',
     image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80',
   },
   {
-    name: 'Logistics', icon: FiTruck, color: 'text-green-500', gradient: 'from-green-500 to-green-600',
+    name: 'Logistics', icon: FiTruck, color: 'text-primary-600', gradient: 'from-primary-600 to-primary-700',
     sector: 'LOGISTICS', description: 'Shipping, freight, and delivery', count: '150+',
     image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600&q=80',
   },
@@ -228,7 +228,7 @@ const Home = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search for services, providers, or categories..."
-                    className="w-full px-6 py-4 pr-36 rounded-2xl text-gray-900 text-lg shadow-lg focus:ring-2 focus:ring-primary-600 focus:outline-none bg-white border border-gray-200 transition-colors"
+                    className="w-full px-6 py-4 pr-36 rounded-2xl text-gray-900 text-lg shadow-lg focus:ring-2 focus:ring-primary-600 focus:outline-none bg-white border border-primary-200 transition-colors"
                   />
                   <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2">
                     <button
@@ -499,7 +499,7 @@ const Home = () => {
               >
                 <div className="flex gap-1 mb-4">
                   {Array.from({ length: t.rating }).map((_, j) => (
-                    <FiStar key={j} className="w-5 h-5 text-yellow-400 fill-current" />
+                    <FiStar key={j} className="w-5 h-5 text-[#F4B400] fill-current" />
                   ))}
                 </div>
                 <p className="text-gray-600 mb-6 leading-relaxed">"{t.text}"</p>
@@ -557,7 +557,7 @@ const Home = () => {
 
       {/* ─── CTA ─── */}
       <section className="relative py-24 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-700 via-primary-600 to-purple-500 animate-gradient" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-700 via-primary-600 to-primary-500 animate-gradient" />
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary-400/10 rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-primary-200/10 rounded-full blur-3xl" />
 

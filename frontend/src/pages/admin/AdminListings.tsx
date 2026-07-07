@@ -150,7 +150,7 @@ const AdminListings = () => {
                     <td className="px-4 py-3">{statusBadge(listing.status)}</td>
                     <td className="px-4 py-3 text-sm text-gray-500">
                       <span className="flex items-center gap-1">
-                        <FiStar className="w-3.5 h-3.5 text-yellow-400" />
+                        <FiStar className="w-3.5 h-3.5 text-[#F4B400]" />
                         {listing.averageRating?.toFixed(1) || '—'}
                       </span>
                     </td>

@@ -44,7 +44,7 @@ const ListingCard = ({ listing, onFavorite }: ListingCardProps) => {
 
         <div className="flex items-center justify-between mt-3">
           <div className="flex items-center gap-1">
-            <FiStar className="w-4 h-4 text-yellow-400 fill-current" />
+            <FiStar className="w-4 h-4 text-[#F4B400] fill-current" />
             <span className="text-sm font-medium">{listing.averageRating?.toFixed(1) || '0.0'}</span>
             <span className="text-xs text-gray-400">({listing.reviewCount || 0})</span>
           </div>
