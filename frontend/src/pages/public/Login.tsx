@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../../context/AuthContext';
+import SeoHead from '../../components/seo/SeoHead';
 import { FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { LoginInput } from '../../types';
@@ -54,6 +55,12 @@ const Login = () => {
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4 py-12">
+      <SeoHead
+        title="Sign In"
+        description="Sign in to your Maliquez Connect account to manage favorites, reviews, and more."
+        canonical="/login"
+        noindex
+      />
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Welcome back</h1>

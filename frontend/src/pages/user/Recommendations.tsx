@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import SeoHead from '../../components/seo/SeoHead';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { AxiosResponse } from 'axios';
@@ -43,6 +44,7 @@ const Recommendations = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      <SeoHead title="Recommendations" noindex />
       <div className="flex items-center gap-3 mb-8">
         <FiThumbsUp className="w-6 h-6 text-primary-600" />
         <h1 className="text-2xl font-bold text-gray-900">Recommendations</h1>

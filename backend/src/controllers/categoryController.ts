@@ -29,8 +29,13 @@ export const getCategories = async (_req: AuthRequest, res: Response, next: Next
 
 export const getCategory = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const category = await prisma.category.findUnique({
-      where: { id: req.params.id },
+    const category = await prisma.category.findFirst({
+      where: {
+        OR: [
+          { id: req.params.id },
+          { slug: req.params.id },
+        ],
+      },
     });
 
     if (!category) {

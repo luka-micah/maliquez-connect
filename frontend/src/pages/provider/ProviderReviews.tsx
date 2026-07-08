@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import SeoHead from '../../components/seo/SeoHead';
 import { AxiosResponse } from 'axios';
 import { listingApi, reviewApi } from '../../api/authApi';
 import ReviewCard from '../../components/common/ReviewCard';
@@ -74,6 +75,7 @@ const ProviderReviews = () => {
 
   return (
     <div className="space-y-6">
+      <SeoHead title="Provider Reviews" noindex />
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Reviews</h1>

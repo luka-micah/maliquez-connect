@@ -6,6 +6,8 @@ import { AxiosResponse } from 'axios';
 import { listingApi, reviewApi, favoriteApi } from '../../api/authApi';
 import StarRating from '../../components/common/StarRating';
 import ReviewCard from '../../components/common/ReviewCard';
+import SeoHead from '../../components/seo/SeoHead';
+import { LocalBusinessJsonLd, BreadcrumbJsonLd } from '../../components/seo/JsonLd';
 import {
   FiStar, FiMapPin, FiPhone, FiMail, FiGlobe, FiClock, FiCheck,
   FiPlus, FiHeart, FiArrowLeft, FiShare2,
@@ -51,6 +53,7 @@ const ListingDetails = () => {
   const listing: Listing | undefined = listingRes?.data?.data;
   const reviews: Review[] = reviewsRes?.data?.data || [];
   const heroImage: string = listing?.images?.[0] || 'https://via.placeholder.com/1200x500?text=No+Image';
+  const listingSlug = listing?.slug || listing?.title?.toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_]+/g, '-').replace(/^-+|-+$/g, '') || id;
 
   const handleAddToCompare = () => {
     if (!id) return;
@@ -100,8 +103,41 @@ const ListingDetails = () => {
     );
   }
 
+  const categoryName = listing && typeof listing.category === 'object' ? listing.category.name : '';
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      <SeoHead
+        title={listing?.title || 'Listing Details'}
+        description={listing?.description ? `${listing.title} is a verified ${listing.sector} provider on Maliquez Connect. ${listing.description.slice(0, 160)}` : `View details for ${listing?.title} on Maliquez Connect.`}
+        canonical={`/listings/${listingSlug}`}
+        image={listing?.images?.[0]}
+        type="article"
+      />
+      <LocalBusinessJsonLd
+        name={listing?.title || ''}
+        description={listing?.description || ''}
+        image={listing?.images?.[0]}
+        url={`https://maliquez.com/listings/${listingSlug}`}
+        telephone={listing?.contact?.phone}
+        address={listing?.location ? {
+          addressLocality: listing.location.city,
+          addressRegion: listing.location.state,
+          addressCountry: listing.location.country,
+        } : undefined}
+        aggregateRating={listing ? {
+          ratingValue: listing.averageRating,
+          reviewCount: listing.reviewCount,
+        } : undefined}
+        priceRange={listing?.pricing ? `${listing.pricing.currency || '$'}${listing.pricing.minimum || ''}` : undefined}
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: 'Home', url: 'https://maliquez.com/' },
+          ...(categoryName ? [{ name: categoryName, url: `https://maliquez.com/search?category=${typeof listing?.category === 'object' ? listing.category.id : ''}` }] : []),
+          { name: listing?.title || '', url: `https://maliquez.com/listings/${listingSlug}` },
+        ]}
+      />
       <Link to="/search" className="inline-flex items-center gap-1 text-gray-500 hover:text-gray-700 mb-6">
         <FiArrowLeft className="w-4 h-4" /> Back to search
       </Link>

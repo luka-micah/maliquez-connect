@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import SeoHead from '../../components/seo/SeoHead';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { AxiosResponse } from 'axios';
@@ -382,6 +383,7 @@ const ProviderListings = () => {
 
   return (
     <div className="space-y-6">
+      <SeoHead title="My Listings" noindex />
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">My Listings</h1>
         <button

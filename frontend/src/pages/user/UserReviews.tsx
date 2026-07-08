@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom';
+import SeoHead from '../../components/seo/SeoHead';
 import { FiMessageSquare, FiSearch, FiStar } from 'react-icons/fi';
 
 const UserReviews = () => {
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
+      <SeoHead title="My Reviews" noindex />
       <div className="flex items-center gap-3 mb-8">
         <FiStar className="w-6 h-6 text-yellow-500" />
         <h1 className="text-2xl font-bold text-gray-900">My Reviews</h1>

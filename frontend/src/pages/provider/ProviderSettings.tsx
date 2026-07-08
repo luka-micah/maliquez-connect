@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import SeoHead from '../../components/seo/SeoHead';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../../context/AuthContext';
 import { FiSave } from 'react-icons/fi';
@@ -75,6 +76,7 @@ const ProviderSettings = () => {
 
   return (
     <div className="max-w-2xl">
+      <SeoHead title="Provider Settings" noindex />
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Provider Settings</h1>
         <p className="text-gray-500 mt-1">Update your business profile information</p>

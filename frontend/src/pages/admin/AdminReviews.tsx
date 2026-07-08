@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import SeoHead from '../../components/seo/SeoHead';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 import { adminApi, reviewApi } from '../../api/authApi';
@@ -69,6 +70,7 @@ const AdminReviews = () => {
 
   return (
     <div>
+      <SeoHead title="Admin — Reviews" noindex />
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Manage Reviews</h1>
 
       <div className="card p-4 mb-6">

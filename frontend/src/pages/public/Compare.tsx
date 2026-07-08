@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 import { listingApi } from '../../api/authApi';
+import SeoHead from '../../components/seo/SeoHead';
 import { FiStar, FiMapPin, FiCheck, FiX, FiTrash2, FiArrowLeft } from 'react-icons/fi';
 import StarRating from '../../components/common/StarRating';
 import { ApiResponse, Listing } from '../../types';
@@ -65,6 +66,12 @@ const Compare = () => {
   if (compareIds.length === 0) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 text-center">
+        <SeoHead
+          title="Compare Listings"
+          description="Compare service providers side by side on Maliquez Connect. Make informed decisions with our comparison tool."
+          canonical="/compare"
+          noindex
+        />
         <FiStar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
         <h2 className="text-2xl font-bold text-gray-900 mb-2">No listings to compare</h2>
         <p className="text-gray-500 mb-6">Add listings from their detail page to start comparing.</p>
@@ -77,6 +84,12 @@ const Compare = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      <SeoHead
+        title="Compare Listings"
+        description="Compare service providers side by side on Maliquez Connect. Make informed decisions with our comparison tool."
+        canonical="/compare"
+        noindex
+      />
       <div className="flex items-center justify-between mb-8">
         <div>
           <Link to="/search" className="inline-flex items-center gap-1 text-gray-500 hover:text-gray-700 mb-2">

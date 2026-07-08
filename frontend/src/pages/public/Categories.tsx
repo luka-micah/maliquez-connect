@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 import { categoryApi } from '../../api/authApi';
+import SeoHead from '../../components/seo/SeoHead';
+import { CollectionPageJsonLd } from '../../components/seo/JsonLd';
 import { FiSearch, FiChevronRight, FiFolder } from 'react-icons/fi';
 import { ApiResponse, Category } from '../../types';
 
@@ -26,6 +28,16 @@ const Categories = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      <SeoHead
+        title="Categories"
+        description="Browse service providers by category on Maliquez Connect. Find schools, hospitals, hotels, logistics companies and more."
+        canonical="/categories"
+      />
+      <CollectionPageJsonLd
+        name="Categories"
+        description="Browse service provider categories on Maliquez Connect."
+        url="https://maliquez.com/categories"
+      />
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Categories</h1>
         <p className="text-gray-500">Browse listings by category to find exactly what you need</p>
@@ -81,7 +93,7 @@ const Categories = () => {
           {filtered.map((category: Category) => (
             <Link
               key={category.id}
-              to={`/search?category=${category.id}`}
+              to={`/categories/${category.slug || category.name.toLowerCase().replace(/\s+/g, '-')}`}
               className="bg-white rounded-2xl p-6 border border-gray-100 hover:bg-primary-100 hover:shadow-xl transition-all duration-300 group"
             >
               <div className="w-12 h-12 bg-primary-50 text-primary-600 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary-700 group-hover:text-white transition-all duration-300">

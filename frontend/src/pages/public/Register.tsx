@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '../../context/AuthContext';
+import SeoHead from '../../components/seo/SeoHead';
 import type { RegisterInput } from '../../types';
 import { FiUser, FiMail, FiLock, FiPhone, FiEye, FiEyeOff, FiBriefcase } from 'react-icons/fi';
 import toast from 'react-hot-toast';
@@ -294,6 +295,12 @@ const Register = () => {
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4 py-12">
+      <SeoHead
+        title="Create an Account"
+        description="Sign up for Maliquez Connect to save favorites, write reviews, and get personalized recommendations."
+        canonical="/register"
+        noindex
+      />
       <div className="w-full max-w-lg">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Create an account</h1>

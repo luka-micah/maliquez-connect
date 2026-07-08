@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import SeoHead from '../../components/seo/SeoHead';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 import { favoriteApi } from '../../api/authApi';
@@ -43,6 +44,7 @@ const Favorites = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      <SeoHead title="My Favorites" noindex />
       <div className="flex items-center gap-3 mb-8">
         <FiHeart className="w-6 h-6 text-red-500" />
         <h1 className="text-2xl font-bold text-gray-900">My Favorites</h1>

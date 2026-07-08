@@ -5,6 +5,8 @@ import { AxiosResponse } from 'axios';
 import { listingApi, categoryApi } from '../../api/authApi';
 import ListingCard from '../../components/common/ListingCard';
 import Pagination from '../../components/common/Pagination';
+import SeoHead from '../../components/seo/SeoHead';
+import { CollectionPageJsonLd } from '../../components/seo/JsonLd';
 import { FiSearch, FiSliders, FiX } from 'react-icons/fi';
 import { ApiResponse, Listing, Category, Pagination as PaginationType } from '../../types';
 
@@ -83,8 +85,20 @@ const Search = () => {
 
   const hasFilters = sector || category || state || city || minRating || minPrice || maxPrice;
 
+  const searchTitle = q ? `Search: ${q}` : 'Browse Listings';
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      <SeoHead
+        title={searchTitle}
+        description={q ? `Search results for "${q}" on Maliquez Connect — find verified service providers.` : 'Browse verified service providers across Education, Healthcare, Hospitality, and Logistics. Compare ratings, pricing, and features.'}
+        canonical="/search"
+      />
+      <CollectionPageJsonLd
+        name={searchTitle}
+        description="Browse and search for verified service providers on Maliquez Connect."
+        url="https://maliquez.com/search"
+      />
       <form onSubmit={handleSearch} className="relative max-w-2xl mb-8">
         <input
           type="text"

@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import SeoHead from '../../components/seo/SeoHead';
 import { Link } from 'react-router-dom';
 import { AxiosResponse } from 'axios';
 import { adminApi } from '../../api/authApi';
@@ -77,6 +78,7 @@ const AdminDashboard = () => {
 
   return (
     <div>
+      <SeoHead title="Admin Dashboard" noindex />
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Dashboard</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">

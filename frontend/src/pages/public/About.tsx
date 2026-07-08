@@ -1,8 +1,20 @@
 import { Link } from 'react-router-dom';
 import { FiTarget, FiEye, FiHeart, FiShield, FiUsers, FiAward } from 'react-icons/fi';
+import SeoHead from '../../components/seo/SeoHead';
+import { OrganizationJsonLd } from '../../components/seo/JsonLd';
 
 const About = () => (
   <div>
+      <SeoHead
+        title="About Us"
+        description="Learn about Maliquez Connect — the decision intelligence platform helping you find, compare, and choose the best service providers with confidence."
+        canonical="/about"
+      />
+      <OrganizationJsonLd
+        name="Maliquez Connect"
+        description="Decision intelligence platform connecting users with verified service providers."
+        url="https://maliquez.com"
+      />
     <section className="relative py-24 bg-white overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-primary-100/60 via-white to-primary-50/40" />
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-100/40 rounded-full blur-3xl" />

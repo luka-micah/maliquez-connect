@@ -13,6 +13,8 @@ import Categories from '../pages/public/Categories';
 import Login from '../pages/public/Login';
 import Register from '../pages/public/Register';
 import About from '../pages/public/About';
+import CategoryPage from '../pages/public/CategoryPage';
+import NotFound from '../pages/public/NotFound';
 
 import UserProfile from '../pages/user/UserProfile';
 import Favorites from '../pages/user/Favorites';
@@ -41,6 +43,7 @@ const AppRoutes = () => (
       <Route path="/listings/:id" element={<ListingDetails />} />
       <Route path="/compare" element={<Compare />} />
       <Route path="/categories" element={<Categories />} />
+      <Route path="/categories/:slug" element={<CategoryPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/about" element={<About />} />
@@ -70,6 +73,8 @@ const AppRoutes = () => (
       <Route path="/admin/reviews" element={<AdminReviews />} />
       <Route path="/admin/reports" element={<AdminReports />} />
     </Route>
+
+    <Route path="*" element={<NotFound />} />
   </Routes>
 );
 

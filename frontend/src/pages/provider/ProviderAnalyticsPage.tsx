@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import SeoHead from '../../components/seo/SeoHead';
 import { AxiosResponse } from 'axios';
 import { listingApi } from '../../api/authApi';
 import { FiList, FiCheckCircle, FiClock, FiStar, FiMessageSquare } from 'react-icons/fi';
@@ -85,6 +86,7 @@ const ProviderAnalyticsPage = () => {
 
   return (
     <div className="space-y-6">
+      <SeoHead title="Analytics" noindex />
       <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">

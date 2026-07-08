@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import SeoHead from '../../components/seo/SeoHead';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { AxiosResponse } from 'axios';
@@ -52,6 +53,7 @@ const AdminProviders = () => {
 
   return (
     <div>
+      <SeoHead title="Admin — Providers" noindex />
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Manage Providers</h1>
 
       <div className="card p-4 mb-6">

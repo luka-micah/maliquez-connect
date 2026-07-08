@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import SeoHead from '../../components/seo/SeoHead';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 import { adminApi } from '../../api/authApi';
@@ -86,6 +87,7 @@ const AdminListings = () => {
 
   return (
     <div>
+      <SeoHead title="Admin — Listings" noindex />
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Manage Listings</h1>
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">

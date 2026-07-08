@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import SeoHead from '../../components/seo/SeoHead';
 import { Link } from 'react-router-dom';
 import { AxiosResponse } from 'axios';
 import { useAuth } from '../../context/AuthContext';
@@ -69,6 +70,7 @@ const ProviderDashboard = () => {
 
   return (
     <div className="space-y-6">
+      <SeoHead title="Provider Dashboard" noindex />
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Welcome back, {businessName}</h1>
         <p className="text-gray-500 mt-1">Here is an overview of your listings</p>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import SeoHead from '../../components/seo/SeoHead';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -69,6 +70,7 @@ const UserProfile = () => {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
+      <SeoHead title="My Profile" noindex />
       <div className="card p-8">
         <div className="flex items-start justify-between mb-8">
           <h1 className="text-2xl font-bold text-gray-900">My Profile</h1>

@@ -93,8 +93,13 @@ export const getListings = async (req: AuthRequest, res: Response, next: NextFun
 
 export const getListing = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const listing = await prisma.listing.findUnique({
-      where: { id: req.params.id },
+    const listing = await prisma.listing.findFirst({
+      where: {
+        OR: [
+          { id: req.params.id },
+          { slug: req.params.id },
+        ],
+      },
       include: {
         category: { select: { name: true, slug: true } },
         owner: {

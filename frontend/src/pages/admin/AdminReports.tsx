@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import SeoHead from '../../components/seo/SeoHead';
 import { AxiosResponse } from 'axios';
 import { adminApi } from '../../api/authApi';
 import { FiUsers, FiList, FiStar, FiBriefcase, FiAlertCircle } from 'react-icons/fi';
@@ -67,6 +68,7 @@ const AdminReports = () => {
 
   return (
     <div>
+      <SeoHead title="Admin — Reports" noindex />
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Reports & Analytics</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">

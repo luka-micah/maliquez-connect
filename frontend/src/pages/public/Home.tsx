@@ -4,6 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 import { searchApi } from '../../api/authApi';
 import ListingCard from '../../components/common/ListingCard';
+import SeoHead from '../../components/seo/SeoHead';
+import { OrganizationJsonLd } from '../../components/seo/JsonLd';
 import {
   FiSearch, FiBookOpen, FiHeart, FiHome, FiTruck,
   FiStar, FiTrendingUp, FiShield, FiThumbsUp, FiUsers, FiAward,
@@ -193,6 +195,16 @@ const Home = () => {
 
   return (
     <div>
+      <SeoHead
+        title="Discover. Compare. Decide."
+        description="Maliquez Connect helps you find and compare top-rated service providers across Education, Healthcare, Hospitality, and Logistics. Read verified reviews and make confident decisions."
+        canonical="/"
+      />
+      <OrganizationJsonLd
+        name="Maliquez Connect"
+        description="Decision intelligence platform connecting users with verified service providers across Education, Healthcare, Hospitality, and Logistics."
+        url="https://maliquez.com"
+      />
       {/* ─── HERO ─── */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden py-12 md:py-0 bg-white">
         <div className="absolute inset-0 bg-gradient-to-br from-primary-100/60 via-white to-primary-50/40" />
