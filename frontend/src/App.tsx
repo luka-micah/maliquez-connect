@@ -1,12 +1,15 @@
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import AppRoutes from './routes/AppRoutes';
+import GTMProvider from './components/analytics/GTMProvider';
 
 const App = () => (
   <BrowserRouter>
-    <AuthProvider>
-      <AppRoutes />
-    </AuthProvider>
+    <GTMProvider>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </GTMProvider>
   </BrowserRouter>
 );
 
