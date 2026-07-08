@@ -162,10 +162,30 @@ const stats = [
   { icon: FiAward, end: 98, label: 'Satisfaction Rate', suffix: '%' },
 ];
 
+const heroSlides = [
+  {
+    image: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1920&q=80',
+    overlay: 'from-primary-900/85 via-primary-800/60 to-transparent',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=1920&q=80',
+    overlay: 'from-primary-900/85 via-primary-800/60 to-transparent',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1920&q=80',
+    overlay: 'from-primary-900/85 via-primary-800/60 to-transparent',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1920&q=80',
+    overlay: 'from-primary-900/85 via-primary-800/60 to-transparent',
+  },
+];
+
 const Home = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const { data: trendingRes, isLoading, error } = useQuery<AxiosResponse<ApiResponse<Listing[]>>>({
     queryKey: ['trending'],
@@ -178,6 +198,13 @@ const Home = () => {
     const handleScroll = () => setShowBackToTop(window.scrollY > 600);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
@@ -206,30 +233,36 @@ const Home = () => {
         url="https://maliquez.com"
       />
       {/* ─── HERO ─── */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden py-12 md:py-0 bg-white">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-100/60 via-white to-primary-50/40" />
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary-100/40 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-primary-50/60 rounded-full blur-3xl animate-float-delayed" />
-        <div className="absolute top-1/3 left-1/4 w-72 h-72 bg-primary-100/30 rounded-full blur-2xl animate-float-slow" />
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden py-12 md:py-0">
+        {heroSlides.map((slide, i) => (
+          <div
+            key={slide.image}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${i === currentSlide ? 'opacity-100' : 'opacity-0'}`}
+          >
+            <img src={slide.image} alt="" className="w-full h-full object-cover" />
+            <div className={`absolute inset-0 bg-gradient-to-r ${slide.overlay}`} />
+          </div>
+        ))}
+        <div className="absolute inset-0 bg-primary-900/70" />
 
         <div className="relative z-10 max-w-6xl mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch min-h-[70vh]">
             {/* Left: Hero Content */}
             <div className="text-center lg:text-left flex flex-col justify-center">
               <div className="animate-fade-in-up">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary-100 rounded-full text-primary-700 text-xs md:text-sm mb-8 font-medium">
-                  <FiZap className="w-4 h-4 text-primary-600" />
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/15 backdrop-blur-sm rounded-full text-white text-xs md:text-sm mb-8 font-medium border border-white/20">
+                  <FiZap className="w-4 h-4 text-primary-300" />
                   Decision Intelligence Platform
                 </div>
               </div>
 
-              <h1 className="text-5xl md:text-7xl font-extrabold text-brand-darkText leading-tight mb-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-                <span className="text-primary-600">Search.</span>
-                <span className="block text-primary-600">Connect.</span>
-                <span className="block text-primary-600">Discover.</span>
+              <h1 className="text-5xl md:text-7xl font-extrabold text-white leading-tight mb-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+                <span className="text-primary-300">Search.</span>
+                <span className="block text-primary-300">Connect.</span>
+                <span className="block text-primary-300">Discover.</span>
               </h1>
 
-              <p className="text-lg md:text-xl text-gray-600 max-w-xl mb-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+              <p className="text-lg md:text-xl text-gray-200 max-w-xl mb-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
                 The smartest way to find and compare top-rated service providers across Education, Healthcare, Hospitality, and Logistics.
               </p>
 
@@ -264,7 +297,7 @@ const Home = () => {
                 </Link>
                 <button
                   onClick={() => scrollToSection('sectors')}
-                  className="px-6 py-3 bg-white text-primary-600 rounded-xl border border-primary-600 hover:bg-primary-50 transition-all font-medium flex items-center gap-2"
+                  className="px-6 py-3 bg-white/10 backdrop-blur-sm text-white rounded-xl border border-white/30 hover:bg-white/20 transition-all font-medium flex items-center gap-2"
                 >
                   <FiCompass className="w-4 h-4" />
                   Browse Sectors
@@ -274,25 +307,21 @@ const Home = () => {
 
             {/* Right: How It Works */}
             <div className="animate-fade-in-up h-full flex" style={{ animationDelay: '0.5s' }}>
-              <div className="flex-1 bg-white rounded-2xl border border-gray-200 p-6 md:p-10 flex flex-col shadow-lg">
-                {/* <div className="flex items-center gap-2 mb-6 md:mb-10">
-                  <FiZap className="w-5 h-5 text-primary-600" />
-                  <h3 className="text-brand-darkText font-bold text-base md:text-lg">How It Works</h3>
-                </div> */}
+              <div className="flex-1 bg-white/15 backdrop-blur-md rounded-2xl border border-white/20 p-6 md:p-10 flex flex-col shadow-lg">
                 <div className="flex-1 flex flex-col gap-4 md:justify-evenly">
                   {steps.map((step, i) => (
                     <div key={step.title} className="flex items-start gap-3 md:gap-4 group">
-                      <div className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 bg-primary-600 text-white rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+                      <div className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 bg-primary-500 text-white rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
                         <step.icon className="w-5 h-5 md:w-6 md:h-6" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5 md:mb-1">
-                          <span className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-primary-100 text-primary-700 text-[10px] md:text-xs font-bold flex items-center justify-center flex-shrink-0">
+                          <span className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-white/20 text-white text-[10px] md:text-xs font-bold flex items-center justify-center flex-shrink-0">
                             {i + 1}
                           </span>
-                          <h4 className="text-brand-darkText font-semibold text-sm md:text-base">{step.title}</h4>
+                          <h4 className="text-white font-semibold text-sm md:text-base">{step.title}</h4>
                         </div>
-                        <p className="text-gray-500 text-xs md:text-sm leading-relaxed">{step.description}</p>
+                        <p className="text-gray-300 text-xs md:text-sm leading-relaxed">{step.description}</p>
                       </div>
                     </div>
                   ))}
@@ -302,15 +331,19 @@ const Home = () => {
           </div>
         </div>
 
-        <button
-          onClick={() => scrollToSection('stats')}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-gray-400 hover:text-primary-600 transition-colors animate-float"
-          aria-label="Scroll down"
-        >
-          <div className="w-6 h-10 border-2 border-gray-300 rounded-full flex justify-center p-1">
-            <div className="w-1.5 h-3 bg-gray-400 rounded-full" />
-          </div>
-        </button>
+        {/* Slide indicators */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+          {heroSlides.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentSlide(i)}
+              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                i === currentSlide ? 'bg-white w-8' : 'bg-white/40 hover:bg-white/60'
+              }`}
+              aria-label={`Go to slide ${i + 1}`}
+            />
+          ))}
+        </div>
       </section>
 
       {/* ─── STATS ─── */}
