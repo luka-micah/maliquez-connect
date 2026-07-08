@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
-import { listingApi, categoryApi } from '../../api/authApi';
+import { categoryApi, searchApi } from '../../api/authApi';
 import ListingCard from '../../components/common/ListingCard';
 import Pagination from '../../components/common/Pagination';
 import SeoHead from '../../components/seo/SeoHead';
@@ -49,8 +49,8 @@ const Search = () => {
   params.page = page;
 
   const { data: listingsRes, isLoading, error } = useQuery({
-    queryKey: ['listings', params],
-    queryFn: () => listingApi.getAll(params),
+    queryKey: ['search', params],
+    queryFn: () => searchApi.search(params),
   });
 
   const { data: categoriesRes } = useQuery({
