@@ -525,12 +525,20 @@ const Home = () => {
       </section>
 
       {/* ─── TESTIMONIALS ─── */}
-      <section className="py-24 bg-white">
-        <div className="max-w-6xl mx-auto px-4">
+      <section className="relative py-24 overflow-hidden">
+        <div className="absolute inset-0">
+          <img
+            src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1920&q=80"
+            alt=""
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-primary-900/80" />
+        </div>
+        <div className="relative z-10 max-w-6xl mx-auto px-4">
           <ScrollReveal className="text-center mb-16">
-            <span className="text-primary-600 font-semibold text-sm tracking-wider uppercase">Testimonials</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-3">What Our Users Say</h2>
-            <p className="text-gray-500 mt-3 max-w-xl mx-auto">
+            <span className="text-primary-300 font-semibold text-sm tracking-wider uppercase">Testimonials</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mt-3">What Our Users Say</h2>
+            <p className="text-gray-300 mt-3 max-w-xl mx-auto">
               Real stories from real people who found what they needed
             </p>
           </ScrollReveal>
@@ -539,7 +547,7 @@ const Home = () => {
             {testimonials.map((t, i) => (
               <ScrollReveal
                 key={t.name}
-                className="bg-gray-50 rounded-2xl p-8 border border-gray-100 hover:shadow-lg transition-all duration-300"
+                className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 hover:bg-white/20 transition-all duration-300"
                 style={{ animationDelay: `${i * 0.1}s` }}
               >
                 <div className="flex gap-1 mb-4">
@@ -547,14 +555,14 @@ const Home = () => {
                     <FiStar key={j} className="w-5 h-5 text-[#F4B400] fill-current" />
                   ))}
                 </div>
-                <p className="text-gray-600 mb-6 leading-relaxed">"{t.text}"</p>
+                <p className="text-gray-200 mb-6 leading-relaxed">"{t.text}"</p>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-primary-100 text-primary-700 rounded-full flex items-center justify-center text-sm font-bold">
+                  <div className="w-10 h-10 bg-primary-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
                     {t.avatar}
                   </div>
                   <div>
-                    <div className="font-semibold text-gray-900">{t.name}</div>
-                    <div className="text-sm text-gray-500">{t.role}</div>
+                    <div className="font-semibold text-white">{t.name}</div>
+                    <div className="text-sm text-gray-400">{t.role}</div>
                   </div>
                 </div>
               </ScrollReveal>
