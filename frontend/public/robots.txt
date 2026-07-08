@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /favorites
+Disallow: /my-reviews
+Disallow: /recommendations
+Disallow: /provider/
+Disallow: /admin/
+
+Sitemap: https://maliquez.com/sitemap.xml
