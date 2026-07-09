@@ -5,12 +5,14 @@ import { useForm } from 'react-hook-form';
 import { AxiosResponse } from 'axios';
 import { listingApi, categoryApi } from '../../api/authApi';
 import {
-  FiPlus, FiEdit2, FiTrash2, FiX, FiStar,
+  FiPlus, FiEdit2, FiTrash2, FiX, FiStar, FiUpload, FiClock,
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { ApiResponse, Listing, Category } from '../../types';
 
 const SECTORS: string[] = ['Education', 'Healthcare', 'Hospitality', 'Logistics'];
+
+const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] as const;
 
 interface ListingFormData {
   title: string;
@@ -29,6 +31,20 @@ interface ListingFormData {
   pricingMin: string;
   pricingMax: string;
   currency: string;
+  mondayOpen: string;
+  mondayClose: string;
+  tuesdayOpen: string;
+  tuesdayClose: string;
+  wednesdayOpen: string;
+  wednesdayClose: string;
+  thursdayOpen: string;
+  thursdayClose: string;
+  fridayOpen: string;
+  fridayClose: string;
+  saturdayOpen: string;
+  saturdayClose: string;
+  sundayOpen: string;
+  sundayClose: string;
 }
 
 const statusBadge = (status: string) => {
@@ -54,6 +70,15 @@ interface ListingFormModalProps {
 const ListingFormModal = ({ isOpen, onClose, listing, categories }: ListingFormModalProps) => {
   const queryClient = useQueryClient();
   const isEditing = !!listing;
+  const [files, setFiles] = useState<File[]>([]);
+
+  const hoursDefault = (day: string) => {
+    const hours = listing?.operatingHours as Record<string, { open?: string; close?: string }> | undefined;
+    return {
+      open: hours?.[day]?.open || '',
+      close: hours?.[day]?.close || '',
+    };
+  };
 
   const {
     register,
@@ -79,12 +104,19 @@ const ListingFormModal = ({ isOpen, onClose, listing, categories }: ListingFormM
           pricingMin: listing.pricing?.minimum?.toString() || '',
           pricingMax: listing.pricing?.maximum?.toString() || '',
           currency: listing.pricing?.currency || 'USD',
+          ...Object.fromEntries(DAYS.flatMap(d => [
+            [`${d}Open`, hoursDefault(d).open],
+            [`${d}Close`, hoursDefault(d).close],
+          ])),
         }
       : {
           title: '', description: '', category: '', sector: '',
           contactPhone: '', contactEmail: '', contactWebsite: '', contactWhatsapp: '',
           address: '', state: '', city: '', country: '',
           features: '', pricingMin: '', pricingMax: '', currency: 'USD',
+          ...Object.fromEntries(
+            DAYS.flatMap<[string, string]>(d => [[`${d}Open`, ''], [`${d}Close`, '']]),
+          ),
         },
   });
 
@@ -95,6 +127,7 @@ const ListingFormModal = ({ isOpen, onClose, listing, categories }: ListingFormM
       toast.success('Listing created successfully');
       onClose();
       reset();
+      setFiles([]);
     },
     onError: (err: Error) => {
       const axiosErr = err as unknown as { response?: { data?: { message?: string } } };
@@ -142,6 +175,19 @@ const ListingFormModal = ({ isOpen, onClose, listing, categories }: ListingFormM
       maximum: formData.pricingMax ? Number(formData.pricingMax) : undefined,
       currency: formData.currency,
     }));
+    const hours: Record<string, { open?: string; close?: string }> = {};
+    const raw = formData as unknown as Record<string, string>;
+    for (const d of DAYS) {
+      const open = raw[`${d}Open`];
+      const close = raw[`${d}Close`];
+      if (open || close) {
+        hours[d] = { open: open || undefined, close: close || undefined };
+      }
+    }
+    fd.append('operatingHours', JSON.stringify(hours));
+    if (!isEditing) {
+      files.forEach((file) => fd.append('images', file));
+    }
     return fd;
   };
 
@@ -267,6 +313,39 @@ const ListingFormModal = ({ isOpen, onClose, listing, categories }: ListingFormM
           </div>
 
           <div>
+            <h3 className="text-sm font-semibold text-gray-900 mb-3">Images</h3>
+            <label className="flex items-center gap-2 px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary-400 transition-colors">
+              <FiUpload className="w-5 h-5 text-gray-400" />
+              <span className="text-sm text-gray-500">
+                {files.length > 0 ? `${files.length} file(s) selected` : 'Upload images'}
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => {
+                  const selected = Array.from(e.target.files || []);
+                  setFiles(prev => [...prev, ...selected]);
+                  e.target.value = '';
+                }}
+                className="hidden"
+              />
+            </label>
+            {files.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {files.map((f, i) => (
+                  <div key={i} className="flex items-center gap-1.5 bg-gray-100 rounded-lg px-2.5 py-1.5 text-xs text-gray-700">
+                    <span className="max-w-28 truncate">{f.name}</span>
+                    <button type="button" onClick={() => setFiles(prev => prev.filter((_, j) => j !== i))} className="text-gray-400 hover:text-red-500">
+                      <FiX className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div>
             <h3 className="text-sm font-semibold text-gray-900 mb-3">Pricing</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
@@ -288,6 +367,37 @@ const ListingFormModal = ({ isOpen, onClose, listing, categories }: ListingFormM
                   <option value="ZAR">ZAR</option>
                 </select>
               </div>
+            </div>
+          </div>
+
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <FiClock className="w-4 h-4 text-gray-500" />
+              <h3 className="text-sm font-semibold text-gray-900">Operating Hours</h3>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+              <div className="hidden md:grid grid-cols-[7rem_1fr_auto_1fr] gap-2 mb-1 px-3">
+                <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">Day</span>
+                <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">Opens</span>
+                <span />
+                <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">Closes</span>
+              </div>
+              {DAYS.map((day) => (
+                <div key={day} className="grid grid-cols-[5rem_1fr_auto_1fr] md:grid-cols-[7rem_1fr_auto_1fr] gap-2 items-center bg-white rounded-lg px-3 py-2 border border-gray-200">
+                  <span className="text-sm font-medium text-gray-700 capitalize truncate">{day}</span>
+                  <input
+                    type="time"
+                    {...register(`${day}Open` as keyof ListingFormData)}
+                    className="w-full px-2 py-1.5 text-sm rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+                  />
+                  <span className="text-xs text-gray-400 text-center">to</span>
+                  <input
+                    type="time"
+                    {...register(`${day}Close` as keyof ListingFormData)}
+                    className="w-full px-2 py-1.5 text-sm rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+                  />
+                </div>
+              ))}
             </div>
           </div>
 
