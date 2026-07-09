@@ -73,6 +73,14 @@ export interface DayHours {
   close: string;
 }
 
+export interface ImageMeta {
+  publicId: string;
+  url: string;
+  width?: number;
+  height?: number;
+  format?: string;
+}
+
 export interface Listing {
   id: string;
   title: string;
@@ -84,6 +92,7 @@ export interface Listing {
   contact?: Contact;
   location?: Location;
   images: string[];
+  imageMetadata?: ImageMeta[];
   features: string[];
   pricing?: Pricing;
   operatingHours?: OperatingHours;
@@ -220,6 +229,7 @@ export interface RegisterInput {
     businessName?: string;
     businessType?: string;
   };
+  subscribedToNewsletter?: boolean;
 }
 
 export interface LoginInput {

@@ -18,6 +18,7 @@ model User {
   isVerified           Boolean          @default(false)
   status               UserStatus       @default(ACTIVE)
   providerProfile      Json?
+  subscribedToNewsletter Boolean @default(false)
   refreshToken         String?
   passwordResetToken   String?
   passwordResetExpires DateTime?
@@ -59,6 +60,7 @@ model Listing {
   contact         Json?
   location        Json?
   images          String[]
+  imageMetadata   Json?
   features        String[]
   pricing         Json?
   operatingHours  Json?

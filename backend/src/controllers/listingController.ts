@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { Prisma, Sector, ListingStatus } from '@prisma/client';
 import prisma from '../config/prisma.js';
 import ApiError from '../utils/ApiError.js';
@@ -7,6 +8,7 @@ import { calculatePagination, parsePagination, slugify } from '../utils/helpers.
 import { ROLES } from '../constants/roles.js';
 import { invalidateCache } from '../config/redis.js';
 import { sendListingCreatedEmail } from '../services/emailService.js';
+import { uploadImagesToCloudinary, deleteCloudinaryImages, deleteListingFolder } from '../services/cloudinaryService.js';
 import type { AuthRequest } from '../types/index.js';
 import type { Response, NextFunction } from 'express';
 
@@ -127,7 +129,19 @@ export const getListing = async (req: AuthRequest, res: Response, next: NextFunc
 
 export const createListing = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
+    const listingId = crypto.randomUUID();
+    const files = (req.files as Express.Multer.File[]) || [];
+
+    let imageMetadata = null;
+    let imageUrls: string[] = [];
+
+    if (files.length > 0) {
+      imageMetadata = await uploadImagesToCloudinary(files, listingId);
+      imageUrls = imageMetadata.map((img) => img.url);
+    }
+
     const data = sanitizeData(req.body);
+    data.id = listingId;
     data.owner = { connect: { id: req.userId } };
 
     if (data.category) {
@@ -146,28 +160,21 @@ export const createListing = async (req: AuthRequest, res: Response, next: NextF
       }
     }
 
-    if (typeof data.images === 'string') {
-      try {
-        data.images = JSON.parse(data.images as string);
-      } catch {
-        data.images = (data.images as string).split(',').map((s: string) => s.trim()).filter(Boolean);
-      }
-    }
-
     if (!data.slug && data.title) {
       data.slug = slugify(data.title as string);
     }
 
-    if (req.files && (req.files as Express.Multer.File[]).length > 0) {
-      const currentImages = data.images as string[] | undefined;
-      if (!Array.isArray(currentImages)) {
-        (data.images as string[]) = [];
-      }
-      (data.images as string[]).push(...(req.files as Express.Multer.File[]).map((f) => f.path));
-    }
+    const listing = await prisma.listing.create({
+      data: {
+        ...data as any,
+        images: imageUrls,
+        imageMetadata: imageMetadata as any,
+      },
+    });
 
-    const listing = await prisma.listing.create({ data: data as any });
     await invalidateCache('listings:*');
+
+    console.log(`[UPLOAD] Listing ${listingId} created with ${imageUrls.length} image(s)`);
 
     prisma.user.findUnique({ where: { id: req.userId }, select: { email: true, firstName: true } }).then(owner => {
       if (owner) {
@@ -215,31 +222,61 @@ export const updateListing = async (req: AuthRequest, res: Response, next: NextF
       }
     }
 
-    if (typeof data.images === 'string') {
-      try {
-        data.images = JSON.parse(data.images as string);
-      } catch {
-        data.images = (data.images as string).split(',').map((s: string) => s.trim()).filter(Boolean);
-      }
+    if (!data.slug && data.title) {
+      data.slug = slugify(data.title as string);
     }
 
-    const files = req.files as Express.Multer.File[] | undefined;
-    if (files && files.length > 0) {
-      const existingImages = Array.isArray(existing.images) ? existing.images : [];
-      const newImages = Array.isArray(data.images) ? (data.images as string[]) : [];
-      (data as Record<string, unknown>).images = [
-        ...existingImages,
-        ...newImages,
-        ...files.map((f) => f.path),
-      ];
+    let currentMetadata = existing.imageMetadata as Array<Record<string, unknown>> | null | undefined;
+    const currentUrls: string[] = Array.isArray(existing.images) ? [...existing.images] : [];
+
+    /* Handle removed images */
+    let removedPublicIds: string[] = data.removedImages as string[] | undefined ?? [];
+    if (typeof removedPublicIds === 'string') {
+      try {
+        removedPublicIds = JSON.parse(removedPublicIds as string);
+      } catch {
+        // ignore
+      }
+    }
+    if (Array.isArray(removedPublicIds) && removedPublicIds.length > 0) {
+      await deleteCloudinaryImages(removedPublicIds);
+      const removedSet = new Set(removedPublicIds);
+      const keepMetadata = (currentMetadata ?? []).filter(
+        (m) => !removedSet.has(m.publicId as string),
+      );
+      const keepUrls = currentUrls.filter((url, i) => {
+        const meta = (currentMetadata ?? [])[i];
+        return !meta || !removedSet.has(meta.publicId as string);
+      });
+      currentMetadata = keepMetadata;
+      data.images = keepUrls;
+    }
+
+    /* Handle new image uploads */
+    const files = (req.files as Express.Multer.File[]) || [];
+    if (files.length > 0) {
+      const newMetadata = await uploadImagesToCloudinary(files, existing.id);
+      const newUrls = newMetadata.map((img) => img.url);
+      currentMetadata = [...(currentMetadata ?? []), ...newMetadata] as any;
+      data.images = [...(Array.isArray(data.images) ? data.images : currentUrls), ...newUrls];
+    }
+
+    /* Preserve existing images if no change was sent */
+    if (!data.images) {
+      data.images = currentUrls;
     }
 
     const updated = await prisma.listing.update({
       where: { id: req.params.id },
-      data: data as any,
+      data: {
+        ...data as any,
+        imageMetadata: currentMetadata as any,
+      },
     });
 
     await invalidateCache('listings:*');
+
+    console.log(`[UPLOAD] Listing ${existing.id} updated`);
 
     res.json(ApiResponse.success(updated, 'Listing updated'));
   } catch (error) {
@@ -259,8 +296,12 @@ export const deleteListing = async (req: AuthRequest, res: Response, next: NextF
       throw ApiError.forbidden('You can only delete your own listings');
     }
 
+    await deleteListingFolder(listing.id);
+
     await prisma.listing.delete({ where: { id: req.params.id } });
     await invalidateCache('listings:*');
+
+    console.log(`[UPLOAD] Listing ${listing.id} deleted along with its images`);
 
     res.json(ApiResponse.success(null, 'Listing deleted'));
   } catch (error) {

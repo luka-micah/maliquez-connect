@@ -20,6 +20,7 @@ const registerSchema = z.object({
   businessName: z.string().optional(),
   businessType: z.string().optional(),
   agreeToTerms: z.boolean().refine(val => val === true, 'You must agree to the Terms and Conditions and Privacy Policy'),
+  subscribedToNewsletter: z.boolean().optional(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'Passwords do not match',
   path: ['confirmPassword'],
@@ -258,6 +259,7 @@ const Register = () => {
       businessType: '',
       role: 'USER',
       agreeToTerms: false,
+      subscribedToNewsletter: false,
     },
   });
 
@@ -282,6 +284,7 @@ const Register = () => {
           businessType: data.businessType,
         };
       }
+      payload.subscribedToNewsletter = data.subscribedToNewsletter ?? false;
       await registerUser(payload as unknown as RegisterInput);
       toast.success('Account created successfully!');
       navigate('/', { replace: true });
@@ -516,6 +519,18 @@ const Register = () => {
             </label>
           </div>
           {errors.agreeToTerms && <p className="text-red-500 text-sm">{errors.agreeToTerms.message}</p>}
+
+          <div className="flex items-start gap-3">
+            <input
+              id="subscribedToNewsletter"
+              type="checkbox"
+              {...register('subscribedToNewsletter')}
+              className="mt-1 w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-600"
+            />
+            <label htmlFor="subscribedToNewsletter" className="text-sm text-gray-600">
+              Subscribe to our newsletter for updates, tips, and exclusive offers
+            </label>
+          </div>
 
           <button
             type="submit"

@@ -17,7 +17,7 @@ const generateTokens = (userId: string, role: string) => ({
 
 export const register = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const { firstName, lastName, email, phone, password, role, providerProfile } = req.body;
+    const { firstName, lastName, email, phone, password, role, providerProfile, subscribedToNewsletter } = req.body;
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
@@ -34,6 +34,7 @@ export const register = async (req: AuthRequest, res: Response, next: NextFuncti
       phone,
       password: hashedPassword,
       role: userRole,
+      subscribedToNewsletter: subscribedToNewsletter ?? false,
     };
 
     if (userRole === ROLES.PROVIDER && providerProfile) {

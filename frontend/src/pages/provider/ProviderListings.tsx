@@ -71,6 +71,8 @@ const ListingFormModal = ({ isOpen, onClose, listing, categories }: ListingFormM
   const queryClient = useQueryClient();
   const isEditing = !!listing;
   const [files, setFiles] = useState<File[]>([]);
+  const [removedPublicIds, setRemovedPublicIds] = useState<string[]>([]);
+  const existingMetas = listing?.imageMetadata ?? [];
 
   const hoursDefault = (day: string) => {
     const hours = listing?.operatingHours as Record<string, { open?: string; close?: string }> | undefined;
@@ -128,6 +130,7 @@ const ListingFormModal = ({ isOpen, onClose, listing, categories }: ListingFormM
       onClose();
       reset();
       setFiles([]);
+      setRemovedPublicIds([]);
     },
     onError: (err: Error) => {
       const axiosErr = err as unknown as { response?: { data?: { message?: string } } };
@@ -142,6 +145,8 @@ const ListingFormModal = ({ isOpen, onClose, listing, categories }: ListingFormM
       toast.success('Listing updated successfully');
       onClose();
       reset();
+      setFiles([]);
+      setRemovedPublicIds([]);
     },
     onError: (err: Error) => {
       const axiosErr = err as unknown as { response?: { data?: { message?: string } } };
@@ -185,9 +190,10 @@ const ListingFormModal = ({ isOpen, onClose, listing, categories }: ListingFormM
       }
     }
     fd.append('operatingHours', JSON.stringify(hours));
-    if (!isEditing) {
-      files.forEach((file) => fd.append('images', file));
+    if (removedPublicIds.length > 0) {
+      fd.append('removedImages', JSON.stringify(removedPublicIds));
     }
+    files.forEach((file) => fd.append('images', file));
     return fd;
   };
 
@@ -314,29 +320,89 @@ const ListingFormModal = ({ isOpen, onClose, listing, categories }: ListingFormM
 
           <div>
             <h3 className="text-sm font-semibold text-gray-900 mb-3">Images</h3>
-            <label className="flex items-center gap-2 px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary-400 transition-colors">
-              <FiUpload className="w-5 h-5 text-gray-400" />
+
+            {/* Existing images (edit mode) */}
+            {existingMetas.length > 0 && (
+              <div className="flex flex-wrap gap-3 mb-3">
+                {existingMetas.map((meta) => {
+                  const removed = removedPublicIds.includes(meta.publicId);
+                  return (
+                    <div
+                      key={meta.publicId}
+                      className={`relative w-24 h-24 rounded-lg overflow-hidden border ${removed ? 'opacity-30 border-red-400' : 'border-gray-200'}`}
+                    >
+                      <img src={meta.url} alt="" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (removed) {
+                            setRemovedPublicIds(prev => prev.filter(id => id !== meta.publicId));
+                          } else {
+                            setRemovedPublicIds(prev => [...prev, meta.publicId]);
+                          }
+                        }}
+                        className={`absolute top-1 right-1 p-0.5 rounded-full ${removed ? 'bg-green-500 text-white' : 'bg-white/80 text-gray-600 hover:text-red-600'}`}
+                      >
+                        {removed ? <FiPlus className="w-3.5 h-3.5" /> : <FiX className="w-3.5 h-3.5" />}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Drop zone */}
+            <label
+              onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('border-primary-400', 'bg-primary-50'); }}
+              onDragLeave={(e) => { e.currentTarget.classList.remove('border-primary-400', 'bg-primary-50'); }}
+              onDrop={(e) => {
+                e.preventDefault();
+                e.currentTarget.classList.remove('border-primary-400', 'bg-primary-50');
+                const dropped = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+                if (dropped.length + files.length + existingMetas.length - removedPublicIds.length > 10) {
+                  toast.error('Maximum 10 images allowed');
+                  return;
+                }
+                setFiles(prev => [...prev, ...dropped]);
+              }}
+              className="flex flex-col items-center justify-center gap-2 px-4 py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary-400 hover:bg-primary-50 transition-colors"
+            >
+              <FiUpload className="w-6 h-6 text-gray-400" />
               <span className="text-sm text-gray-500">
-                {files.length > 0 ? `${files.length} file(s) selected` : 'Upload images'}
+                {files.length > 0
+                  ? `${files.length} new file(s) selected`
+                  : 'Drag & drop images here, or click to select'}
               </span>
+              <span className="text-xs text-gray-400">JPG, PNG or WEBP &middot; Max 5MB each &middot; Up to 10 images</span>
               <input
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp"
                 multiple
                 onChange={(e) => {
                   const selected = Array.from(e.target.files || []);
+                  if (selected.length + files.length + existingMetas.length - removedPublicIds.length > 10) {
+                    toast.error('Maximum 10 images allowed');
+                    e.target.value = '';
+                    return;
+                  }
                   setFiles(prev => [...prev, ...selected]);
                   e.target.value = '';
                 }}
                 className="hidden"
               />
             </label>
+
+            {/* New file previews */}
             {files.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
+              <div className="flex flex-wrap gap-3 mt-3">
                 {files.map((f, i) => (
-                  <div key={i} className="flex items-center gap-1.5 bg-gray-100 rounded-lg px-2.5 py-1.5 text-xs text-gray-700">
-                    <span className="max-w-28 truncate">{f.name}</span>
-                    <button type="button" onClick={() => setFiles(prev => prev.filter((_, j) => j !== i))} className="text-gray-400 hover:text-red-500">
+                  <div key={`new-${i}`} className="relative w-24 h-24 rounded-lg overflow-hidden border border-gray-200">
+                    <img src={URL.createObjectURL(f)} alt="" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setFiles(prev => prev.filter((_, j) => j !== i))}
+                      className="absolute top-1 right-1 p-0.5 rounded-full bg-white/80 text-gray-600 hover:text-red-600"
+                    >
                       <FiX className="w-3.5 h-3.5" />
                     </button>
                   </div>
