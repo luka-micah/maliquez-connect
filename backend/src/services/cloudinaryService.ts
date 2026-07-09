@@ -14,29 +14,33 @@ const folderPath = (listingId: string): string => `maliquez/listings/${listingId
 
 const uploadBuffer = (
   buffer: Buffer,
+  mimeType: string,
   listingId: string,
   index: number,
 ): Promise<UploadApiResponse> =>
   new Promise((resolve, reject) => {
-    const uploadStream = cloudinary.uploader.upload_stream(
+    const base64 = buffer.toString('base64');
+    const dataUri = `data:${mimeType};base64,${base64}`;
+
+    cloudinary.uploader.upload(
+      dataUri,
       {
         folder: folderPath(listingId),
         public_id: `image-${index}`,
-        format: 'auto',
         quality: 'auto',
-        fetch_format: 'auto',
-        responsive_placeholder: 'auto',
         transformation: [{ width: 1200, height: 1200, crop: 'limit', quality: 'auto' }],
       },
       (error, result) => {
-        if (error || !result) {
-          reject(ApiError.internal('Image upload to Cloudinary failed'));
+        if (error) {
+          console.error('[CLOUDINARY] Upload error:', JSON.stringify(error));
+          reject(ApiError.internal(`Image upload failed: ${error.message}`));
+        } else if (!result) {
+          reject(ApiError.internal('Image upload returned no result'));
         } else {
           resolve(result);
         }
       },
     );
-    uploadStream.end(buffer);
   });
 
 export const uploadImagesToCloudinary = async (
@@ -46,7 +50,7 @@ export const uploadImagesToCloudinary = async (
   if (files.length === 0) return [];
 
   const results = await Promise.allSettled(
-    files.map((file, i) => uploadBuffer(file.buffer, listingId, i)),
+    files.map((file, i) => uploadBuffer(file.buffer, file.mimetype, listingId, i)),
   );
 
   const uploaded: ImageMeta[] = [];
@@ -64,6 +68,8 @@ export const uploadImagesToCloudinary = async (
         format: r.format,
       });
     } else {
+      const reason = result.reason instanceof ApiError ? result.reason.message : 'Unknown error';
+      console.error(`[CLOUDINARY] Failed to upload ${files[i].originalname}: ${reason}`);
       errors.push(files[i].originalname);
     }
   }

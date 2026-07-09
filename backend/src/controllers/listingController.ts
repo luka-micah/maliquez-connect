@@ -145,7 +145,7 @@ export const createListing = async (req: AuthRequest, res: Response, next: NextF
     data.owner = { connect: { id: req.userId } };
 
     if (data.category) {
-      data.category = { connect: { name: data.category as string } };
+      data.category = { connect: { id: data.category as string } };
     }
 
     for (const key of ['contact', 'location', 'pricing', 'features', 'operatingHours'] as const) {
@@ -207,7 +207,7 @@ export const updateListing = async (req: AuthRequest, res: Response, next: NextF
     const data = sanitizeData(req.body);
 
     if (data.category) {
-      data.category = { connect: { name: data.category as string } };
+      data.category = { connect: { id: data.category as string } };
     }
 
     for (const key of ['contact', 'location', 'pricing', 'features', 'operatingHours'] as const) {
@@ -238,6 +238,7 @@ export const updateListing = async (req: AuthRequest, res: Response, next: NextF
         // ignore
       }
     }
+    delete data.removedImages;
     if (Array.isArray(removedPublicIds) && removedPublicIds.length > 0) {
       await deleteCloudinaryImages(removedPublicIds);
       const removedSet = new Set(removedPublicIds);
