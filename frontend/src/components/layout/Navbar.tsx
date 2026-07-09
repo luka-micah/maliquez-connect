@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useAuth } from '../../context/AuthContext';
-import { FiMenu, FiX, FiSearch, FiBell, FiLogOut, FiUser, FiChevronDown } from 'react-icons/fi';
+import { FiMenu, FiX, FiSearch, FiLogOut, FiUser, FiChevronDown } from 'react-icons/fi';
+import NotificationDropdown from './NotificationDropdown';
 import type { User } from '../../types';
 
 const Navbar = () => {
@@ -59,9 +60,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center gap-4">
             {isAuthenticated ? (
               <>
-                <button className="relative text-gray-600 hover:text-primary-600">
-                  <FiBell className="w-5 h-5" />
-                </button>
+                <NotificationDropdown />
                 <div className="relative">
                   <button
                     onClick={() => setShowDropdown(!showDropdown)}

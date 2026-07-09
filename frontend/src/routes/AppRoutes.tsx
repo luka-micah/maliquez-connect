@@ -12,6 +12,8 @@ import Compare from '../pages/public/Compare';
 import Categories from '../pages/public/Categories';
 import Login from '../pages/public/Login';
 import Register from '../pages/public/Register';
+import ForgotPassword from '../pages/public/ForgotPassword';
+import ResetPassword from '../pages/public/ResetPassword';
 import About from '../pages/public/About';
 import CategoryPage from '../pages/public/CategoryPage';
 import NotFound from '../pages/public/NotFound';
@@ -46,6 +48,8 @@ const AppRoutes = () => (
       <Route path="/categories/:slug" element={<CategoryPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
       <Route path="/about" element={<About />} />
     </Route>
 

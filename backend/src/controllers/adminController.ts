@@ -7,6 +7,10 @@ import { calculatePagination, parsePagination } from '../utils/helpers.js';
 import { LISTING_STATUS, REVIEW_STATUS } from '../constants/listingStatus.js';
 import { ROLES } from '../constants/roles.js';
 import { invalidateCache } from '../config/redis.js';
+import {
+  sendListingApprovedEmail,
+  sendListingSuspendedEmail,
+} from '../services/emailService.js';
 import type { AuthRequest } from '../types/index.js';
 
 export const getUsers = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
@@ -124,6 +128,17 @@ export const approveListing = async (req: AuthRequest, res: Response, next: Next
 
     await invalidateCache('listings:*');
 
+    prisma.user.findUnique({ where: { id: listing.ownerId }, select: { email: true, firstName: true } }).then(owner => {
+      if (owner) {
+        sendListingApprovedEmail({
+          email: owner.email,
+          firstName: owner.firstName,
+          listingTitle: listing.title,
+          listingId: listing.id,
+        });
+      }
+    }).catch(() => {});
+
     res.json(ApiResponse.success(updated, 'Listing approved'));
   } catch (error) {
     next(error);
@@ -154,6 +169,16 @@ export const suspendListing = async (req: AuthRequest, res: Response, next: Next
     });
 
     await invalidateCache('listings:*');
+
+    prisma.user.findUnique({ where: { id: listing.ownerId }, select: { email: true, firstName: true } }).then(owner => {
+      if (owner) {
+        sendListingSuspendedEmail({
+          email: owner.email,
+          firstName: owner.firstName,
+          listingTitle: listing.title,
+        });
+      }
+    }).catch(() => {});
 
     res.json(ApiResponse.success(updated, 'Listing suspended'));
   } catch (error) {

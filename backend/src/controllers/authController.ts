@@ -7,6 +7,7 @@ import ApiResponse from '../utils/ApiResponse.js';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/generateToken.js';
 import { hashPassword, comparePassword } from '../utils/password.js';
 import { ROLES } from '../constants/roles.js';
+import { sendPasswordResetEmail, sendWelcomeEmail } from '../services/emailService.js';
 import type { AuthRequest } from '../types/index.js';
 
 const generateTokens = (userId: string, role: string) => ({
@@ -49,6 +50,8 @@ export const register = async (req: AuthRequest, res: Response, next: NextFuncti
       where: { id: user.id },
       data: { refreshToken: tokens.refreshToken },
     });
+
+    sendWelcomeEmail({ email: user.email, firstName: user.firstName }).catch(() => {});
 
     const { password: _, refreshToken: __, passwordResetToken: ___, passwordResetExpires: ____, ...safeUser } = user;
 
@@ -190,10 +193,19 @@ export const updateProfile = async (req: AuthRequest, res: Response, next: NextF
 export const forgotPassword = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { email } = req.body;
-    const user = await prisma.user.findUnique({ where: { email } });
 
+    if (!email || typeof email !== 'string') {
+      throw ApiError.badRequest('Email is required');
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      throw ApiError.badRequest('Invalid email address');
+    }
+
+    const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      return res.json(ApiResponse.success(null, 'If the email exists, a reset link has been sent'));
+      throw ApiError.notFound('No account found with this email address');
     }
 
     const resetToken = crypto.randomBytes(32).toString('hex');
@@ -207,7 +219,13 @@ export const forgotPassword = async (req: AuthRequest, res: Response, next: Next
       },
     });
 
-    res.json(ApiResponse.success({ resetToken }, 'Password reset token generated'));
+    await sendPasswordResetEmail({
+      email: user.email,
+      firstName: user.firstName,
+      resetToken,
+    });
+
+    res.json(ApiResponse.success(null, 'Password reset link sent to your email'));
   } catch (error) {
     next(error);
   }
@@ -216,6 +234,18 @@ export const forgotPassword = async (req: AuthRequest, res: Response, next: Next
 export const resetPassword = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { token, password } = req.body;
+
+    if (!token || typeof token !== 'string') {
+      throw ApiError.badRequest('Reset token is required');
+    }
+
+    if (!password || typeof password !== 'string') {
+      throw ApiError.badRequest('Password is required');
+    }
+
+    if (password.length < 6) {
+      throw ApiError.badRequest('Password must be at least 6 characters');
+    }
 
     const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
     const user = await prisma.user.findFirst({

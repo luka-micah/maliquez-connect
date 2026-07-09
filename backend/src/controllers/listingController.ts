@@ -6,6 +6,7 @@ import { LISTING_STATUS } from '../constants/listingStatus.js';
 import { calculatePagination, parsePagination, slugify } from '../utils/helpers.js';
 import { ROLES } from '../constants/roles.js';
 import { invalidateCache } from '../config/redis.js';
+import { sendListingCreatedEmail } from '../services/emailService.js';
 import type { AuthRequest } from '../types/index.js';
 import type { Response, NextFunction } from 'express';
 
@@ -167,6 +168,16 @@ export const createListing = async (req: AuthRequest, res: Response, next: NextF
 
     const listing = await prisma.listing.create({ data: data as any });
     await invalidateCache('listings:*');
+
+    prisma.user.findUnique({ where: { id: req.userId }, select: { email: true, firstName: true } }).then(owner => {
+      if (owner) {
+        sendListingCreatedEmail({
+          email: owner.email,
+          firstName: owner.firstName,
+          listingTitle: listing.title,
+        });
+      }
+    }).catch(() => {});
 
     res.status(201).json(ApiResponse.created(listing, 'Listing created successfully'));
   } catch (error) {
