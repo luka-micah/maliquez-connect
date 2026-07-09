@@ -9,7 +9,7 @@ import type { RegisterInput } from '../../types';
 import { FiUser, FiMail, FiLock, FiPhone, FiEye, FiEyeOff, FiBriefcase } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 
-const baseSchema = z.object({
+const registerSchema = z.object({
   firstName: z.string().min(1, 'First name is required').max(50),
   lastName: z.string().min(1, 'Last name is required').max(50),
   email: z.string().min(1, 'Email is required').email('Invalid email address'),
@@ -17,24 +17,32 @@ const baseSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters'),
   confirmPassword: z.string().min(1, 'Please confirm your password'),
   role: z.enum(['USER', 'PROVIDER']),
+  businessName: z.string().optional(),
+  businessType: z.string().optional(),
   agreeToTerms: z.boolean().refine(val => val === true, 'You must agree to the Terms and Conditions and Privacy Policy'),
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'Passwords do not match',
   path: ['confirmPassword'],
+}).superRefine((data, ctx) => {
+  if (data.role === 'PROVIDER') {
+    if (!data.businessName || data.businessName.trim() === '') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Business name is required',
+        path: ['businessName'],
+      });
+    }
+    if (!data.businessType || data.businessType.trim() === '') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Business type is required',
+        path: ['businessType'],
+      });
+    }
+  }
 });
 
-const providerSchema = z.object({
-  businessName: z.string().min(1, 'Business name is required'),
-  businessType: z.string().min(1, 'Business type is required'),
-});
-
-type BaseSchemaType = z.infer<typeof baseSchema>;
-
-interface RegisterFormData extends BaseSchemaType {
-  businessName?: string;
-  businessType?: string;
-  agreeToTerms: boolean;
-}
+type RegisterFormData = z.infer<typeof registerSchema>;
 
 const termsText = `Terms and Conditions for Maliquez Connect
 Last Updated: 1st June 2026
@@ -238,7 +246,7 @@ const Register = () => {
     watch,
     formState: { errors },
   } = useForm<RegisterFormData>({
-    resolver: zodResolver(baseSchema.or(providerSchema)),
+    resolver: zodResolver(registerSchema),
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -269,13 +277,6 @@ const Register = () => {
         role: data.role,
       };
       if (data.role === 'PROVIDER') {
-        const providerValidation = providerSchema.safeParse(data);
-        if (!providerValidation.success) {
-          const firstError = providerValidation.error.errors[0];
-          toast.error(firstError.message);
-          setSubmitting(false);
-          return;
-        }
         payload.providerProfile = {
           businessName: data.businessName,
           businessType: data.businessType,
