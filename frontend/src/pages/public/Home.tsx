@@ -103,12 +103,12 @@ const sectors: Sector[] = [
   {
     name: 'Education', icon: FiBookOpen, color: 'text-primary-600', gradient: 'from-primary-600 to-primary-700',
     sector: 'EDUCATION', description: 'Schools, tutors, and learning centers', count: '240+',
-    image: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&q=80',
+    image: 'https://res.cloudinary.com/dxx0r7sdm/image/upload/v1783692046/edu5_nvh2oj.jpg',
   },
   {
     name: 'Healthcare', icon: FiHeart, color: 'text-primary-600', gradient: 'from-primary-600 to-primary-700',
     sector: 'HEALTHCARE', description: 'Hospitals, clinics, and wellness', count: '180+',
-    image: 'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=600&q=80',
+    image: 'https://res.cloudinary.com/dxx0r7sdm/image/upload/v1783692045/hel2_lsmvum.jpg',
   },
   {
     name: 'Hospitality', icon: FiHome, color: 'text-primary-600', gradient: 'from-primary-600 to-primary-700',
@@ -118,7 +118,7 @@ const sectors: Sector[] = [
   {
     name: 'Logistics', icon: FiTruck, color: 'text-primary-600', gradient: 'from-primary-600 to-primary-700',
     sector: 'LOGISTICS', description: 'Shipping, freight, and delivery', count: '150+',
-    image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600&q=80',
+    image: 'https://res.cloudinary.com/dxx0r7sdm/image/upload/v1783692051/log2_kekhni.jpg',
   },
 ];
 
@@ -164,19 +164,31 @@ const stats = [
 
 const heroSlides = [
   {
-    image: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1920&q=80',
+    image: 'https://res.cloudinary.com/dxx0r7sdm/image/upload/v1783692062/hel3_tzvgdi.jpg',
     overlay: 'from-primary-900/85 via-primary-800/60 to-transparent',
   },
   {
-    image: 'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=1920&q=80',
+    image: 'https://res.cloudinary.com/dxx0r7sdm/image/upload/v1783692068/edu2_onp3gf.jpg',
     overlay: 'from-primary-900/85 via-primary-800/60 to-transparent',
   },
   {
-    image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1920&q=80',
+    image: 'https://res.cloudinary.com/dxx0r7sdm/image/upload/v1783692054/log1_he67wv.jpg',
     overlay: 'from-primary-900/85 via-primary-800/60 to-transparent',
   },
   {
-    image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1920&q=80',
+    image: 'https://res.cloudinary.com/dxx0r7sdm/image/upload/v1783692052/bus1_iwqu8k.jpg',
+    overlay: 'from-primary-900/85 via-primary-800/60 to-transparent',
+  },
+  {
+    image: 'https://res.cloudinary.com/dxx0r7sdm/image/upload/v1783692059/edu3_f0wyjm.jpg',
+    overlay: 'from-primary-900/85 via-primary-800/60 to-transparent',
+  },
+  {
+    image: 'https://res.cloudinary.com/dxx0r7sdm/image/upload/v1783692061/edu4_vzseh1.jpg',
+    overlay: 'from-primary-900/85 via-primary-800/60 to-transparent',
+  },
+  {
+    image: 'https://res.cloudinary.com/dxx0r7sdm/image/upload/v1783692060/hel4_gxxgoz.jpg',
     overlay: 'from-primary-900/85 via-primary-800/60 to-transparent',
   },
 ];
@@ -337,9 +349,8 @@ const Home = () => {
             <button
               key={i}
               onClick={() => setCurrentSlide(i)}
-              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                i === currentSlide ? 'bg-white w-8' : 'bg-white/40 hover:bg-white/60'
-              }`}
+              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${i === currentSlide ? 'bg-white w-8' : 'bg-white/40 hover:bg-white/60'
+                }`}
               aria-label={`Go to slide ${i + 1}`}
             />
           ))}
@@ -528,7 +539,7 @@ const Home = () => {
       <section className="relative py-24 overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1920&q=80"
+            src="https://res.cloudinary.com/dxx0r7sdm/image/upload/v1783692068/edu1_uvh7kc.jpg"
             alt=""
             className="w-full h-full object-cover"
           />

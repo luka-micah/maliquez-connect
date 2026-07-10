@@ -5,16 +5,16 @@ import { OrganizationJsonLd } from '../../components/seo/JsonLd';
 
 const About = () => (
   <div>
-      <SeoHead
-        title="About Us"
-        description="Learn about Maliquez Connect — the decision intelligence platform helping you find, compare, and choose the best service providers with confidence."
-        canonical="/about"
-      />
-      <OrganizationJsonLd
-        name="Maliquez Connect"
-        description="Decision intelligence platform connecting users with verified service providers."
-        url="https://maliquez.com"
-      />
+    <SeoHead
+      title="About Us"
+      description="Learn about Maliquez Connect — the decision intelligence platform helping you find, compare, and choose the best service providers with confidence."
+      canonical="/about"
+    />
+    <OrganizationJsonLd
+      name="Maliquez Connect"
+      description="Decision intelligence platform connecting users with verified service providers."
+      url="https://maliquez.com"
+    />
     <section className="relative py-24 bg-white overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-primary-100/60 via-white to-primary-50/40" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-200/30 via-transparent to-transparent" />
@@ -60,7 +60,7 @@ const About = () => (
     <section className="relative py-20 overflow-hidden">
       <div className="absolute inset-0">
         <img
-          src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80"
+          src="https://res.cloudinary.com/dxx0r7sdm/image/upload/v1783692074/hel1_ckfhio.jpg"
           alt=""
           className="w-full h-full object-cover"
         />
