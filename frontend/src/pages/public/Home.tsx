@@ -261,7 +261,7 @@ const Home = () => {
         url="https://maliquez.com"
       />
       {/* ─── HERO ─── */}
-      <section className="relative min-h-[90vh] md:min-h-screen flex items-center justify-center overflow-hidden py-16 md:py-0">
+      <section className="relative min-h-[90vh] md:min-h-screen flex items-center justify-center overflow-hidden py-16 md:py-16">
         {heroSlides.map((slide, i) => (
           <div
             key={slide.image}
