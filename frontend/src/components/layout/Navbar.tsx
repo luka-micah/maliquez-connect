@@ -35,12 +35,17 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-8">
-            <Link to="/" className="text-xl font-bold text-primary-600">
-              Maliquez<span className="text-primary-400">Connect</span>
+            <Link to="/" className="block">
+              <img
+                src="https://res.cloudinary.com/dxx0r7sdm/image/upload/v1783956718/name_side-purple_r1bsho.png"
+                alt="Maliquez Connect"
+                className="h-12 md:h-14 w-auto"
+              />
             </Link>
             <div className="hidden md:flex items-center gap-6">
               <Link to="/search" className="text-brand-darkText hover:text-primary-600">Search</Link>
               <Link to="/categories" className="text-brand-darkText hover:text-primary-600">Categories</Link>
+              <Link to="/about" className="text-brand-darkText hover:text-primary-600">About Us</Link>
             </div>
           </div>
 
@@ -95,35 +100,45 @@ const Navbar = () => {
             )}
           </div>
 
-          <button className="md:hidden text-gray-600" onClick={() => setIsOpen(!isOpen)}>
+          <button className="md:hidden p-2 text-gray-600 hover:text-primary-600 rounded-lg hover:bg-gray-50" onClick={() => setIsOpen(!isOpen)} aria-label="Toggle menu">
             {isOpen ? <FiX className="w-6 h-6" /> : <FiMenu className="w-6 h-6" />}
           </button>
         </div>
 
         {isOpen && (
-          <div className="md:hidden pb-4 space-y-3">
-            <form onSubmit={handleSearch}>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search..."
-                className="input-field"
-              />
+          <div className="md:hidden border-t border-gray-100 -mx-4 px-4 pb-4">
+            <form onSubmit={handleSearch} className="pt-4 pb-3">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search schools, hospitals, hotels..."
+                  className="w-full rounded-lg border border-gray-300 pl-10 pr-4 py-2.5 text-sm focus:ring-2 focus:ring-primary-600 focus:border-primary-600 focus:outline-none"
+                />
+                <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-400 w-4 h-4" />
+              </div>
             </form>
-            <Link to="/search" className="block text-brand-darkText py-2">Search</Link>
-            <Link to="/categories" className="block text-brand-darkText py-2">Categories</Link>
-            {isAuthenticated ? (
-              <>
-                <Link to={getDashboardLink()} className="block text-gray-600 py-2">Dashboard</Link>
-                <button onClick={logout} className="block text-red-600 py-2">Logout</button>
-              </>
-            ) : (
-              <>
-                <Link to="/login" className="block text-brand-darkText py-2">Login</Link>
-                <Link to="/register" className="block text-primary-600 py-2 font-medium">Register</Link>
-              </>
-            )}
+            <div className="space-y-1">
+              <Link to="/search" className="block px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-700 rounded-lg text-sm font-medium" onClick={() => setIsOpen(false)}>Search</Link>
+              <Link to="/categories" className="block px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-700 rounded-lg text-sm font-medium" onClick={() => setIsOpen(false)}>Categories</Link>
+              <Link to="/about" className="block px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-700 rounded-lg text-sm font-medium" onClick={() => setIsOpen(false)}>About Us</Link>
+            </div>
+            <div className="border-t border-gray-100 mt-2 pt-2 space-y-1">
+              {isAuthenticated ? (
+                <>
+                  <Link to={getDashboardLink()} className="block px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-700 rounded-lg text-sm font-medium" onClick={() => setIsOpen(false)}>Dashboard</Link>
+                  <button onClick={() => { setIsOpen(false); logout(); }} className="flex items-center gap-2 w-full px-4 py-2.5 text-red-600 hover:bg-red-50 rounded-lg text-sm font-medium">
+                    <FiLogOut className="w-4 h-4" /> Logout
+                  </button>
+                </>
+              ) : (
+                <div className="flex flex-col gap-2 px-4 pt-2">
+                  <Link to="/login" className="block text-center px-4 py-2.5 border border-primary-600 text-primary-600 rounded-lg hover:bg-primary-50 text-sm font-medium" onClick={() => setIsOpen(false)}>Login</Link>
+                  <Link to="/register" className="block text-center px-4 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 text-sm font-medium" onClick={() => setIsOpen(false)}>Get Started</Link>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>

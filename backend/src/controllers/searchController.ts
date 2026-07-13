@@ -140,12 +140,23 @@ export const getTrending = async (_req: AuthRequest, res: Response, next: NextFu
       where: { status: LISTING_STATUS.APPROVED },
       orderBy: [{ reviewCount: 'desc' }, { averageRating: 'desc' }],
       select: {
+        id: true,
         title: true,
         slug: true,
         sector: true,
+        verified: true,
         averageRating: true,
         reviewCount: true,
         images: true,
+        pricing: true,
+        location: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
       },
       take: 10,
     });

@@ -131,49 +131,85 @@ const AdminCategories = () => {
             No categories yet. Click "Create Category" to add one.
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Name</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Description</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
-                  <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {categories.map((cat: Category) => (
-                  <tr key={cat.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900">{cat.name}</td>
-                    <td className="px-4 py-3 text-sm text-gray-500 max-w-[300px] truncate">
-                      {cat.description || '—'}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`badge ${cat.status !== 'INACTIVE' ? 'badge-success' : 'badge-danger'}`}>
-                        {cat.status || 'ACTIVE'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => openEdit(cat)}
-                          className="btn-sm text-primary-600 hover:text-primary-800"
-                        >
-                          <FiEdit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => setDeleteConfirm(cat)}
-                          className="btn-sm text-red-600 hover:text-red-800"
-                        >
-                          <FiTrash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
+          <>
+            {/* Desktop table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Name</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Description</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
+                    <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {categories.map((cat: Category) => (
+                    <tr key={cat.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-sm font-medium text-gray-900">{cat.name}</td>
+                      <td className="px-4 py-3 text-sm text-gray-500 max-w-[300px] truncate">
+                        {cat.description || '—'}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`badge ${cat.status !== 'INACTIVE' ? 'badge-success' : 'badge-danger'}`}>
+                          {cat.status || 'ACTIVE'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => openEdit(cat)}
+                            className="btn-sm text-primary-600 hover:text-primary-800"
+                          >
+                            <FiEdit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => setDeleteConfirm(cat)}
+                            className="btn-sm text-red-600 hover:text-red-800"
+                          >
+                            <FiTrash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile cards */}
+            <div className="md:hidden divide-y divide-gray-200">
+              {categories.map((cat: Category) => (
+                <div key={cat.id} className="p-4 space-y-2.5">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-gray-900">{cat.name}</p>
+                      {cat.description && (
+                        <p className="text-xs text-gray-500 line-clamp-2 mt-0.5">{cat.description}</p>
+                      )}
+                    </div>
+                    <span className={`badge flex-shrink-0 ${cat.status !== 'INACTIVE' ? 'badge-success' : 'badge-danger'}`}>
+                      {cat.status || 'ACTIVE'}
+                    </span>
+                  </div>
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      onClick={() => openEdit(cat)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-primary-600 bg-primary-50 hover:bg-primary-100 transition-colors"
+                    >
+                      <FiEdit2 className="w-3.5 h-3.5" /> Edit
+                    </button>
+                    <button
+                      onClick={() => setDeleteConfirm(cat)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 transition-colors"
+                    >
+                      <FiTrash2 className="w-3.5 h-3.5" /> Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
 

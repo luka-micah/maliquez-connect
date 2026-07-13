@@ -36,6 +36,7 @@ import AdminListings from '../pages/admin/AdminListings';
 import AdminCategories from '../pages/admin/AdminCategories';
 import AdminReviews from '../pages/admin/AdminReviews';
 import AdminReports from '../pages/admin/AdminReports';
+import AdminProviderAnalytics from '../pages/admin/AdminProviderAnalytics';
 
 const AppRoutes = () => (
   <Routes>
@@ -72,6 +73,7 @@ const AppRoutes = () => (
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
       <Route path="/admin/users" element={<AdminUsers />} />
       <Route path="/admin/providers" element={<AdminProviders />} />
+      <Route path="/admin/providers/analytics/:id" element={<AdminProviderAnalytics />} />
       <Route path="/admin/listings" element={<AdminListings />} />
       <Route path="/admin/categories" element={<AdminCategories />} />
       <Route path="/admin/reviews" element={<AdminReviews />} />

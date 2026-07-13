@@ -121,61 +121,109 @@ const AdminUsers = () => {
         ) : users.length === 0 ? (
           <div className="p-8 text-center text-gray-500">No users found.</div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
-                  <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {users.map((user: User) => (
-                  <tr key={user.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900">{`${user.firstName} ${user.lastName}`}</td>
-                    <td className="px-4 py-3 text-sm text-gray-500">{user.email}</td>
-                    <td className="px-4 py-3">
+          <>
+            {/* Desktop table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
+                    <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {users.map((user: User) => (
+                    <tr key={user.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-sm font-medium text-gray-900">{`${user.firstName} ${user.lastName}`}</td>
+                      <td className="px-4 py-3 text-sm text-gray-500">{user.email}</td>
+                      <td className="px-4 py-3">
+                        <span className={`badge ${user.role === 'ADMIN' ? 'badge-danger' : user.role === 'PROVIDER' ? 'badge-warning' : 'badge-info'}`}>
+                          {user.role}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`badge ${user.status === 'ACTIVE' ? 'badge-success' : 'badge-danger'}`}>
+                          {user.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-500">{formatDate(user.createdAt)}</td>
+                      <td className="px-4 py-3 text-right">
+                        <button
+                          onClick={() =>
+                            updateStatusMutation.mutate({
+                              id: user.id,
+                              status: user.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE',
+                            })
+                          }
+                          disabled={updateStatusMutation.isPending}
+                          className={`btn-sm flex items-center gap-1 ml-auto ${
+                            user.status === 'ACTIVE'
+                              ? 'text-red-600 hover:text-red-800'
+                              : 'text-green-600 hover:text-green-800'
+                          }`}
+                        >
+                          {user.status === 'ACTIVE' ? (
+                            <><FiToggleLeft className="w-4 h-4" /> Suspend</>
+                          ) : (
+                            <><FiToggleRight className="w-4 h-4" /> Activate</>
+                          )}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile cards */}
+            <div className="md:hidden divide-y divide-gray-200">
+              {users.map((user: User) => (
+                <div key={user.id} className="p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-sm font-semibold text-gray-900 truncate">{`${user.firstName} ${user.lastName}`}</h3>
+                      <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                    </div>
+                    <div className="flex gap-1.5 flex-shrink-0">
                       <span className={`badge ${user.role === 'ADMIN' ? 'badge-danger' : user.role === 'PROVIDER' ? 'badge-warning' : 'badge-info'}`}>
                         {user.role}
                       </span>
-                    </td>
-                    <td className="px-4 py-3">
                       <span className={`badge ${user.status === 'ACTIVE' ? 'badge-success' : 'badge-danger'}`}>
                         {user.status}
                       </span>
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-500">{formatDate(user.createdAt)}</td>
-                    <td className="px-4 py-3 text-right">
-                      <button
-                        onClick={() =>
-                          updateStatusMutation.mutate({
-                            id: user.id,
-                            status: user.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE',
-                          })
-                        }
-                        disabled={updateStatusMutation.isPending}
-                        className={`btn-sm flex items-center gap-1 ml-auto ${
-                          user.status === 'ACTIVE'
-                            ? 'text-red-600 hover:text-red-800'
-                            : 'text-green-600 hover:text-green-800'
-                        }`}
-                      >
-                        {user.status === 'ACTIVE' ? (
-                          <><FiToggleLeft className="w-4 h-4" /> Suspend</>
-                        ) : (
-                          <><FiToggleRight className="w-4 h-4" /> Activate</>
-                        )}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-400">{formatDate(user.createdAt)}</span>
+                    <button
+                      onClick={() =>
+                        updateStatusMutation.mutate({
+                          id: user.id,
+                          status: user.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE',
+                        })
+                      }
+                      disabled={updateStatusMutation.isPending}
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                        user.status === 'ACTIVE'
+                          ? 'text-red-600 bg-red-50 hover:bg-red-100'
+                          : 'text-green-600 bg-green-50 hover:bg-green-100'
+                      }`}
+                    >
+                      {user.status === 'ACTIVE' ? (
+                        <><FiToggleLeft className="w-3.5 h-3.5" /> Suspend</>
+                      ) : (
+                        <><FiToggleRight className="w-3.5 h-3.5" /> Activate</>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
 

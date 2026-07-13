@@ -128,62 +128,111 @@ const AdminListings = () => {
         ) : listings.length === 0 ? (
           <div className="p-8 text-center text-gray-500">No listings found.</div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Title</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Category</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Owner</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Rating</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Date</th>
-                  <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {listings.map((listing: Listing) => (
-                  <tr key={listing.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900 max-w-[200px] truncate">
-                      {listing.title}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-500">{typeof listing.category === 'object' ? listing.category?.name : listing.category || '—'}</td>
-                    <td className="px-4 py-3 text-sm text-gray-500">{typeof listing.owner === 'object' ? `${listing.owner?.firstName} ${listing.owner?.lastName}` : listing.owner || '—'}</td>
-                    <td className="px-4 py-3">{statusBadge(listing.status)}</td>
-                    <td className="px-4 py-3 text-sm text-gray-500">
-                      <span className="flex items-center gap-1">
-                        <FiStar className="w-3.5 h-3.5 text-[#F4B400]" />
-                        {listing.averageRating?.toFixed(1) || '—'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-500">{formatDate(listing.createdAt)}</td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        {listing.status === 'PENDING' && (
-                          <button
-                            onClick={() => approveMutation.mutate(listing.id)}
-                            disabled={approveMutation.isPending}
-                            className="btn-sm text-green-600 hover:text-green-800 flex items-center gap-1"
-                          >
-                            <FiCheckCircle className="w-4 h-4" /> Approve
-                          </button>
-                        )}
-                        {listing.status !== 'SUSPENDED' && (
-                          <button
-                            onClick={() => suspendMutation.mutate(listing.id)}
-                            disabled={suspendMutation.isPending}
-                            className="btn-sm text-red-600 hover:text-red-800 flex items-center gap-1"
-                          >
-                            <FiXCircle className="w-4 h-4" /> Suspend
-                          </button>
-                        )}
-                      </div>
-                    </td>
+          <>
+            {/* Desktop table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Title</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Category</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Owner</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Rating</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Date</th>
+                    <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {listings.map((listing: Listing) => (
+                    <tr key={listing.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-sm font-medium text-gray-900 max-w-[200px] truncate">
+                        {listing.title}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-500">{typeof listing.category === 'object' ? listing.category?.name : listing.category || '—'}</td>
+                      <td className="px-4 py-3 text-sm text-gray-500">{typeof listing.owner === 'object' ? `${listing.owner?.firstName} ${listing.owner?.lastName}` : listing.owner || '—'}</td>
+                      <td className="px-4 py-3">{statusBadge(listing.status)}</td>
+                      <td className="px-4 py-3 text-sm text-gray-500">
+                        <span className="flex items-center gap-1">
+                          <FiStar className="w-3.5 h-3.5 text-[#F4B400]" />
+                          {listing.averageRating?.toFixed(1) || '—'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-500">{formatDate(listing.createdAt)}</td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          {listing.status === 'PENDING' && (
+                            <button
+                              onClick={() => approveMutation.mutate(listing.id)}
+                              disabled={approveMutation.isPending}
+                              className="btn-sm text-green-600 hover:text-green-800 flex items-center gap-1"
+                            >
+                              <FiCheckCircle className="w-4 h-4" /> Approve
+                            </button>
+                          )}
+                          {listing.status !== 'SUSPENDED' && (
+                            <button
+                              onClick={() => suspendMutation.mutate(listing.id)}
+                              disabled={suspendMutation.isPending}
+                              className="btn-sm text-red-600 hover:text-red-800 flex items-center gap-1"
+                            >
+                              <FiXCircle className="w-4 h-4" /> Suspend
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile cards */}
+            <div className="md:hidden divide-y divide-gray-200">
+              {listings.map((listing: Listing) => (
+                <div key={listing.id} className="p-4 space-y-2.5">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-gray-900 truncate">{listing.title}</p>
+                      <p className="text-xs text-gray-500 truncate">
+                        {typeof listing.category === 'object' ? listing.category?.name : listing.category || '—'}
+                        {' · '}
+                        {typeof listing.owner === 'object' ? `${listing.owner?.firstName} ${listing.owner?.lastName}` : listing.owner || '—'}
+                      </p>
+                    </div>
+                    {statusBadge(listing.status)}
+                  </div>
+                  <div className="flex items-center gap-3 text-xs text-gray-500">
+                    <span className="flex items-center gap-1">
+                      <FiStar className="w-3.5 h-3.5 text-[#F4B400]" />
+                      {listing.averageRating?.toFixed(1) || '—'}
+                    </span>
+                    <span>{formatDate(listing.createdAt)}</span>
+                  </div>
+                  <div className="flex gap-2 pt-1">
+                    {listing.status === 'PENDING' && (
+                      <button
+                        onClick={() => approveMutation.mutate(listing.id)}
+                        disabled={approveMutation.isPending}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-green-600 bg-green-50 hover:bg-green-100 transition-colors"
+                      >
+                        <FiCheckCircle className="w-3.5 h-3.5" /> Approve
+                      </button>
+                    )}
+                    {listing.status !== 'SUSPENDED' && (
+                      <button
+                        onClick={() => suspendMutation.mutate(listing.id)}
+                        disabled={suspendMutation.isPending}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 transition-colors"
+                      >
+                        <FiXCircle className="w-3.5 h-3.5" /> Suspend
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
 

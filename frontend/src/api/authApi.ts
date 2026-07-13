@@ -123,6 +123,13 @@ export const recommendationApi = {
     api.get('/recommendations', { params }),
   getByBudget: (params?: { min?: number; max?: number } & PaginationParams): Promise<AxiosResponse<ApiResponse<Listing[]>>> =>
     api.get('/recommendations/by-budget', { params }),
+  getPreferences: (): Promise<AxiosResponse<ApiResponse<{
+    categories: { id: string; name: string }[];
+    sectors: { name: string }[];
+    priceRange: { min: number; max: number | null } | null;
+    recentSearches: string[];
+  }>>> =>
+    api.get('/recommendations/preferences'),
 };
 
 export const notificationApi = {

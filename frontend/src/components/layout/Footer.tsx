@@ -6,9 +6,11 @@ const Footer = () => (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         <div>
-          <h3 className="text-white text-lg font-bold mb-4">
-            Maliquez<span className="text-primary-200">Connect</span>
-          </h3>
+            <img
+              src="https://res.cloudinary.com/dxx0r7sdm/image/upload/v1783956717/side-_white_bsbuy4.png"
+              alt="Maliquez Connect"
+              className="h-20 w-auto mb-4"
+            />
           <p className="text-sm text-white/80">Discover. Compare. Decide. Your decision intelligence platform.</p>
           <div className="flex items-center gap-3 mt-6">
             <a href="#" aria-label="Facebook" className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-primary-600 transition-colors">

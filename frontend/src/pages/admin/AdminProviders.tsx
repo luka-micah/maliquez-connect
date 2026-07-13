@@ -79,47 +79,81 @@ const AdminProviders = () => {
         ) : providers.length === 0 ? (
           <div className="p-8 text-center text-gray-500">No providers found.</div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Business Name</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Owner Name</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Email</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Verification</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Date</th>
-                  <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {providers.map((provider: ProviderListItem) => (
-                  <tr key={provider.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900">{provider.businessName || '—'}</td>
-                    <td className="px-4 py-3 text-sm text-gray-700">{provider.name}</td>
-                    <td className="px-4 py-3 text-sm text-gray-500">{provider.email}</td>
-                    <td className="px-4 py-3">
-                      <span className={`badge ${
-                        provider.verificationStatus === 'VERIFIED' ? 'badge-success'
-                        : provider.verificationStatus === 'REJECTED' ? 'badge-danger'
-                        : 'badge-warning'
-                      }`}>
-                        {provider.verificationStatus || 'PENDING'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-500">{formatDate(provider.createdAt)}</td>
-                    <td className="px-4 py-3 text-right">
-                      <Link
-                        to={`/admin/providers/analytics/${provider.id}`}
-                        className="btn-sm inline-flex items-center gap-1 text-primary-600 hover:text-primary-800"
-                      >
-                        <FiEye className="w-4 h-4" /> View Analytics
-                      </Link>
-                    </td>
+          <>
+            {/* Desktop table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Business Name</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Owner Name</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Email</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Verification</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Date</th>
+                    <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {providers.map((provider: ProviderListItem) => (
+                    <tr key={provider.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-sm font-medium text-gray-900">{provider.businessName || '—'}</td>
+                      <td className="px-4 py-3 text-sm text-gray-700">{provider.name}</td>
+                      <td className="px-4 py-3 text-sm text-gray-500">{provider.email}</td>
+                      <td className="px-4 py-3">
+                        <span className={`badge ${
+                          provider.verificationStatus === 'VERIFIED' ? 'badge-success'
+                          : provider.verificationStatus === 'REJECTED' ? 'badge-danger'
+                          : 'badge-warning'
+                        }`}>
+                          {provider.verificationStatus || 'PENDING'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-500">{formatDate(provider.createdAt)}</td>
+                      <td className="px-4 py-3 text-right">
+                        <Link
+                          to={`/admin/providers/analytics/${provider.id}`}
+                          className="btn-sm inline-flex items-center gap-1 text-primary-600 hover:text-primary-800"
+                        >
+                          <FiEye className="w-4 h-4" /> View Analytics
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile cards */}
+            <div className="md:hidden divide-y divide-gray-200">
+              {providers.map((provider: ProviderListItem) => (
+                <div key={provider.id} className="p-4 space-y-2.5">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-gray-900 truncate">{provider.businessName || '—'}</p>
+                      <p className="text-xs text-gray-500">{provider.name}</p>
+                    </div>
+                    <span className={`badge flex-shrink-0 ${
+                      provider.verificationStatus === 'VERIFIED' ? 'badge-success'
+                      : provider.verificationStatus === 'REJECTED' ? 'badge-danger'
+                      : 'badge-warning'
+                    }`}>
+                      {provider.verificationStatus || 'PENDING'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 truncate">{provider.email}</p>
+                  <div className="flex items-center justify-between pt-1">
+                    <span className="text-xs text-gray-400">{formatDate(provider.createdAt)}</span>
+                    <Link
+                      to={`/admin/providers/analytics/${provider.id}`}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-primary-600 bg-primary-50 hover:bg-primary-100 transition-colors"
+                    >
+                      <FiEye className="w-3.5 h-3.5" /> View Analytics
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
 

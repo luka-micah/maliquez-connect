@@ -155,6 +155,11 @@ export interface Recommendation {
   createdAt: string;
 }
 
+export interface RecommendationListing extends Listing {
+  recommendationScore?: number;
+  matchReasons?: string[];
+}
+
 export interface SearchHistory {
   id: string;
   user: string;

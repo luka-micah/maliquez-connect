@@ -151,10 +151,10 @@ const ListingDetails = () => {
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div className="lg:col-span-2 space-y-6 order-2 lg:order-1">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{listing.title}</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{listing.title}</h1>
             <div className="flex items-center gap-3 mt-2">
               <span className="px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm font-medium">
                 {listing.sector}
@@ -275,8 +275,8 @@ const ListingDetails = () => {
           </div>
         </div>
 
-        <div className="space-y-4">
-          <div className="card p-5 space-y-4">
+        <div className="space-y-4 order-1 lg:order-2">
+          <div className="card p-4 md:p-5 space-y-4">
             {listing.pricing?.minimum && (
               <div>
                 <p className="text-sm text-gray-500">Starting from</p>
@@ -321,32 +321,34 @@ const ListingDetails = () => {
             </div>
           </div>
 
-          <button
-            onClick={handleAddToCompare}
-            className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 font-medium transition-colors ${
-              compared
-                ? 'border-primary-600 bg-primary-50 text-primary-700'
-                : 'border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white'
-            }`}
-          >
-            <FiPlus className="w-5 h-5" />
-            {compared ? 'Added to Compare' : 'Add to Compare'}
-          </button>
-
-          {isAuthenticated && (
+          <div className="flex flex-col gap-3">
             <button
-              onClick={() => addFavoriteMutation.mutate()}
-              disabled={addFavoriteMutation.isPending}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 border-red-200 text-red-500 hover:bg-red-50 font-medium transition-colors disabled:opacity-50"
+              onClick={handleAddToCompare}
+              className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 font-medium text-sm md:text-base transition-colors ${
+                compared
+                  ? 'border-primary-600 bg-primary-50 text-primary-700'
+                  : 'border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white'
+              }`}
             >
-              <FiHeart className="w-5 h-5" />
-              {addFavoriteMutation.isPending ? 'Adding...' : 'Add to Favorites'}
+              <FiPlus className="w-4 h-4 md:w-5 md:h-5" />
+              {compared ? 'Added to Compare' : 'Add to Compare'}
             </button>
-          )}
 
-          <button className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 font-medium transition-colors">
-            <FiShare2 className="w-5 h-5" /> Share
-          </button>
+            {isAuthenticated && (
+              <button
+                onClick={() => addFavoriteMutation.mutate()}
+                disabled={addFavoriteMutation.isPending}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 border-red-200 text-red-500 hover:bg-red-50 font-medium text-sm md:text-base transition-colors disabled:opacity-50"
+              >
+                <FiHeart className="w-4 h-4 md:w-5 md:h-5" />
+                {addFavoriteMutation.isPending ? 'Adding...' : 'Add to Favorites'}
+              </button>
+            )}
+
+            <button className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 font-medium text-sm md:text-base transition-colors">
+              <FiShare2 className="w-4 h-4 md:w-5 md:h-5" /> Share
+            </button>
+          </div>
         </div>
       </div>
     </div>

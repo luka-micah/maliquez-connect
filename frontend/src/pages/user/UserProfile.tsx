@@ -109,7 +109,7 @@ const UserProfile = () => {
                 <FiUser className="w-10 h-10 text-primary-600" />
               )}
             </div>
-            <button className="absolute -bottom-1 -right-1 p-1.5 bg-white rounded-full border border-gray-300 text-gray-500 hover:text-gray-700 shadow-sm">
+            <button className="absolute bottom-0 right-0 p-1.5 bg-white rounded-full border border-gray-300 text-gray-500 hover:text-gray-700 shadow-sm">
               <FiCamera className="w-4 h-4" />
             </button>
           </div>
