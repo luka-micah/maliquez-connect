@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, type ReactNode } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCredentials, setUser, logout as logoutAction, setLoading } from '../store/slices/authSlice';
+import { setCredentials, restoreAuth, setUser, logout as logoutAction, setLoading } from '../store/slices/authSlice';
 import { authApi } from '../api/authApi';
 import type { User, LoginInput, RegisterInput, ApiResponse } from '../types';
 import type { RootState } from '../store';
@@ -26,16 +26,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const { user, isAuthenticated, loading } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
+    const accessToken = localStorage.getItem('accessToken');
+    const refreshToken = localStorage.getItem('refreshToken');
+    
+    if (accessToken && refreshToken) {
       dispatch(setLoading(true));
       authApi.getProfile()
         .then((res) => {
-          dispatch(setUser(res.data.data));
+          dispatch(restoreAuth({
+            user: res.data.data,
+            accessToken,
+            refreshToken,
+          }));
         })
         .catch(() => {
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
+          dispatch(setLoading(false));
         })
         .finally(() => dispatch(setLoading(false)));
     } else {

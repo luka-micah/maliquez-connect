@@ -285,9 +285,25 @@ const Register = () => {
         };
       }
       payload.subscribedToNewsletter = data.subscribedToNewsletter ?? false;
-      await registerUser(payload as unknown as RegisterInput);
+      const response = await registerUser(payload as unknown as RegisterInput);
       toast.success('Account created successfully!');
-      navigate('/', { replace: true });
+      
+      // Determine redirect path based on user role
+      let redirectPath = '/';
+      switch (response.data.user.role) {
+        case 'ADMIN':
+          redirectPath = '/admin/dashboard';
+          break;
+        case 'PROVIDER':
+          redirectPath = '/provider/dashboard';
+          break;
+        case 'USER':
+        default:
+          redirectPath = '/dashboard';
+          break;
+      }
+      
+      navigate(redirectPath, { replace: true });
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: { message?: string } } };
       const message = axiosErr.response?.data?.message || 'Registration failed. Please try again.';

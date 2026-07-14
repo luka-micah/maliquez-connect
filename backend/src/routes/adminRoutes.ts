@@ -2,7 +2,7 @@ import { Router } from 'express';
 import {
   getUsers, getProviders, getAdminListings,
   approveListing, suspendListing, updateUserStatus,
-  moderateReview, getPendingListings,
+  updateProviderVerification, moderateReview, getPendingListings,
   getAdminDashboard, getProviderAnalytics,
 } from '../controllers/adminController.js';
 import { authenticate, authorize } from '../middlewares/auth.js';
@@ -20,6 +20,7 @@ router.get('/listings/pending', getPendingListings);
 router.put('/listings/:id/approve', approveListing);
 router.put('/listings/:id/suspend', suspendListing);
 router.put('/users/:id/status', updateUserStatus);
+router.put('/providers/:id/verify', updateProviderVerification);
 router.put('/reviews/:id/moderate', moderateReview);
 router.get('/providers/:id/analytics', getProviderAnalytics);
 

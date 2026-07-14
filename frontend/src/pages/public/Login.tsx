@@ -41,9 +41,28 @@ const Login = () => {
   const onSubmit = async (data: LoginFormData) => {
     setSubmitting(true);
     try {
-      await login(data as unknown as LoginInput);
+      const response = await login(data as unknown as LoginInput);
       toast.success('Welcome back!');
-      navigate(from, { replace: true });
+      
+      // Determine redirect path based on user role
+      let redirectPath = from;
+      if (from === '/') {
+        // If from is root, redirect to appropriate dashboard
+        switch (response.data.user.role) {
+          case 'ADMIN':
+            redirectPath = '/admin/dashboard';
+            break;
+          case 'PROVIDER':
+            redirectPath = '/provider/dashboard';
+            break;
+          case 'USER':
+          default:
+            redirectPath = '/dashboard';
+            break;
+        }
+      }
+      
+      navigate(redirectPath, { replace: true });
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: { message?: string } } };
       const message = axiosErr.response?.data?.message || 'Invalid email or password';

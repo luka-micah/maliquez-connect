@@ -23,6 +23,12 @@ interface SetCredentialsPayload {
   refreshToken: string;
 }
 
+interface RestoreAuthPayload {
+  user: User;
+  accessToken: string;
+  refreshToken: string;
+}
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -35,6 +41,13 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
+    },
+    restoreAuth: (state, action: PayloadAction<RestoreAuthPayload>) => {
+      const { user, accessToken, refreshToken } = action.payload;
+      state.user = user;
+      state.accessToken = accessToken;
+      state.refreshToken = refreshToken;
+      state.isAuthenticated = true;
     },
     setUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
@@ -53,5 +66,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setCredentials, setUser, logout, setLoading } = authSlice.actions;
+export const { setCredentials, restoreAuth, setUser, logout, setLoading } = authSlice.actions;
 export default authSlice.reducer;

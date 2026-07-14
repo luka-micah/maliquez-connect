@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import SeoHead from '../../components/seo/SeoHead';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { AxiosResponse } from 'axios';
 import { adminApi } from '../../api/authApi';
 import Pagination from '../../components/common/Pagination';
-import { FiEye, FiAlertCircle } from 'react-icons/fi';
+import { FiEye, FiAlertCircle, FiCheckCircle, FiXCircle, FiClock } from 'react-icons/fi';
 import { ApiResponse, User, Pagination as PaginationType } from '../../types';
 
 const verificationOptions: string[] = ['', 'PENDING', 'VERIFIED', 'REJECTED'];
@@ -27,6 +27,11 @@ interface AdminProvidersQueryResult {
 const AdminProviders = () => {
   const [page, setPage] = useState<number>(1);
   const [verificationFilter, setVerificationFilter] = useState<string>('');
+  const [selectedProviderId, setSelectedProviderId] = useState<string | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<string>('');
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  
+  const queryClient = useQueryClient();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['adminProviders', page, verificationFilter],
@@ -34,10 +39,56 @@ const AdminProviders = () => {
       adminApi.getProviders({ page, limit: 10, verificationStatus: verificationFilter || undefined }),
   });
 
-  const providers = (data?.data?.data || []) as ProviderListItem[];
+  const verificationMutation = useMutation({
+    mutationFn: ({ providerId, status }: { providerId: string; status: string }) =>
+      adminApi.verifyProvider(providerId, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['adminProviders'] });
+      setIsModalOpen(false);
+      setSelectedProviderId(null);
+      setSelectedStatus('');
+    },
+    onError: (error) => {
+      console.error('Failed to update provider verification:', error);
+    },
+  });
+
+  const rawProviders = (data?.data?.data || []) as any[];
+  const providers = rawProviders.map((provider) => ({
+    id: provider.id,
+    businessName: provider.providerProfile?.businessName,
+    name: `${provider.firstName} ${provider.lastName}`,
+    email: provider.email,
+    verificationStatus: provider.providerProfile?.verificationStatus,
+    createdAt: provider.createdAt,
+  })) as ProviderListItem[];
   const pagination = (data?.data?.pagination || { page: 1 }) as PaginationType;
 
+
   const formatDate = (d: string): string => new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+
+  const handleVerificationClick = (providerId: string, currentStatus: string) => {
+    setSelectedProviderId(providerId);
+    setSelectedStatus(currentStatus || 'PENDING');
+    setIsModalOpen(true);
+  };
+
+  const handleConfirmVerification = () => {
+    if (selectedProviderId && selectedStatus) {
+      verificationMutation.mutate({ providerId: selectedProviderId, status: selectedStatus });
+    }
+  };
+
+  const getVerificationIcon = (status?: string) => {
+    switch (status) {
+      case 'VERIFIED':
+        return <FiCheckCircle className="w-4 h-4 text-green-600" />;
+      case 'REJECTED':
+        return <FiXCircle className="w-4 h-4 text-red-600" />;
+      default:
+        return <FiClock className="w-4 h-4 text-yellow-600" />;
+    }
+  };
 
   if (error) {
     return (
@@ -100,13 +151,17 @@ const AdminProviders = () => {
                       <td className="px-4 py-3 text-sm text-gray-700">{provider.name}</td>
                       <td className="px-4 py-3 text-sm text-gray-500">{provider.email}</td>
                       <td className="px-4 py-3">
-                        <span className={`badge ${
-                          provider.verificationStatus === 'VERIFIED' ? 'badge-success'
-                          : provider.verificationStatus === 'REJECTED' ? 'badge-danger'
-                          : 'badge-warning'
-                        }`}>
+                        <button
+                          onClick={() => handleVerificationClick(provider.id, provider.verificationStatus || '')}
+                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                            provider.verificationStatus === 'VERIFIED' ? 'badge badge-success'
+                            : provider.verificationStatus === 'REJECTED' ? 'badge badge-danger'
+                            : 'badge badge-warning'
+                          } hover:opacity-80 cursor-pointer`}
+                        >
+                          {getVerificationIcon(provider.verificationStatus)}
                           {provider.verificationStatus || 'PENDING'}
-                        </span>
+                        </button>
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-500">{formatDate(provider.createdAt)}</td>
                       <td className="px-4 py-3 text-right">
@@ -132,13 +187,17 @@ const AdminProviders = () => {
                       <p className="text-sm font-semibold text-gray-900 truncate">{provider.businessName || '—'}</p>
                       <p className="text-xs text-gray-500">{provider.name}</p>
                     </div>
-                    <span className={`badge flex-shrink-0 ${
-                      provider.verificationStatus === 'VERIFIED' ? 'badge-success'
-                      : provider.verificationStatus === 'REJECTED' ? 'badge-danger'
-                      : 'badge-warning'
-                    }`}>
+                    <button
+                      onClick={() => handleVerificationClick(provider.id, provider.verificationStatus || '')}
+                      className={`badge flex-shrink-0 inline-flex items-center gap-1 ${
+                        provider.verificationStatus === 'VERIFIED' ? 'badge-success'
+                        : provider.verificationStatus === 'REJECTED' ? 'badge-danger'
+                        : 'badge-warning'
+                      } cursor-pointer hover:opacity-80`}
+                    >
+                      {getVerificationIcon(provider.verificationStatus)}
                       {provider.verificationStatus || 'PENDING'}
-                    </span>
+                    </button>
                   </div>
                   <p className="text-xs text-gray-500 truncate">{provider.email}</p>
                   <div className="flex items-center justify-between pt-1">
@@ -158,6 +217,52 @@ const AdminProviders = () => {
       </div>
 
       <Pagination pagination={pagination} onPageChange={setPage} />
+
+      {/* Verification Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Change Verification Status</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Verification Status
+                </label>
+                <select
+                  value={selectedStatus}
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                  className="input-field w-full"
+                >
+                  {verificationOptions.slice(1).map((status: string) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setSelectedProviderId(null);
+                }}
+                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                disabled={verificationMutation.isPending}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmVerification}
+                className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50"
+                disabled={verificationMutation.isPending}
+              >
+                {verificationMutation.isPending ? 'Updating...' : 'Update'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

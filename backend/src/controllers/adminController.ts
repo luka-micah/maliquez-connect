@@ -278,6 +278,47 @@ export const getAdminDashboard = async (_req: AuthRequest, res: Response, next: 
   }
 };
 
+export const updateProviderVerification = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { verificationStatus } = req.body;
+
+    const provider = await prisma.user.findUnique({
+      where: { id: req.params.id },
+    });
+
+    if (!provider || provider.role !== ROLES.PROVIDER) {
+      throw ApiError.notFound('Provider not found');
+    }
+
+    const currentProfile = provider.providerProfile as Record<string, unknown> | null || {};
+    
+    const updated = await prisma.user.update({
+      where: { id: req.params.id },
+      data: {
+        providerProfile: {
+          ...currentProfile,
+          verificationStatus,
+        },
+      },
+    });
+
+    await prisma.notification.create({
+      data: {
+        user: { connect: { id: provider.id } },
+        title: 'Verification Status Updated',
+        message: `Your provider verification status has been updated to ${verificationStatus}`,
+        type: 'APPROVAL',
+        referenceId: provider.id,
+        referenceModel: 'User',
+      },
+    });
+
+    res.json(ApiResponse.success(updated, `Provider verification updated to ${verificationStatus}`));
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getProviderAnalytics = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     const userId = req.params.id || req.userId;
