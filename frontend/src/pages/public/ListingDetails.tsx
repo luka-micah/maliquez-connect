@@ -1,25 +1,19 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 import { AxiosResponse } from 'axios';
-import { listingApi, reviewApi, favoriteApi } from '../../api/authApi';
+import { listingApi, reviewApi, favoriteApi, chatApi } from '../../api/authApi';
 import StarRating from '../../components/common/StarRating';
 import ReviewCard from '../../components/common/ReviewCard';
 import SeoHead from '../../components/seo/SeoHead';
 import { LocalBusinessJsonLd, BreadcrumbJsonLd } from '../../components/seo/JsonLd';
 import {
   FiStar, FiMapPin, FiPhone, FiMail, FiGlobe, FiClock, FiCheck,
-  FiPlus, FiHeart, FiArrowLeft, FiShare2,
+  FiPlus, FiHeart, FiArrowLeft, FiShare2, FiSend,
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { ApiResponse, Listing, Review } from '../../types';
-
-interface RootState {
-  auth: {
-    isAuthenticated: boolean;
-  };
-}
 
 interface ReviewsQueryResult {
   reviews?: Review[];
@@ -27,9 +21,13 @@ interface ReviewsQueryResult {
 
 const ListingDetails = () => {
   const { id } = useParams<{ id: string }>();
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated, user } = useSelector((state: any) => state.auth);
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<string>('reviews');
   const [compared, setCompared] = useState<boolean>(false);
+  const [rating, setRating] = useState<number>(0);
+  const [reviewText, setReviewText] = useState<string>('');
+  const queryClient = useQueryClient();
 
   const { data: listingRes, isLoading, error } = useQuery({
     queryKey: ['listing', id],
@@ -53,6 +51,7 @@ const ListingDetails = () => {
   const listing: Listing | undefined = listingRes?.data?.data;
   const reviews: Review[] = reviewsRes?.data?.data || [];
   const heroImage: string = listing?.images?.[0] || 'https://via.placeholder.com/1200x500?text=No+Image';
+  const listingOwnerId = listing ? (typeof listing.owner === 'object' ? listing.owner.id : listing.owner) : null;
   const listingSlug = listing?.slug || listing?.title?.toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_]+/g, '-').replace(/^-+|-+$/g, '') || id;
 
   const handleAddToCompare = () => {
@@ -76,6 +75,20 @@ const ListingDetails = () => {
     mutationFn: () => favoriteApi.add(id!),
     onSuccess: () => toast.success('Added to favorites'),
     onError: () => toast.error('Failed to add to favorites'),
+  });
+
+  const reviewMutation = useMutation<any, any, void>({
+    mutationFn: () => reviewApi.create({ listing: id!, rating, review: reviewText }),
+    onSuccess: () => {
+      toast.success('Review submitted');
+      setRating(0);
+      setReviewText('');
+      if (id) {
+        queryClient.invalidateQueries({ queryKey: ['listing-reviews', id] });
+        queryClient.invalidateQueries({ queryKey: ['listing', id] });
+      }
+    },
+    onError: () => toast.error('Failed to submit review'),
   });
 
   if (isLoading) {
@@ -221,6 +234,43 @@ const ListingDetails = () => {
             <div className="py-6">
               {activeTab === 'reviews' && (
                 <>
+                  {isAuthenticated && user?.id !== listingOwnerId ? (
+                    <div className="card p-4 mb-6">
+                      <div className="flex flex-col gap-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                          <h3 className="text-lg font-semibold text-gray-900">Leave a review</h3>
+                          <StarRating rating={rating} onRate={setRating} readonly={false} />
+                        </div>
+                        <textarea
+                          value={reviewText}
+                          onChange={(e) => setReviewText(e.target.value)}
+                          rows={4}
+                          placeholder="Share your experience with this provider..."
+                          className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm text-gray-700 focus:ring-primary-500 focus:border-primary-500"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => reviewMutation.mutate()}
+                          disabled={reviewMutation.isPending || rating === 0}
+                          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-primary-600 text-white hover:bg-primary-700 font-medium text-sm transition-colors disabled:opacity-50"
+                        >
+                          {reviewMutation.isPending ? 'Submitting...' : 'Submit Review'}
+                        </button>
+                      </div>
+                    </div>
+                  ) : isAuthenticated && user?.id === listingOwnerId ? (
+                    <div className="rounded-2xl border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-700 mb-6">
+                      You cannot review your own listing.
+                    </div>
+                  ) : (
+                    <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-700 mb-6">
+                      <Link to="/login" className="font-medium text-primary-600 hover:text-primary-700">
+                        Log in
+                      </Link>{' '}
+                      to submit a review for this listing.
+                    </div>
+                  )}
+
                   {reviewsLoading && (
                     <div className="space-y-4">
                       {[1, 2, 3].map((i) => (
@@ -333,6 +383,36 @@ const ListingDetails = () => {
               <FiPlus className="w-4 h-4 md:w-5 md:h-5" />
               {compared ? 'Added to Compare' : 'Add to Compare'}
             </button>
+
+            {listingOwnerId && user?.id !== listingOwnerId && (
+              <div className="space-y-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!isAuthenticated) {
+                      toast('Please login or register to send a message');
+                      return;
+                    }
+                    chatApi.createConversation(id!).then((res) => {
+                      navigate(`/inbox/${res.data.data.id}`);
+                    }).catch(() => toast.error('Failed to start conversation'));
+                  }}
+                  disabled={!isAuthenticated}
+                  className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium text-sm md:text-base transition-colors ${
+                    isAuthenticated
+                      ? 'bg-primary-600 text-white hover:bg-primary-700'
+                      : 'cursor-not-allowed bg-gray-200 text-gray-500'
+                  }`}
+                >
+                  <FiSend className="w-4 h-4 md:w-5 md:h-5" /> Send Message
+                </button>
+                {!isAuthenticated && (
+                  <p className="text-sm text-gray-500">
+                    Please <Link to="/login" className="text-primary-600 hover:text-primary-700">login</Link> or <Link to="/register" className="text-primary-600 hover:text-primary-700">register</Link> to send a message.
+                  </p>
+                )}
+              </div>
+            )}
 
             {isAuthenticated && (
               <button

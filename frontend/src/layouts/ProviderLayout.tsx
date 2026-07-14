@@ -1,7 +1,7 @@
 import { Outlet, NavLink } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
-import { FiGrid, FiList, FiBarChart2, FiStar, FiSettings, FiMenu, FiX } from 'react-icons/fi';
+import { FiGrid, FiList, FiBarChart2, FiStar, FiMessageSquare, FiSettings, FiMenu, FiX } from 'react-icons/fi';
 import { useState } from 'react';
 import type { IconType } from 'react-icons';
 
@@ -15,6 +15,7 @@ const sidebarLinks: SidebarLink[] = [
   { to: '/provider/dashboard', label: 'Dashboard', icon: FiGrid },
   { to: '/provider/listings', label: 'My Listings', icon: FiList },
   { to: '/provider/analytics', label: 'Analytics', icon: FiBarChart2 },
+  { to: '/provider/inbox', label: 'Inbox', icon: FiMessageSquare },
   { to: '/provider/reviews', label: 'Reviews', icon: FiStar },
   { to: '/provider/settings', label: 'Settings', icon: FiSettings },
 ];
@@ -48,7 +49,7 @@ const ProviderLayout = () => {
           <div className="flex items-center justify-center pt-3 pb-2">
             <div className="w-10 h-1 bg-gray-300 rounded-full" />
           </div>
-          <nav className="grid grid-cols-5 pb-6 px-2">
+          <nav className="grid grid-cols-6 pb-6 px-2">
             {sidebarLinks.map((link) => (
               <NavLink
                 key={link.to}

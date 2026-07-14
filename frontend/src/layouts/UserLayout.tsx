@@ -1,7 +1,7 @@
 import { Outlet, NavLink } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
-import { FiUser, FiHeart, FiStar, FiThumbsUp, FiMenu, FiX } from 'react-icons/fi';
+import { FiUser, FiHeart, FiStar, FiThumbsUp, FiMessageSquare, FiMenu, FiX } from 'react-icons/fi';
 import { useState } from 'react';
 import type { IconType } from 'react-icons';
 
@@ -14,6 +14,7 @@ interface SidebarLink {
 const sidebarLinks: SidebarLink[] = [
   { to: '/dashboard', label: 'Profile', icon: FiUser },
   { to: '/favorites', label: 'Favorites', icon: FiHeart },
+  { to: '/inbox', label: 'Inbox', icon: FiMessageSquare },
   { to: '/my-reviews', label: 'My Reviews', icon: FiStar },
   { to: '/recommendations', label: 'Recommendations', icon: FiThumbsUp },
 ];

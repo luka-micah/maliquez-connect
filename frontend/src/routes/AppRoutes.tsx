@@ -22,6 +22,8 @@ import UserProfile from '../pages/user/UserProfile';
 import Favorites from '../pages/user/Favorites';
 import UserReviews from '../pages/user/UserReviews';
 import Recommendations from '../pages/user/Recommendations';
+import ChatList from '../pages/user/ChatList';
+import ChatWindow from '../pages/user/ChatWindow';
 
 import ProviderDashboard from '../pages/provider/ProviderDashboard';
 import ProviderListings from '../pages/provider/ProviderListings';
@@ -59,6 +61,8 @@ const AppRoutes = () => (
       <Route path="/favorites" element={<Favorites />} />
       <Route path="/my-reviews" element={<UserReviews />} />
       <Route path="/recommendations" element={<Recommendations />} />
+      <Route path="/inbox" element={<ChatList />} />
+      <Route path="/inbox/:id" element={<ChatWindow />} />
     </Route>
 
     <Route element={<ProtectedRoute roles={['PROVIDER', 'ADMIN']}><ProviderLayout /></ProtectedRoute>}>
@@ -67,6 +71,8 @@ const AppRoutes = () => (
       <Route path="/provider/analytics" element={<ProviderAnalyticsPage />} />
       <Route path="/provider/reviews" element={<ProviderReviews />} />
       <Route path="/provider/settings" element={<ProviderSettings />} />
+      <Route path="/provider/inbox" element={<ChatList />} />
+      <Route path="/provider/inbox/:id" element={<ChatWindow />} />
     </Route>
 
     <Route element={<ProtectedRoute roles={['ADMIN']}><AdminLayout /></ProtectedRoute>}>

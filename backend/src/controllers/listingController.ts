@@ -51,7 +51,7 @@ export const getListings = async (req: AuthRequest, res: Response, next: NextFun
       where,
       include: {
         category: { select: { name: true, slug: true } },
-        owner: { select: { firstName: true, lastName: true, email: true, avatar: true } },
+        owner: { select: { id: true, firstName: true, lastName: true, email: true, avatar: true } },
       },
       orderBy: parseSort(sort),
     });
@@ -107,6 +107,7 @@ export const getListing = async (req: AuthRequest, res: Response, next: NextFunc
         category: { select: { name: true, slug: true } },
         owner: {
           select: {
+            id: true,
             firstName: true,
             lastName: true,
             email: true,

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FiStar, FiMapPin, FiHeart } from 'react-icons/fi';
+import { FiStar, FiMapPin, FiHeart, FiSend } from 'react-icons/fi';
 import type { Category, Listing } from '../../types';
 
 interface ListingCardProps {
@@ -21,18 +21,28 @@ const ListingCard = ({ listing, onFavorite }: ListingCardProps) => {
         </div>
       </Link>
       <div className="p-4">
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between gap-3">
           <div className="flex-1">
             <Link to={`/listings/${listing.id}`}>
               <h3 className="font-semibold text-primary-700 hover:text-primary-800">{listing.title}</h3>
             </Link>
             <p className="text-xs text-gray-500 mt-1">{(listing.category as Category)?.name} &middot; {listing.sector}</p>
           </div>
-          {onFavorite && (
-            <button onClick={() => onFavorite(listing.id)} className="text-gray-400 hover:text-red-500">
-              <FiHeart className="w-5 h-5" />
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            <Link
+              to={`/listings/${listing.id}`}
+              className="inline-flex items-center gap-1 text-primary-600 hover:text-primary-700 text-sm"
+              aria-label={`Message ${listing.title}`}
+            >
+              <FiSend className="w-4 h-4" />
+              <span>Message</span>
+            </Link>
+            {onFavorite && (
+              <button onClick={() => onFavorite(listing.id)} className="text-gray-400 hover:text-red-500">
+                <FiHeart className="w-5 h-5" />
+              </button>
+            )}
+          </div>
         </div>
 
         {listing.location && (

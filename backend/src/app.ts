@@ -17,6 +17,7 @@ import favoriteRoutes from './routes/favoriteRoutes.js';
 import comparisonRoutes from './routes/comparisonRoutes.js';
 import recommendationRoutes from './routes/recommendationRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
+import chatRoutes from './routes/chatRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 
 const app = express();
@@ -58,6 +59,7 @@ app.use('/api/v1/favorites', favoriteRoutes);
 app.use('/api/v1/comparisons', comparisonRoutes);
 app.use('/api/v1/recommendations', recommendationRoutes);
 app.use('/api/v1/notifications', notificationRoutes);
+app.use('/api/v1/chats', chatRoutes);
 app.use('/api/v1/admin', adminRoutes);
 
 app.use((_req, res) => {

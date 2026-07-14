@@ -241,3 +241,30 @@ export interface LoginInput {
   email: string;
   password: string;
 }
+
+export interface Conversation {
+  id: string;
+  listingId: string;
+  userId: string;
+  providerId: string;
+  lastMessage?: string;
+  lastMessageAt?: string;
+  createdAt: string;
+  updatedAt: string;
+  listing: { id: string; title: string; images: string[] };
+  user: { id: string; firstName: string; lastName: string; avatar?: string };
+  provider: { id: string; firstName: string; lastName: string; avatar?: string };
+  messages?: Message[];
+  unreadCount?: number;
+}
+
+export interface Message {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  content: string;
+  read: boolean;
+  createdAt: string;
+  updatedAt: string;
+  sender: { id: string; firstName: string; lastName: string; avatar?: string };
+}

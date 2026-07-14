@@ -14,6 +14,8 @@ import type {
   Notification,
   AdminDashboard,
   ProviderAnalytics,
+  Conversation,
+  Message,
 } from '../types';
 
 type AuthResponse = { user: User; accessToken: string; refreshToken: string };
@@ -104,7 +106,7 @@ export const favoriteApi = {
   getAll: (params?: PaginationParams): Promise<AxiosResponse<ApiResponse<Favorite[]>>> =>
     api.get('/favorites', { params }),
   add: (listingId: string): Promise<AxiosResponse<ApiResponse<Favorite>>> =>
-    api.post('/favorites', { listing: listingId }),
+    api.post('/favorites', { listingId }),
   remove: (id: string): Promise<AxiosResponse<ApiResponse<null>>> =>
     api.delete(`/favorites/${id}`),
 };
@@ -130,6 +132,19 @@ export const recommendationApi = {
     recentSearches: string[];
   }>>> =>
     api.get('/recommendations/preferences'),
+};
+
+export const chatApi = {
+  createConversation: (listingId: string): Promise<AxiosResponse<ApiResponse<Conversation>>> =>
+    api.post('/chats', { listingId }),
+  getConversations: (): Promise<AxiosResponse<ApiResponse<Conversation[]>>> =>
+    api.get('/chats'),
+  getConversation: (id: string): Promise<AxiosResponse<ApiResponse<Conversation>>> =>
+    api.get(`/chats/${id}`),
+  getMessages: (id: string): Promise<AxiosResponse<ApiResponse<Message[]>>> =>
+    api.get(`/chats/${id}/messages`),
+  markRead: (id: string): Promise<AxiosResponse<ApiResponse<null>>> =>
+    api.put(`/chats/${id}/read`),
 };
 
 export const notificationApi = {
