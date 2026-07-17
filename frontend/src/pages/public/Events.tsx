@@ -1,11 +1,14 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 import { eventApi } from '../../api/authApi';
 import SeoHead from '../../components/seo/SeoHead';
-import { FiCalendar, FiMapPin, FiClock, FiExternalLink, FiAlertCircle } from 'react-icons/fi';
+import EventRegistrationModal from '../../components/events/EventRegistrationModal';
+import { FiCalendar, FiMapPin, FiClock, FiExternalLink, FiAlertCircle, FiUserPlus } from 'react-icons/fi';
 import { ApiResponse, AppEvent } from '../../types';
 
 const Events = () => {
+  const [registeringEvent, setRegisteringEvent] = useState<AppEvent | null>(null);
   const { data, isLoading, error } = useQuery<AxiosResponse<ApiResponse<AppEvent[]>>>({
     queryKey: ['published-events'],
     queryFn: () => eventApi.getPublished(),
@@ -95,20 +98,35 @@ const Events = () => {
                         </div>
                       )}
                     </div>
-                    {ev.linkUrl && (
-                      <a
-                        href={ev.linkUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-4 inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-medium text-sm"
+                    <div className="mt-4 flex items-center gap-2">
+                      <button
+                        onClick={() => setRegisteringEvent(ev)}
+                        className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
                       >
-                        Learn More <FiExternalLink className="w-3.5 h-3.5" />
-                      </a>
-                    )}
+                        <FiUserPlus className="w-4 h-4" /> Register
+                      </button>
+                      {ev.linkUrl && (
+                        <a
+                          href={ev.linkUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-medium text-sm"
+                        >
+                          Learn More <FiExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
+          )}
+
+          {registeringEvent && (
+            <EventRegistrationModal
+              event={registeringEvent}
+              onClose={() => setRegisteringEvent(null)}
+            />
           )}
         </div>
       </section>

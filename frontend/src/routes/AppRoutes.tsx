@@ -39,6 +39,7 @@ import AdminListings from '../pages/admin/AdminListings';
 import AdminCategories from '../pages/admin/AdminCategories';
 import AdminAds from '../pages/admin/AdminAds';
 import AdminEvents from '../pages/admin/AdminEvents';
+import AdminEventRegistrations from '../pages/admin/AdminEventRegistrations';
 import AdminReviews from '../pages/admin/AdminReviews';
 import AdminReports from '../pages/admin/AdminReports';
 import AdminProviderAnalytics from '../pages/admin/AdminProviderAnalytics';
@@ -88,6 +89,7 @@ const AppRoutes = () => (
       <Route path="/admin/categories" element={<AdminCategories />} />
       <Route path="/admin/ads" element={<AdminAds />} />
       <Route path="/admin/events" element={<AdminEvents />} />
+      <Route path="/admin/events/registrations" element={<AdminEventRegistrations />} />
       <Route path="/admin/reviews" element={<AdminReviews />} />
       <Route path="/admin/reports" element={<AdminReports />} />
     </Route>

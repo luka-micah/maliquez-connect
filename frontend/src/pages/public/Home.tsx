@@ -299,12 +299,7 @@ const Home = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 items-stretch">
             {/* Left: Hero Content */}
             <div className="text-center lg:text-left flex flex-col justify-center">
-              <div className="animate-fade-in-up">
-                <div className="inline-flex items-center gap-2 px-3 py-1 md:px-4 md:py-1.5 bg-white/15 backdrop-blur-sm rounded-full text-white text-[11px] md:text-sm mb-6 md:mb-8 font-medium border border-white/20">
-                  <FiZap className="w-3 h-4 md:w-4 md:h-4 text-primary-300" />
-                  Decision Intelligence Platform
-                </div>
-              </div>
+
 
               <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white leading-tight mb-4 md:mb-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
                 <span className="text-primary-300">Search.</span>
@@ -357,7 +352,7 @@ const Home = () => {
 
             {/* Right: How It Works */}
             <div className="animate-fade-in-up flex" style={{ animationDelay: '0.5s' }}>
-              <div className="flex-1 bg-white/15 backdrop-blur-md rounded-2xl border border-white/20 p-5 md:p-10 flex flex-col shadow-lg">
+              <div className="flex-1 bg-white/15 backdrop-blur-md rounded-md border border-white/20 p-5 md:p-10 flex flex-col shadow-lg">
                 <div className="flex-1 flex flex-col gap-3 md:gap-4 md:justify-evenly">
                   {steps.map((step, i) => (
                     <div key={step.title} className="flex items-start gap-3 md:gap-4 group">
@@ -365,10 +360,7 @@ const Home = () => {
                         <step.icon className="w-4 h-5 md:w-6 md:h-6" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-0.5 md:mb-1">
-                          <span className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-white/20 text-white text-[10px] md:text-xs font-bold flex items-center justify-center flex-shrink-0">
-                            {i + 1}
-                          </span>
+                        <div className="mb-0.5 md:mb-1">
                           <h4 className="text-white font-semibold text-sm md:text-base">{step.title}</h4>
                         </div>
                         <p className="text-gray-300 text-xs md:text-sm leading-relaxed">{step.description}</p>
@@ -401,7 +393,7 @@ const Home = () => {
           {stats.map((stat, i) => (
             <div
               key={stat.label}
-              className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 text-center hover:-translate-y-1 transition-all duration-300 animate-fade-in-up"
+              className="bg-white rounded-md shadow-xl border border-gray-100 p-6 text-center hover:-translate-y-1 transition-all duration-300 animate-fade-in-up"
               style={{ animationDelay: `${i * 0.1}s` }}
             >
               <div className="inline-flex items-center justify-center w-12 h-12 bg-primary-50 text-primary-600 rounded-xl mb-3">

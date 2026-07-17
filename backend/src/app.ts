@@ -20,6 +20,7 @@ import notificationRoutes from './routes/notificationRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import adRoutes from './routes/adRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
+import eventRegistrationRoutes from './routes/eventRegistrationRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 
 const app = express();
@@ -64,6 +65,7 @@ app.use('/api/v1/notifications', notificationRoutes);
 app.use('/api/v1/chats', chatRoutes);
 app.use('/api/v1/ads', adRoutes);
 app.use('/api/v1/events', eventRoutes);
+app.use('/api/v1/event-registrations', eventRegistrationRoutes);
 app.use('/api/v1/admin', adminRoutes);
 
 app.use((_req, res) => {

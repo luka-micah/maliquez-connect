@@ -14,6 +14,7 @@ import type {
   Notification,
   Ad,
   AppEvent,
+  EventRegistration,
   AdminDashboard,
   ProviderAnalytics,
   Conversation,
@@ -188,6 +189,15 @@ export const eventApi = {
     api.put(`/events/${id}`, data),
   delete: (id: string): Promise<AxiosResponse<ApiResponse<null>>> =>
     api.delete(`/events/${id}`),
+};
+
+export const eventRegistrationApi = {
+  register: (data: { eventId: string; firstName: string; lastName: string; email: string; phone?: string }): Promise<AxiosResponse<ApiResponse<EventRegistration>>> =>
+    api.post('/event-registrations', data),
+  getAll: (params?: PaginationParams): Promise<AxiosResponse<ApiResponse<EventRegistration[]>>> =>
+    api.get('/event-registrations', { params }),
+  getByEvent: (eventId: string, params?: PaginationParams): Promise<AxiosResponse<ApiResponse<EventRegistration[]>>> =>
+    api.get(`/event-registrations/${eventId}`, { params }),
 };
 
 export const adminApi = {

@@ -198,6 +198,18 @@ export interface Pagination {
   unreadCount?: number;
 }
 
+export interface EventRegistration {
+  id: string;
+  eventId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  createdAt: string;
+  updatedAt: string;
+  event?: { id: string; title: string; date?: string };
+}
+
 export interface AppEvent {
   id: string;
   title: string;
