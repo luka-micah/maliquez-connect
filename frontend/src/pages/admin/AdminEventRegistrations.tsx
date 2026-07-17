@@ -15,8 +15,8 @@ const AdminEventRegistrations = () => {
     : ['event-registrations', 'all', page];
 
   const queryFn = filterEventId
-    ? () => eventRegistrationApi.getByEvent(filterEventId, { page: String(page), limit: '20' })
-    : () => eventRegistrationApi.getAll({ page: String(page), limit: '20' });
+    ? () => eventRegistrationApi.getByEvent(filterEventId, { page, limit: 20 })
+    : () => eventRegistrationApi.getAll({ page, limit: 20 });
 
   const { data, isLoading, error } = useQuery<AxiosResponse<ApiResponse<EventRegistration[]>>>({
     queryKey,
