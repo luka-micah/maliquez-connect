@@ -1,7 +1,7 @@
 import { Outlet, NavLink } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
-import { FiGrid, FiUsers, FiBriefcase, FiList, FiFolder, FiStar, FiBarChart2, FiMenu, FiX } from 'react-icons/fi';
+import { FiGrid, FiUsers, FiBriefcase, FiList, FiFolder, FiStar, FiBarChart2, FiImage, FiCalendar, FiMenu, FiX } from 'react-icons/fi';
 import { useState } from 'react';
 import type { IconType } from 'react-icons';
 
@@ -17,6 +17,8 @@ const sidebarLinks: SidebarLink[] = [
   { to: '/admin/providers', label: 'Providers', icon: FiBriefcase },
   { to: '/admin/listings', label: 'Listings', icon: FiList },
   { to: '/admin/categories', label: 'Categories', icon: FiFolder },
+  { to: '/admin/ads', label: 'Ads', icon: FiImage },
+  { to: '/admin/events', label: 'Events', icon: FiCalendar },
   { to: '/admin/reviews', label: 'Reviews', icon: FiStar },
   { to: '/admin/reports', label: 'Reports', icon: FiBarChart2 },
 ];

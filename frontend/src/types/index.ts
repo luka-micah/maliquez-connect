@@ -198,6 +198,32 @@ export interface Pagination {
   unreadCount?: number;
 }
 
+export interface AppEvent {
+  id: string;
+  title: string;
+  description?: string;
+  image?: string;
+  date?: string;
+  time?: string;
+  location?: string;
+  linkUrl?: string;
+  status: 'ACTIVE' | 'INACTIVE';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Ad {
+  id: string;
+  title: string;
+  image: string;
+  linkUrl?: string;
+  status: 'ACTIVE' | 'INACTIVE';
+  startDate?: string;
+  endDate?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface AdminDashboard {
   totalUsers: number;
   totalProviders: number;

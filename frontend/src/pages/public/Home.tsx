@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 import { AxiosResponse } from 'axios';
-import { searchApi, recommendationApi } from '../../api/authApi';
+import { searchApi, recommendationApi, adApi } from '../../api/authApi';
 import ListingCard from '../../components/common/ListingCard';
 import SeoHead from '../../components/seo/SeoHead';
 import { OrganizationJsonLd } from '../../components/seo/JsonLd';
@@ -11,9 +11,9 @@ import {
   FiSearch, FiBookOpen, FiHeart, FiHome, FiTruck,
   FiStar, FiTrendingUp, FiShield, FiThumbsUp, FiUsers, FiAward,
   FiBarChart2, FiArrowUp, FiArrowRight, FiCheckCircle, FiZap,
-  FiCompass, FiRefreshCw,
+  FiCompass, FiRefreshCw, FiX,
 } from 'react-icons/fi';
-import { ApiResponse, Listing, RecommendationListing } from '../../types';
+import { ApiResponse, Listing, RecommendationListing, Ad } from '../../types';
 
 interface RootState {
   auth: {
@@ -205,6 +205,7 @@ const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [adModalAd, setAdModalAd] = useState<Ad | null>(null);
 
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
@@ -219,8 +220,29 @@ const Home = () => {
     enabled: isAuthenticated,
   });
 
+  const { data: adsRes } = useQuery<AxiosResponse<ApiResponse<Ad[]>>>({
+    queryKey: ['active-ads'],
+    queryFn: () => adApi.getActive(),
+  });
+
   const trending: Listing[] = trendingRes?.data?.data || [];
   const aiRecommendations: RecommendationListing[] = aiRecsRes?.data?.data || [];
+  const activeAds: Ad[] = adsRes?.data?.data || [];
+
+  const randomAd = useMemo(() => {
+    if (activeAds.length === 0) return null;
+    return activeAds[Math.floor(Math.random() * activeAds.length)];
+  }, [activeAds]);
+
+  useEffect(() => {
+    if (randomAd && !sessionStorage.getItem('ad_shown')) {
+      const timer = setTimeout(() => {
+        setAdModalAd(randomAd);
+        sessionStorage.setItem('ad_shown', 'true');
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [randomAd]);
 
   useEffect(() => {
     const handleScroll = () => setShowBackToTop(window.scrollY > 600);
@@ -458,6 +480,35 @@ const Home = () => {
           )}
         </div>
       </section>
+
+      {/* ─── AD MODAL ─── */}
+      {adModalAd && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setAdModalAd(null)}>
+          <div
+            className="relative bg-white rounded-2xl overflow-hidden max-w-lg w-full mx-4 shadow-2xl animate-fade-in-up"
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setAdModalAd(null)}
+              className="absolute top-3 right-3 z-10 w-8 h-8 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-colors"
+            >
+              <FiX className="w-4 h-4" />
+            </button>
+            {adModalAd.linkUrl ? (
+              <a href={adModalAd.linkUrl} target="_blank" rel="noopener noreferrer">
+                <img src={adModalAd.image} alt={adModalAd.title} className="w-full object-cover max-h-[70vh]" />
+              </a>
+            ) : (
+              <img src={adModalAd.image} alt={adModalAd.title} className="w-full object-cover max-h-[70vh]" />
+            )}
+            {adModalAd.title && (
+              <div className="p-4 border-t border-gray-100">
+                <p className="text-sm text-gray-600 text-center">{adModalAd.title}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* ─── AI RECOMMENDATIONS (Personalized) ─── */}
       {isAuthenticated && (

@@ -12,6 +12,8 @@ import type {
   Comparison,
   SearchHistory,
   Notification,
+  Ad,
+  AppEvent,
   AdminDashboard,
   ProviderAnalytics,
   Conversation,
@@ -156,6 +158,36 @@ export const notificationApi = {
     api.put(`/notifications/${id}/read`),
   markAllRead: (): Promise<AxiosResponse<ApiResponse<null>>> =>
     api.put('/notifications/read-all'),
+};
+
+export const adApi = {
+  getActive: (): Promise<AxiosResponse<ApiResponse<Ad[]>>> =>
+    api.get('/ads/active'),
+  getAll: (params?: PaginationParams): Promise<AxiosResponse<ApiResponse<Ad[]>>> =>
+    api.get('/ads', { params }),
+  getById: (id: string): Promise<AxiosResponse<ApiResponse<Ad>>> =>
+    api.get(`/ads/${id}`),
+  create: (data: Partial<Ad>): Promise<AxiosResponse<ApiResponse<Ad>>> =>
+    api.post('/ads', data),
+  update: (id: string, data: Partial<Ad>): Promise<AxiosResponse<ApiResponse<Ad>>> =>
+    api.put(`/ads/${id}`, data),
+  delete: (id: string): Promise<AxiosResponse<ApiResponse<null>>> =>
+    api.delete(`/ads/${id}`),
+};
+
+export const eventApi = {
+  getPublished: (): Promise<AxiosResponse<ApiResponse<AppEvent[]>>> =>
+    api.get('/events/published'),
+  getAll: (params?: PaginationParams): Promise<AxiosResponse<ApiResponse<AppEvent[]>>> =>
+    api.get('/events', { params }),
+  getById: (id: string): Promise<AxiosResponse<ApiResponse<AppEvent>>> =>
+    api.get(`/events/${id}`),
+  create: (data: Partial<AppEvent>): Promise<AxiosResponse<ApiResponse<AppEvent>>> =>
+    api.post('/events', data),
+  update: (id: string, data: Partial<AppEvent>): Promise<AxiosResponse<ApiResponse<AppEvent>>> =>
+    api.put(`/events/${id}`, data),
+  delete: (id: string): Promise<AxiosResponse<ApiResponse<null>>> =>
+    api.delete(`/events/${id}`),
 };
 
 export const adminApi = {

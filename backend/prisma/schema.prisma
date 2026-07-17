@@ -218,6 +218,36 @@ model Message {
   @@map("messages")
 }
 
+model Event {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  image       String?
+  date        DateTime?
+  time        String?
+  location    String?
+  linkUrl     String?
+  status      String    @default("ACTIVE")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("events")
+}
+
+model Ad {
+  id        String    @id @default(cuid())
+  title     String
+  image     String
+  linkUrl   String?
+  status    String    @default("ACTIVE")
+  startDate DateTime?
+  endDate   DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("ads")
+}
+
 enum Role {
   USER
   PROVIDER

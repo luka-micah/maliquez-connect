@@ -16,6 +16,7 @@ import ForgotPassword from '../pages/public/ForgotPassword';
 import ResetPassword from '../pages/public/ResetPassword';
 import About from '../pages/public/About';
 import CategoryPage from '../pages/public/CategoryPage';
+import Events from '../pages/public/Events';
 import NotFound from '../pages/public/NotFound';
 
 import UserProfile from '../pages/user/UserProfile';
@@ -36,6 +37,8 @@ import AdminUsers from '../pages/admin/AdminUsers';
 import AdminProviders from '../pages/admin/AdminProviders';
 import AdminListings from '../pages/admin/AdminListings';
 import AdminCategories from '../pages/admin/AdminCategories';
+import AdminAds from '../pages/admin/AdminAds';
+import AdminEvents from '../pages/admin/AdminEvents';
 import AdminReviews from '../pages/admin/AdminReviews';
 import AdminReports from '../pages/admin/AdminReports';
 import AdminProviderAnalytics from '../pages/admin/AdminProviderAnalytics';
@@ -54,6 +57,7 @@ const AppRoutes = () => (
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
       <Route path="/about" element={<About />} />
+      <Route path="/events" element={<Events />} />
     </Route>
 
     <Route element={<ProtectedRoute><UserLayout /></ProtectedRoute>}>
@@ -82,6 +86,8 @@ const AppRoutes = () => (
       <Route path="/admin/providers/analytics/:id" element={<AdminProviderAnalytics />} />
       <Route path="/admin/listings" element={<AdminListings />} />
       <Route path="/admin/categories" element={<AdminCategories />} />
+      <Route path="/admin/ads" element={<AdminAds />} />
+      <Route path="/admin/events" element={<AdminEvents />} />
       <Route path="/admin/reviews" element={<AdminReviews />} />
       <Route path="/admin/reports" element={<AdminReports />} />
     </Route>
