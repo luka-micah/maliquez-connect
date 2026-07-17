@@ -283,7 +283,7 @@ const Home = () => {
         url="https://maliquez.com"
       />
       {/* ─── HERO ─── */}
-      <section className="relative min-h-[90vh] md:min-h-screen flex items-center justify-center overflow-hidden py-16 md:py-16">
+      <section className="relative min-h-[90vh] md:min-h-screen flex items-center justify-center overflow-hidden py-10 md:py-16">
         {heroSlides.map((slide, i) => (
           <div
             key={slide.image}
@@ -301,7 +301,7 @@ const Home = () => {
             <div className="text-center lg:text-left flex flex-col justify-center">
 
 
-              <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white leading-tight mb-4 md:mb-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+              <h1 className="text-5xl sm:text-5xl md:text-7xl font-extrabold text-white leading-tight mb-4 md:mb-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
                 <span className="text-primary-300">Search.</span>
                 <span className="block text-primary-300">Connect.</span>
                 <span className="block text-primary-300">Discover.</span>
@@ -332,7 +332,7 @@ const Home = () => {
                 </div>
               </form>
 
-              <div className="flex flex-wrap justify-center lg:justify-start gap-3 md:gap-4 mb-16 md:mb-0 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+              <div className="flex flex-wrap justify-center lg:justify-start gap-3 md:gap-4 mb-10 md:mb-0 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
                 <Link
                   to="/register"
                   className="px-5 py-2.5 md:px-6 md:py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-all font-semibold flex items-center gap-2 shadow-lg text-sm md:text-base"
