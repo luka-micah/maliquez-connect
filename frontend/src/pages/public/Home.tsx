@@ -351,7 +351,7 @@ const Home = () => {
             </div>
 
             {/* Right: How It Works */}
-            <div className="animate-fade-in-up flex" style={{ animationDelay: '0.5s' }}>
+            <div className="animate-fade-in-up hidden lg:flex" style={{ animationDelay: '0.5s' }}>
               <div className="flex-1 bg-white/15 backdrop-blur-md rounded-md border border-white/20 p-5 md:p-10 flex flex-col shadow-lg">
                 <div className="flex-1 flex flex-col gap-3 md:gap-4 md:justify-evenly">
                   {steps.map((step, i) => (
@@ -671,7 +671,7 @@ const Home = () => {
             {testimonials.map((t, i) => (
               <ScrollReveal
                 key={t.name}
-                className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 hover:bg-white/20 transition-all duration-300"
+                className="bg-white/10 backdrop-blur-md rounded-md p-8 border border-white/20 hover:bg-white/20 transition-all duration-300"
                 style={{ animationDelay: `${i * 0.1}s` }}
               >
                 <div className="flex gap-1 mb-4">
@@ -722,7 +722,7 @@ const Home = () => {
                 { count: '4.2K+', label: 'Honest Reviews' },
                 { count: '98%', label: 'Satisfaction Rate' },
               ].map((stat) => (
-                <div key={stat.label} className="bg-white rounded-2xl p-6 border border-gray-100 text-center">
+                <div key={stat.label} className="bg-white rounded-md p-6 border border-gray-100 text-center">
                   <div className="text-2xl font-bold text-primary-600">{stat.count}</div>
                   <div className="text-sm text-gray-500 mt-1">{stat.label}</div>
                 </div>
