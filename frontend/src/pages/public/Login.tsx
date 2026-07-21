@@ -42,16 +42,18 @@ const Login = () => {
     setSubmitting(true);
     try {
       const response = await login(data as unknown as LoginInput);
+
+      if (response.data.user.role === 'ADMIN') {
+        toast.error('Admins must use the Admin Portal to sign in.');
+        setSubmitting(false);
+        return;
+      }
+
       toast.success('Welcome back!');
       
-      // Determine redirect path based on user role
       let redirectPath = from;
       if (from === '/') {
-        // If from is root, redirect to appropriate dashboard
         switch (response.data.user.role) {
-          case 'ADMIN':
-            redirectPath = '/admin/dashboard';
-            break;
           case 'PROVIDER':
             redirectPath = '/provider/dashboard';
             break;

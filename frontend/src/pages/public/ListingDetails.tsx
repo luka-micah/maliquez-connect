@@ -142,7 +142,6 @@ const ListingDetails = () => {
           ratingValue: listing.averageRating,
           reviewCount: listing.reviewCount,
         } : undefined}
-        priceRange={listing?.pricing ? `${listing.pricing.currency || '$'}${listing.pricing.minimum || ''}` : undefined}
       />
       <BreadcrumbJsonLd
         items={[
@@ -327,20 +326,6 @@ const ListingDetails = () => {
 
         <div className="space-y-4 order-1 lg:order-2">
           <div className="card p-4 md:p-5 space-y-4">
-            {listing.pricing?.minimum && (
-              <div>
-                <p className="text-sm text-gray-500">Starting from</p>
-                <p className="text-2xl font-bold text-primary-600">
-                  {listing.pricing.currency || '$'} {listing.pricing.minimum.toLocaleString()}
-                  {listing.pricing.maximum && (
-                    <span className="text-lg text-gray-400 font-normal">
-                      {' '}- {listing.pricing.currency || '$'} {listing.pricing.maximum.toLocaleString()}
-                    </span>
-                  )}
-                </p>
-              </div>
-            )}
-
             <div className="border-t border-gray-100 pt-4 space-y-3">
               {listing.contact?.phone && (
                 <div className="flex items-center gap-3 text-gray-600">

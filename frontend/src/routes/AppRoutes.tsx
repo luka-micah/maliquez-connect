@@ -43,6 +43,7 @@ import AdminEventRegistrations from '../pages/admin/AdminEventRegistrations';
 import AdminReviews from '../pages/admin/AdminReviews';
 import AdminReports from '../pages/admin/AdminReports';
 import AdminProviderAnalytics from '../pages/admin/AdminProviderAnalytics';
+import AdminLogin from '../pages/admin/AdminLogin';
 
 const AppRoutes = () => (
   <Routes>
@@ -59,6 +60,7 @@ const AppRoutes = () => (
       <Route path="/reset-password/:token" element={<ResetPassword />} />
       <Route path="/about" element={<About />} />
       <Route path="/events" element={<Events />} />
+      <Route path="/admin/login" element={<AdminLogin />} />
     </Route>
 
     <Route element={<ProtectedRoute><UserLayout /></ProtectedRoute>}>

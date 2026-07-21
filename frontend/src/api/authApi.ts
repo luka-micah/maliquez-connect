@@ -219,6 +219,8 @@ export const adminApi = {
     api.put(`/admin/users/${id}/status`, { status }),
   verifyProvider: (id: string, verificationStatus: string): Promise<AxiosResponse<ApiResponse<User>>> =>
     api.put(`/admin/providers/${id}/verify`, { verificationStatus }),
+  getReviews: (params?: PaginationParams): Promise<AxiosResponse<ApiResponse<Review[]>>> =>
+    api.get('/admin/reviews', { params }),
   moderateReview: (id: string, status: string): Promise<AxiosResponse<ApiResponse<Review>>> =>
     api.put(`/admin/reviews/${id}/moderate`, { status }),
   getProviderAnalytics: (id: string): Promise<AxiosResponse<ApiResponse<ProviderAnalytics>>> =>

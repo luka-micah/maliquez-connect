@@ -58,11 +58,6 @@ const ListingCard = ({ listing, onFavorite }: ListingCardProps) => {
             <span className="text-sm font-medium">{listing.averageRating?.toFixed(1) || '0.0'}</span>
             <span className="text-xs text-gray-400">({listing.reviewCount || 0})</span>
           </div>
-          {listing.pricing?.minimum && (
-            <span className="text-sm font-medium text-primary-600">
-              {listing.pricing.currency} {listing.pricing.minimum.toLocaleString()}
-            </span>
-          )}
         </div>
       </div>
     </div>

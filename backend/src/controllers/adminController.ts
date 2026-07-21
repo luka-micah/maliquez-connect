@@ -1,4 +1,4 @@
-import { Prisma, Role, UserStatus, ListingStatus, Sector } from '@prisma/client';
+import { Prisma, Role, UserStatus, ListingStatus, Sector, ReviewStatus } from '@prisma/client';
 import { Response, NextFunction } from 'express';
 import prisma from '../config/prisma.js';
 import ApiResponse from '../utils/ApiResponse.js';
@@ -201,6 +201,33 @@ export const updateUserStatus = async (req: AuthRequest, res: Response, next: Ne
     });
 
     res.json(ApiResponse.success(user, 'User status updated'));
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getReviews = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { status } = req.query;
+    const { page, limit, skip } = parsePagination(req.query as { page?: string; limit?: string });
+
+    const where: Prisma.ReviewWhereInput = {};
+    if (status) where.status = String(status) as ReviewStatus;
+
+    const total = await prisma.review.count({ where });
+    const reviews = await prisma.review.findMany({
+      where,
+      include: {
+        user: { select: { id: true, firstName: true, lastName: true, email: true } },
+        listing: { select: { id: true, title: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: limit,
+    });
+
+    const pagination = calculatePagination(page, limit, total);
+    res.json(ApiResponse.paginated(reviews, pagination));
   } catch (error) {
     next(error);
   }

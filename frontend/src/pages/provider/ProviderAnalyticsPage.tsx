@@ -90,9 +90,9 @@ const ProviderAnalyticsPage = () => {
       <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className="bg-white rounded-md border border-gray-200 p-5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-md flex items-center justify-center">
               <FiList className="w-5 h-5 text-blue-600" />
             </div>
             <div>
@@ -101,9 +101,9 @@ const ProviderAnalyticsPage = () => {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className="bg-white rounded-md border border-gray-200 p-5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-md flex items-center justify-center">
               <FiCheckCircle className="w-5 h-5 text-green-600" />
             </div>
             <div>
@@ -112,9 +112,9 @@ const ProviderAnalyticsPage = () => {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className="bg-white rounded-md border border-gray-200 p-5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-yellow-100 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-md flex items-center justify-center">
               <FiClock className="w-5 h-5 text-yellow-600" />
             </div>
             <div>
@@ -123,9 +123,9 @@ const ProviderAnalyticsPage = () => {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className="bg-white rounded-md border border-gray-200 p-5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-yellow-100 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-md flex items-center justify-center">
               <FiStar className="w-5 h-5 text-yellow-600" />
             </div>
             <div>
@@ -134,9 +134,9 @@ const ProviderAnalyticsPage = () => {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className="bg-white rounded-md border border-gray-200 p-5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-md flex items-center justify-center">
               <FiMessageSquare className="w-5 h-5 text-purple-600" />
             </div>
             <div>
@@ -148,7 +148,7 @@ const ProviderAnalyticsPage = () => {
       </div>
 
       {total === 0 && (
-        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
+        <div className="bg-white rounded-md border border-gray-200 p-12 text-center">
           <FiList className="w-12 h-12 text-gray-300 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">No data to analyze</h3>
           <p className="text-gray-500">Create listings first to see your analytics.</p>
@@ -156,7 +156,7 @@ const ProviderAnalyticsPage = () => {
       )}
 
       {total > 0 && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <div className="bg-white rounded-md border border-gray-200 p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-6">Listing Status Distribution</h2>
           <div className="space-y-4">
             {statusCounts.map((s) => (

@@ -161,17 +161,62 @@ const AdminReports = () => {
             ))}
           </div>
         ) : (
-          <div className="flex items-end gap-3 h-40">
-            {monthlyGrowth.map((m: MonthlyGrowth) => (
-              <div key={m.month} className="flex-1 flex flex-col items-center gap-1">
-                <span className="text-xs text-gray-500">{m.value}</span>
-                <div
-                  className="w-full bg-gradient-to-t from-primary-500 to-primary-300 rounded-t transition-all duration-500"
-                  style={{ height: `${(m.value / maxGrowth) * 100}%` }}
-                />
-                <span className="text-xs text-gray-600 font-medium">{m.month}</span>
-              </div>
-            ))}
+          <div className="w-full">
+            <svg viewBox="0 0 600 220" className="w-full h-auto" preserveAspectRatio="xMidYMid meet">
+              <defs>
+                <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#7A1F5C" stopOpacity="0.2" />
+                  <stop offset="100%" stopColor="#7A1F5C" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+              {monthlyGrowth.map((m: MonthlyGrowth) => {
+                const x = 50 + (monthlyGrowth.indexOf(m) / (monthlyGrowth.length - 1)) * 500;
+                const y = 190 - (m.value / maxGrowth) * 160;
+                return (
+                  <g key={m.month}>
+                    <text x={x} y="212" textAnchor="middle" className="text-xs" fill="#6b7280" fontSize="12">{m.month}</text>
+                    <text x={x} y={y - 10} textAnchor="middle" fill="#6b7280" fontSize="11">{m.value}</text>
+                  </g>
+                );
+              })}
+              {monthlyGrowth.map((m: MonthlyGrowth) => {
+                const x = 50 + (monthlyGrowth.indexOf(m) / (monthlyGrowth.length - 1)) * 500;
+                const y = 190 - (m.value / maxGrowth) * 160;
+                return (
+                  <circle key={m.month} cx={x} cy={y} r="4" fill="#7A1F5C" className="transition-all duration-500" />
+                );
+              })}
+              <polyline
+                fill="none"
+                stroke="#7A1F5C"
+                strokeWidth="2.5"
+                strokeLinejoin="round"
+                strokeLinecap="round"
+                points={monthlyGrowth.map((m: MonthlyGrowth) => {
+                  const x = 50 + (monthlyGrowth.indexOf(m) / (monthlyGrowth.length - 1)) * 500;
+                  const y = 190 - (m.value / maxGrowth) * 160;
+                  return `${x},${y}`;
+                }).join(' ')}
+                className="transition-all duration-500"
+              />
+              <polygon
+                fill="url(#lineGrad)"
+                points={(() => {
+                  const pts = monthlyGrowth.map((m: MonthlyGrowth) => {
+                    const x = 50 + (monthlyGrowth.indexOf(m) / (monthlyGrowth.length - 1)) * 500;
+                    const y = 190 - (m.value / maxGrowth) * 160;
+                    return `${x},${y}`;
+                  }).join(' ');
+                  const firstX = 50;
+                  const lastX = 50 + 500;
+                  return `${firstX},190 ${pts} ${lastX},190`;
+                })()}
+              />
+            </svg>
+            <div className="flex items-center justify-center gap-2 mt-2">
+              <span className="w-3 h-0.5 bg-primary-600 rounded" />
+              <span className="text-xs text-gray-500">New users per month</span>
+            </div>
           </div>
         )}
       </div>

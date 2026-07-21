@@ -2,7 +2,7 @@ import { useState } from 'react';
 import SeoHead from '../../components/seo/SeoHead';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
-import { adminApi, reviewApi } from '../../api/authApi';
+import { adminApi } from '../../api/authApi';
 import Pagination from '../../components/common/Pagination';
 import { FiCheckCircle, FiXCircle, FiStar, FiAlertCircle } from 'react-icons/fi';
 import toast from 'react-hot-toast';
@@ -23,7 +23,7 @@ const AdminReviews = () => {
   const { data, isLoading, error } = useQuery({
     queryKey: ['adminReviews', page, statusFilter],
     queryFn: async () => {
-      const res = await (reviewApi as any).getAll({ page, limit: 10, status: statusFilter || undefined });
+      const res = await adminApi.getReviews({ page, limit: 10, status: statusFilter || undefined });
       return res.data as ApiResponse<AdminReviewsQueryResult>;
     },
   });

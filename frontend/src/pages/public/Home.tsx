@@ -356,7 +356,7 @@ const Home = () => {
                 <div className="flex-1 flex flex-col gap-3 md:gap-4 md:justify-evenly">
                   {steps.map((step, i) => (
                     <div key={step.title} className="flex items-start gap-3 md:gap-4 group">
-                      <div className="flex-shrink-0 w-9 h-9 md:w-12 md:h-12 bg-primary-500 text-white rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+                      <div className="flex-shrink-0 w-9 h-9 md:w-12 md:h-12 bg-primary-500 text-white rounded-md flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
                         <step.icon className="w-4 h-5 md:w-6 md:h-6" />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -396,7 +396,7 @@ const Home = () => {
               className="bg-white rounded-md shadow-xl border border-gray-100 p-6 text-center hover:-translate-y-1 transition-all duration-300 animate-fade-in-up"
               style={{ animationDelay: `${i * 0.1}s` }}
             >
-              <div className="inline-flex items-center justify-center w-12 h-12 bg-primary-50 text-primary-600 rounded-xl mb-3">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-primary-50 text-primary-600 rounded-md mb-3">
                 <stat.icon className="w-6 h-6" />
               </div>
               <div className="text-3xl font-bold text-gray-900">

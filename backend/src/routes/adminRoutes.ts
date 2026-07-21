@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {
-  getUsers, getProviders, getAdminListings,
+  getUsers, getProviders, getAdminListings, getReviews,
   approveListing, suspendListing, updateUserStatus,
   updateProviderVerification, moderateReview, getPendingListings,
   getAdminDashboard, getProviderAnalytics,
@@ -21,6 +21,7 @@ router.put('/listings/:id/approve', approveListing);
 router.put('/listings/:id/suspend', suspendListing);
 router.put('/users/:id/status', updateUserStatus);
 router.put('/providers/:id/verify', updateProviderVerification);
+router.get('/reviews', getReviews);
 router.put('/reviews/:id/moderate', moderateReview);
 router.get('/providers/:id/analytics', getProviderAnalytics);
 
