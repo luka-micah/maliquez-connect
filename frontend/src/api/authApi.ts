@@ -19,6 +19,10 @@ import type {
   ProviderAnalytics,
   Conversation,
   Message,
+  AgentProfile,
+  ProviderOnboarding,
+  AdminReport,
+  AuditLogEntry,
 } from '../types';
 
 type AuthResponse = { user: User; accessToken: string; refreshToken: string };
@@ -225,4 +229,27 @@ export const adminApi = {
     api.put(`/admin/reviews/${id}/moderate`, { status }),
   getProviderAnalytics: (id: string): Promise<AxiosResponse<ApiResponse<ProviderAnalytics>>> =>
     api.get(`/admin/providers/${id}/analytics`),
+  // Agent management
+  getAgents: (params?: PaginationParams): Promise<AxiosResponse<ApiResponse<AgentProfile[]>>> =>
+    api.get('/admin/agents', { params }),
+  updateAgentStatus: (id: string, status: string): Promise<AxiosResponse<ApiResponse<AgentProfile>>> =>
+    api.put(`/admin/agents/${id}/status`, { status }),
+  // Provider onboarding management
+  getOnboardings: (params?: PaginationParams): Promise<AxiosResponse<ApiResponse<ProviderOnboarding[]>>> =>
+    api.get('/admin/onboardings', { params }),
+  approveOnboarding: (id: string): Promise<AxiosResponse<ApiResponse<ProviderOnboarding>>> =>
+    api.put(`/admin/onboardings/${id}/approve`),
+  rejectOnboarding: (id: string, reason?: string): Promise<AxiosResponse<ApiResponse<ProviderOnboarding>>> =>
+    api.put(`/admin/onboardings/${id}/reject`, { reason }),
+  publishOnboarding: (id: string): Promise<AxiosResponse<ApiResponse<ProviderOnboarding>>> =>
+    api.put(`/admin/onboardings/${id}/publish`),
+  reassignProvider: (id: string, agentId: string): Promise<AxiosResponse<ApiResponse<ProviderOnboarding>>> =>
+    api.put(`/admin/onboardings/${id}/reassign`, { agentId }),
+  resetOnboarding: (id: string): Promise<AxiosResponse<ApiResponse<ProviderOnboarding>>> =>
+    api.put(`/admin/onboardings/${id}/reset`),
+  // Reports & Audit
+  getReports: (): Promise<AxiosResponse<ApiResponse<AdminReport>>> =>
+    api.get('/admin/reports'),
+  getAuditLogs: (params?: PaginationParams): Promise<AxiosResponse<ApiResponse<AuditLogEntry[]>>> =>
+    api.get('/admin/audit-logs', { params }),
 };

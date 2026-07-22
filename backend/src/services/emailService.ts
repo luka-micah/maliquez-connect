@@ -372,6 +372,177 @@ export const sendUserStatusChangedEmail = async ({ email, firstName, status }: S
   });
 };
 
+/* ─── Provider Invitation ──────────────────────────── */
+
+interface SendInvitationEmailParams {
+  email: string;
+  providerName: string;
+  businessName: string;
+  invitationLink: string;
+  expirationDate: string;
+}
+
+export const sendInvitationEmail = async ({
+  email,
+  providerName,
+  businessName,
+  invitationLink,
+  expirationDate,
+}: SendInvitationEmailParams): Promise<void> => {
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;color:#111827;font-weight:600;">You're invited to join Maliquez Connect!</h2>
+    <p style="margin:0 0 20px;font-size:14px;color:#6b7280;line-height:1.6;">
+      Hi ${providerName},
+    </p>
+    <p style="margin:0 0 20px;font-size:14px;color:#6b7280;line-height:1.6;">
+      Great news! <strong>${businessName}</strong> has been registered on Maliquez Connect. You've been invited to claim your business listing and start connecting with customers.
+    </p>
+    <p style="margin:0 0 20px;font-size:14px;color:#6b7280;line-height:1.6;">
+      Click the button below to create your account, set up your profile, and start managing your business listing.
+    </p>
+    <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px;">
+      <tr>
+        <td align="center">
+          <a href="${invitationLink}" target="_blank" style="display:inline-block;padding:12px 24px;background-color:#059669;color:#ffffff;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;">
+            Claim Your Account
+          </a>
+        </td>
+      </tr>
+    </table>
+    <p style="margin:0 0 20px;font-size:14px;color:#6b7280;line-height:1.6;">
+      Or copy and paste this link into your browser:
+    </p>
+    <p style="margin:0 0 8px;font-size:12px;color:#059669;word-break:break-all;background-color:#f9fafb;padding:12px;border-radius:6px;border:1px solid #e5e7eb;">
+      ${invitationLink}
+    </p>
+    <p style="margin:0 0 0;font-size:13px;color:#ef4444;line-height:1.6;">
+      This invitation will expire on <strong>${expirationDate}</strong>. Please claim your account before this date.
+    </p>
+    <p style="margin:0 0 0;font-size:14px;color:#6b7280;line-height:1.6;padding-top:16px;">
+      If you have any questions, feel free to reach out to our support team.
+    </p>`;
+
+  await sendEmail({
+    to: email,
+    subject: `You're invited to join Maliquez Connect – ${businessName}`,
+    html: emailLayout(content),
+  });
+};
+
+/* ─── Provider Onboarding Reminders ─────────────────── */
+
+interface SendOnboardingReminderEmailParams {
+  email: string;
+  providerName: string;
+  businessName: string;
+  reminderType: 'profile' | 'documents';
+  actionUrl: string;
+}
+
+export const sendOnboardingReminderEmail = async ({
+  email,
+  providerName,
+  businessName,
+  reminderType,
+  actionUrl,
+}: SendOnboardingReminderEmailParams): Promise<void> => {
+  const reminders = {
+    profile: {
+      title: 'Complete your business profile',
+      message: `Your business <strong>${businessName}</strong> profile is still incomplete. Please complete your profile to start connecting with customers.`,
+    },
+    documents: {
+      title: 'Upload verification documents',
+      message: `Please upload your verification documents for <strong>${businessName}</strong> to complete the verification process.`,
+    },
+  };
+
+  const reminder = reminders[reminderType];
+
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;color:#111827;font-weight:600;">${reminder.title}</h2>
+    <p style="margin:0 0 20px;font-size:14px;color:#6b7280;line-height:1.6;">
+      Hi ${providerName},
+    </p>
+    <p style="margin:0 0 20px;font-size:14px;color:#6b7280;line-height:1.6;">
+      ${reminder.message}
+    </p>
+    <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px;">
+      <tr>
+        <td align="center">
+          <a href="${actionUrl}" target="_blank" style="display:inline-block;padding:12px 24px;background-color:#059669;color:#ffffff;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;">
+            ${reminderType === 'profile' ? 'Complete Profile' : 'Upload Documents'}
+          </a>
+        </td>
+      </tr>
+    </table>
+    <p style="margin:0 0 0;font-size:14px;color:#6b7280;line-height:1.6;">
+      Maliquez Connect Team
+    </p>`;
+
+  await sendEmail({
+    to: email,
+    subject: reminder.title,
+    html: emailLayout(content),
+  });
+};
+
+/* ─── Provider Approval / Rejection ─────────────────── */
+
+interface SendProviderDecisionEmailParams {
+  email: string;
+  providerName: string;
+  businessName: string;
+  decision: 'approved' | 'rejected';
+  reason?: string;
+}
+
+export const sendProviderDecisionEmail = async ({
+  email,
+  providerName,
+  businessName,
+  decision,
+  reason,
+}: SendProviderDecisionEmailParams): Promise<void> => {
+  const isApproved = decision === 'approved';
+
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;color:#111827;font-weight:600;">${isApproved ? 'Congratulations! Your business has been approved' : 'Application update'}</h2>
+    <p style="margin:0 0 20px;font-size:14px;color:#6b7280;line-height:1.6;">
+      Hi ${providerName},
+    </p>
+    ${isApproved
+      ? `<p style="margin:0 0 20px;font-size:14px;color:#6b7280;line-height:1.6;">
+           Your business <strong>${businessName}</strong> has been approved and is now live on Maliquez Connect! Customers can now find and connect with your business.
+         </p>
+         <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px;">
+           <tr>
+             <td align="center">
+               <a href="${CLIENT_URL}/provider/dashboard" target="_blank" style="display:inline-block;padding:12px 24px;background-color:#059669;color:#ffffff;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;">
+                 Go to Dashboard
+               </a>
+             </td>
+           </tr>
+         </table>`
+      : `<p style="margin:0 0 20px;font-size:14px;color:#6b7280;line-height:1.6;">
+           After careful review, your business <strong>${businessName}</strong> could not be approved at this time.
+         </p>
+         ${reason ? `<p style="margin:0 0 20px;font-size:14px;color:#6b7280;line-height:1.6;"><strong>Reason:</strong> ${reason}</p>` : ''}
+         <p style="margin:0 0 20px;font-size:14px;color:#6b7280;line-height:1.6;">
+           If you'd like to reapply or have any questions, please contact our support team.
+         </p>`
+    }
+    <p style="margin:0 0 0;font-size:14px;color:#6b7280;line-height:1.6;">
+      Maliquez Connect Team
+    </p>`;
+
+  await sendEmail({
+    to: email,
+    subject: isApproved ? `Your business has been approved!` : `Application update for ${businessName}`,
+    html: emailLayout(content),
+  });
+};
+
 /* ─── Review moderated ──────────────────────────────── */
 
 interface SendReviewModeratedEmailParams {

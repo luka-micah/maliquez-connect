@@ -12,6 +12,7 @@ import Compare from '../pages/public/Compare';
 import Categories from '../pages/public/Categories';
 import Login from '../pages/public/Login';
 import Register from '../pages/public/Register';
+import AgentRegister from '../pages/public/AgentRegister';
 import ForgotPassword from '../pages/public/ForgotPassword';
 import ResetPassword from '../pages/public/ResetPassword';
 import About from '../pages/public/About';
@@ -44,6 +45,19 @@ import AdminReviews from '../pages/admin/AdminReviews';
 import AdminReports from '../pages/admin/AdminReports';
 import AdminProviderAnalytics from '../pages/admin/AdminProviderAnalytics';
 import AdminLogin from '../pages/admin/AdminLogin';
+import AgentLeaderboard from '../pages/admin/AgentLeaderboard';
+import AdminAgents from '../pages/admin/AdminAgents';
+import AdminOnboardings from '../pages/admin/AdminOnboardings';
+
+import AgentLayout from '../layouts/AgentLayout';
+import AgentDashboard from '../pages/agent/AgentDashboard';
+import ProviderManagement from '../pages/agent/ProviderManagement';
+import ProviderPipeline from '../pages/agent/ProviderPipeline';
+import ProviderDetails from '../pages/agent/ProviderDetails';
+import FollowUps from '../pages/agent/FollowUps';
+import Activities from '../pages/agent/Activities';
+
+import ProviderClaim from '../pages/provider/ProviderClaim';
 
 const AppRoutes = () => (
   <Routes>
@@ -56,12 +70,15 @@ const AppRoutes = () => (
       <Route path="/categories/:slug" element={<CategoryPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/register-agent" element={<AgentRegister />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
       <Route path="/about" element={<About />} />
       <Route path="/events" element={<Events />} />
       <Route path="/admin/login" element={<AdminLogin />} />
     </Route>
+
+    <Route path="/provider/claim" element={<ProviderClaim />} />
 
     <Route element={<ProtectedRoute><UserLayout /></ProtectedRoute>}>
       <Route path="/dashboard" element={<UserProfile />} />
@@ -82,6 +99,15 @@ const AppRoutes = () => (
       <Route path="/provider/inbox/:id" element={<ChatWindow />} />
     </Route>
 
+    <Route element={<ProtectedRoute roles={['AGENT', 'ADMIN']}><AgentLayout /></ProtectedRoute>}>
+      <Route path="/agent/dashboard" element={<AgentDashboard />} />
+      <Route path="/agent/providers" element={<ProviderManagement />} />
+      <Route path="/agent/providers/:id" element={<ProviderDetails />} />
+      <Route path="/agent/pipeline" element={<ProviderPipeline />} />
+      <Route path="/agent/follow-ups" element={<FollowUps />} />
+      <Route path="/agent/activities" element={<Activities />} />
+    </Route>
+
     <Route element={<ProtectedRoute roles={['ADMIN']}><AdminLayout /></ProtectedRoute>}>
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
       <Route path="/admin/users" element={<AdminUsers />} />
@@ -94,6 +120,9 @@ const AppRoutes = () => (
       <Route path="/admin/events/registrations" element={<AdminEventRegistrations />} />
       <Route path="/admin/reviews" element={<AdminReviews />} />
       <Route path="/admin/reports" element={<AdminReports />} />
+      <Route path="/admin/agents" element={<AdminAgents />} />
+      <Route path="/admin/onboardings" element={<AdminOnboardings />} />
+      <Route path="/admin/agent-leaderboard" element={<AgentLeaderboard />} />
     </Route>
 
     <Route path="*" element={<NotFound />} />

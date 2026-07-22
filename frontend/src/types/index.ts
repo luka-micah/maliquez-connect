@@ -5,10 +5,11 @@ export interface User {
   email: string;
   phone?: string;
   avatar?: string;
-  role: 'USER' | 'PROVIDER' | 'ADMIN';
+  role: 'USER' | 'PROVIDER' | 'AGENT' | 'ADMIN';
   isVerified: boolean;
   status: 'ACTIVE' | 'SUSPENDED' | 'INACTIVE';
   providerProfile?: ProviderProfile;
+  agentProfile?: AgentProfile;
   createdAt: string;
   updatedAt: string;
 }
@@ -278,6 +279,159 @@ export interface RegisterInput {
 export interface LoginInput {
   email: string;
   password: string;
+}
+
+export interface AgentProfile {
+  id: string;
+  userId: string;
+  name: string;
+  referralCode: string;
+  phone?: string;
+  assignedState?: string;
+  assignedLGA?: string;
+  status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED' | 'PENDING';
+  createdAt: string;
+  updatedAt: string;
+  user?: { id: string; firstName: string; lastName: string; email: string; avatar?: string; status?: string; createdAt?: string };
+  _count?: { providerOnboardings: number };
+}
+
+export interface ProviderOnboarding {
+  id: string;
+  providerId: string;
+  agentId: string;
+  businessName: string;
+  category?: string;
+  sector?: string;
+  contactPerson: string;
+  phoneNumber: string;
+  email: string;
+  whatsappNumber?: string;
+  address?: string;
+  state?: string;
+  lga?: string;
+  description?: string;
+  gpsCoordinates?: { lat: number; lng: number };
+  website?: string;
+  socialLinks?: Record<string, string>;
+  onboardingStatus: OnboardingStatusType;
+  onboardingNotes?: string;
+  invitedAt?: string;
+  claimedAt?: string;
+  approvedAt?: string;
+  rejectedAt?: string;
+  rejectedReason?: string;
+  createdAt: string;
+  updatedAt: string;
+  provider?: { id: string; firstName: string; lastName: string; email: string; avatar?: string; phone?: string; status?: string };
+  agent?: AgentProfile;
+  documents?: ProviderDocument[];
+  outreachActivities?: OutreachActivity[];
+}
+
+export type OnboardingStatusType =
+  | 'PROSPECT' | 'CONTACTED' | 'INTERESTED' | 'REGISTERED'
+  | 'INVITED' | 'ACCOUNT_CLAIMED' | 'PROFILE_COMPLETED'
+  | 'DOCUMENTS_SUBMITTED' | 'UNDER_REVIEW' | 'APPROVED'
+  | 'PUBLISHED' | 'REJECTED' | 'SUSPENDED' | 'INACTIVE';
+
+export interface ProviderDocument {
+  id: string;
+  providerId: string;
+  onboardingId: string;
+  documentType: DocumentType;
+  fileUrl: string;
+  publicId?: string;
+  fileName?: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type DocumentType =
+  | 'CAC_CERTIFICATE' | 'NATIONAL_ID' | 'DRIVER_LICENSE'
+  | 'UTILITY_BILL' | 'BUSINESS_REGISTRATION' | 'TAX_CERTIFICATE'
+  | 'OTHER';
+
+export interface OutreachActivity {
+  id: string;
+  agentId: string;
+  providerId: string;
+  onboardingId?: string;
+  activityType: ActivityType;
+  note?: string;
+  nextFollowUp?: string;
+  createdAt: string;
+  updatedAt: string;
+  onboarding?: { id: string; businessName: string; contactPerson: string; onboardingStatus?: string };
+}
+
+export type ActivityType =
+  | 'PHONE_CALL' | 'WHATSAPP' | 'SMS' | 'EMAIL'
+  | 'OFFICE_VISIT' | 'MEETING' | 'FOLLOW_UP' | 'OTHER';
+
+export interface AuditLogEntry {
+  id: string;
+  userId?: string;
+  agentId?: string;
+  action: string;
+  entityType: string;
+  entityId?: string;
+  previousValue?: unknown;
+  newValue?: unknown;
+  ipAddress?: string;
+  createdAt: string;
+  user?: { id: string; firstName: string; lastName: string; email: string };
+  agent?: { id: string; name: string; referralCode: string };
+}
+
+export interface AgentDashboard {
+  totalBusinessesContacted: number;
+  totalRegistered: number;
+  totalInvitationsSent: number;
+  pendingClaims: number;
+  pendingReviews: number;
+  approvedProviders: number;
+  rejectedProviders: number;
+  monthlyRegistrations: { month: string; count: number }[];
+  weeklyRegistrations: { week: string; count: number }[];
+  approvalRate: number;
+  todaysFollowUps: OutreachActivity[];
+  upcomingFollowUps: OutreachActivity[];
+  overdueFollowUps: OutreachActivity[];
+}
+
+export interface AdminReport {
+  totalProviders: number;
+  pendingApproval: number;
+  approved: number;
+  rejected: number;
+  invited: number;
+  claimed: number;
+  completionRate: number;
+  averageApprovalTime: number;
+  averageOnboardingTime: number;
+  agentRankings: { agentId: string; name: string; totalRegistered: number; approvedCount: number }[];
+  statePerformance: { state: string; count: number }[];
+  lgaPerformance: { lga: string; count: number }[];
+  monthlyGrowth: { month: string; count: number }[];
+}
+
+export interface CreateProviderInput {
+  businessName: string;
+  category?: string;
+  sector?: string;
+  contactPerson: string;
+  phoneNumber: string;
+  email: string;
+  whatsappNumber?: string;
+  address?: string;
+  state?: string;
+  lga?: string;
+  description?: string;
+  gpsCoordinates?: { lat: number; lng: number };
+  website?: string;
+  socialLinks?: Record<string, string>;
 }
 
 export interface Conversation {

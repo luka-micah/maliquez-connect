@@ -14,7 +14,7 @@ const initialState: AuthState = {
   accessToken: null,
   refreshToken: null,
   isAuthenticated: false,
-  loading: false,
+  loading: true,
 };
 
 interface SetCredentialsPayload {

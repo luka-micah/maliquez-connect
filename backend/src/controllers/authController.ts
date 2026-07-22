@@ -78,6 +78,10 @@ export const login = async (req: AuthRequest, res: Response, next: NextFunction)
       throw ApiError.forbidden('Your account has been suspended');
     }
 
+    if (user.status === 'INACTIVE') {
+      throw ApiError.forbidden('Your account is pending activation. Please wait for administrator approval.');
+    }
+
     const tokens = generateTokens(user.id, user.role);
 
     await prisma.user.update({

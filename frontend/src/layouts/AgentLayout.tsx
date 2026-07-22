@@ -1,7 +1,7 @@
 import { Outlet, NavLink } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
-import { FiGrid, FiUsers, FiBriefcase, FiList, FiFolder, FiStar, FiBarChart2, FiImage, FiCalendar, FiClipboard, FiAward, FiMenu, FiX, FiShield, FiUserCheck, FiServer } from 'react-icons/fi';
+import { FiGrid, FiUsers, FiMail, FiCalendar, FiClock, FiUserCheck, FiStar, FiMenu, FiX } from 'react-icons/fi';
 import { useState } from 'react';
 import type { IconType } from 'react-icons';
 
@@ -12,29 +12,20 @@ interface SidebarLink {
 }
 
 const sidebarLinks: SidebarLink[] = [
-  { to: '/admin/dashboard', label: 'Dashboard', icon: FiGrid },
-  { to: '/admin/users', label: 'Users', icon: FiUsers },
-  { to: '/admin/providers', label: 'Providers', icon: FiBriefcase },
-  { to: '/admin/listings', label: 'Listings', icon: FiList },
-  { to: '/admin/categories', label: 'Categories', icon: FiFolder },
-  { to: '/admin/ads', label: 'Ads', icon: FiImage },
-  { to: '/admin/events', label: 'Events', icon: FiCalendar },
-  { to: '/admin/events/registrations', label: 'Registrations', icon: FiClipboard },
-  { to: '/admin/reviews', label: 'Reviews', icon: FiStar },
-  { to: '/admin/reports', label: 'Reports', icon: FiBarChart2 },
-  { to: '/admin/agents', label: 'Agents', icon: FiUserCheck },
-  { to: '/admin/onboardings', label: 'Onboardings', icon: FiServer },
-  { to: '/admin/agent-leaderboard', label: 'Agent Leaders', icon: FiAward },
+  { to: '/agent/dashboard', label: 'Dashboard', icon: FiGrid },
+  { to: '/agent/providers', label: 'Providers', icon: FiUsers },
+  { to: '/agent/pipeline', label: 'Pipeline', icon: FiStar },
+  { to: '/agent/follow-ups', label: 'Follow-ups', icon: FiClock },
+  { to: '/agent/activities', label: 'Activities', icon: FiCalendar },
 ];
 
-const AdminLayout = () => {
+const AgentLayout = () => {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <div className="flex-1 flex overflow-x-auto">
-        {/* Mobile sidebar toggle */}
         <button
           onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
           className="md:hidden fixed bottom-6 right-6 z-50 w-12 h-12 bg-primary-600 text-white rounded-xl shadow-lg hover:bg-primary-500 flex items-center justify-center"
@@ -43,7 +34,6 @@ const AdminLayout = () => {
           {mobileSidebarOpen ? <FiX className="w-5 h-5" /> : <FiMenu className="w-5 h-5" />}
         </button>
 
-        {/* Mobile sidebar overlay */}
         {mobileSidebarOpen && (
           <div
             className="fixed inset-0 bg-black/50 z-40 md:hidden"
@@ -51,12 +41,11 @@ const AdminLayout = () => {
           />
         )}
 
-        {/* Mobile sidebar drawer */}
         <aside className={`fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 rounded-t-2xl shadow-2xl transition-transform duration-300 md:hidden ${mobileSidebarOpen ? 'translate-y-0' : 'translate-y-full'}`}>
           <div className="flex items-center justify-center pt-3 pb-2">
             <div className="w-10 h-1 bg-gray-300 rounded-full" />
           </div>
-          <nav className="grid grid-cols-4 gap-1 pb-6 px-3 max-h-[50vh] overflow-y-auto">
+          <nav className="grid grid-cols-5 gap-1 pb-6 px-3 max-h-[50vh] overflow-y-auto">
             {sidebarLinks.map((link) => (
               <NavLink
                 key={link.to}
@@ -75,7 +64,6 @@ const AdminLayout = () => {
           </nav>
         </aside>
 
-        {/* Desktop sidebar */}
         <aside className="w-64 bg-white border-r border-gray-200 hidden md:block min-w-0">
           <nav className="p-4 space-y-1 sticky top-16">
             {sidebarLinks.map((link) => (
@@ -103,4 +91,4 @@ const AdminLayout = () => {
   );
 };
 
-export default AdminLayout;
+export default AgentLayout;

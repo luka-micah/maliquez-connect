@@ -15,12 +15,12 @@ interface StatCardConfig {
 }
 
 const statCards: StatCardConfig[] = [
-  { key: 'totalUsers', label: 'Total Users', icon: FiUsers, color: 'bg-blue-500', link: '/admin/users' },
-  { key: 'totalProviders', label: 'Total Providers', icon: FiBriefcase, color: 'bg-green-500', link: '/admin/providers' },
-  { key: 'totalListings', label: 'Total Listings', icon: FiList, color: 'bg-purple-500', link: '/admin/listings' },
-  { key: 'totalReviews', label: 'Total Reviews', icon: FiStar, color: 'bg-amber-500', link: '/admin/reviews' },
-  { key: 'pendingListings', label: 'Pending Listings', icon: FiClock, color: 'bg-orange-500', link: '/admin/listings' },
-  { key: 'pendingReviews', label: 'Pending Reviews', icon: FiAlertCircle, color: 'bg-red-500', link: '/admin/reviews' },
+  { key: 'totalUsers', label: 'Total Users', icon: FiUsers, color: 'bg-primary-600', link: '/admin/users' },
+  { key: 'totalProviders', label: 'Total Providers', icon: FiBriefcase, color: 'bg-primary-600', link: '/admin/providers' },
+  { key: 'totalListings', label: 'Total Listings', icon: FiList, color: 'bg-primary-600', link: '/admin/listings' },
+  { key: 'totalReviews', label: 'Total Reviews', icon: FiStar, color: 'bg-primary-600', link: '/admin/reviews' },
+  { key: 'pendingListings', label: 'Pending Listings', icon: FiClock, color: 'bg-primary-600', link: '/admin/listings' },
+  { key: 'pendingReviews', label: 'Pending Reviews', icon: FiAlertCircle, color: 'bg-primary-600', link: '/admin/reviews' },
 ];
 
 interface QuickLinkConfig {
@@ -51,7 +51,7 @@ const AdminDashboard = () => {
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div key={i} className="card p-6 animate-pulse">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gray-200 rounded-lg" />
+                <div className="w-12 h-12 bg-gray-200 rounded-md" />
                 <div className="space-y-2 flex-1">
                   <div className="h-4 bg-gray-200 rounded w-1/2" />
                   <div className="h-6 bg-gray-200 rounded w-1/3" />
@@ -85,7 +85,7 @@ const AdminDashboard = () => {
         {statCards.map(({ key, label, icon: Icon, color, link }) => (
           <Link key={key} to={link} className="card p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center gap-4">
-              <div className={`${color} p-3 rounded-lg text-white`}>
+              <div className={`${color} p-3 rounded-md text-white`}>
                 <Icon className="w-6 h-6" />
               </div>
               <div>
@@ -125,7 +125,7 @@ const AdminDashboard = () => {
                   {data.map((v, i) => {
                     const x = 20 + (i / (data.length - 1)) * 260;
                     const y = 120 - (v / max) * 100;
-                    return i % 2 === 0 ? <text key={i} x={x} y="135" textAnchor="middle" fill="#9ca3af" fontSize="9">{['Jan','Mar','May','Jul','Sep','Nov'][i/2]}</text> : null;
+                    return i % 2 === 0 ? <text key={i} x={x} y="135" textAnchor="middle" fill="#9ca3af" fontSize="9">{['Jan', 'Mar', 'May', 'Jul', 'Sep', 'Nov'][i / 2]}</text> : null;
                   })}
                 </>
               );

@@ -34,6 +34,10 @@ model User {
   conversationsAsUser  Conversation[]   @relation("conversationUser")
   conversationsAsProvider Conversation[] @relation("conversationProvider")
   messages             Message[]
+  agentProfile         AgentProfile?
+  providerOnboarding   ProviderOnboarding?
+  providerDocuments    ProviderDocument[]
+  auditLogs            AuditLog[]
 
   @@map("users")
 }
@@ -259,15 +263,164 @@ model Ad {
   status    String    @default("ACTIVE")
   startDate DateTime?
   endDate   DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("ads")
+}
+
+model AgentProfile {
+  id            String      @id @default(cuid())
+  userId        String      @unique
+  name          String
+  referralCode  String      @unique
+  phone         String?
+  assignedState String?
+  assignedLGA   String?
+  status        AgentStatus @default(ACTIVE)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  providerOnboardings ProviderOnboarding[]
+  outreachActivities  OutreachActivity[]
+  auditLogs           AuditLog[]
+
+  @@index([referralCode])
+  @@index([userId])
+  @@index([status])
+  @@map("agent_profiles")
+}
+
+model ProviderOnboarding {
+  id               String           @id @default(cuid())
+  providerId       String           @unique
+  agentId          String
+  businessName     String
+  category         String?
+  sector           String?
+  contactPerson    String
+  phoneNumber      String
+  email            String
+  whatsappNumber   String?
+  address          String?
+  state            String?
+  lga              String?
+  description      String?
+  gpsCoordinates   Json?
+  website          String?
+  socialLinks      Json?
+  onboardingStatus OnboardingStatus @default(PROSPECT)
+  onboardingNotes  String?
+  invitedAt        DateTime?
+  claimedAt        DateTime?
+  approvedAt       DateTime?
+  rejectedAt       DateTime?
+  rejectedReason   String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  agent               AgentProfile        @relation(fields: [agentId], references: [id])
+  provider            User                @relation(fields: [providerId], references: [id])
+  outreachActivities  OutreachActivity[]  @relation("ActivityProvider")
+  onboardingActivities OutreachActivity[] @relation("ActivityOnboarding")
+  invitationTokens    InvitationToken[]    @relation("InvitationProvider")
+  documents           ProviderDocument[]
+
+  @@index([agentId])
+  @@index([providerId])
+  @@index([onboardingStatus])
+  @@index([email])
+  @@index([state])
+  @@index([lga])
+  @@map("provider_onboardings")
+}
+
+model ProviderDocument {
+  id            String       @id @default(cuid())
+  providerId    String
+  onboardingId  String
+  documentType  DocumentType
+  fileUrl       String
+  publicId      String?
+  fileName      String?
+  status        String       @default("PENDING")
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  onboarding ProviderOnboarding @relation(fields: [onboardingId], references: [id], onDelete: Cascade)
+  provider   User               @relation(fields: [providerId], references: [id])
+
+  @@index([onboardingId])
+  @@index([providerId])
+  @@map("provider_documents")
+}
+
+model OutreachActivity {
+  id            String       @id @default(cuid())
+  agentId       String
+  providerId    String
+  onboardingId  String?
+  activityType  ActivityType
+  note          String?
+  nextFollowUp  DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  agent      AgentProfile        @relation(fields: [agentId], references: [id])
+  provider   ProviderOnboarding  @relation("ActivityProvider", fields: [providerId], references: [id])
+  onboarding ProviderOnboarding? @relation("ActivityOnboarding", fields: [onboardingId], references: [id])
+
+  @@index([agentId])
+  @@index([providerId])
+  @@index([nextFollowUp])
+  @@map("outreach_activities")
+}
+
+model AuditLog {
+  id            String      @id @default(cuid())
+  userId        String?
+  agentId       String?
+  action        AuditAction
+  entityType    String
+  entityId      String?
+  previousValue Json?
+  newValue      Json?
+  ipAddress     String?
+  createdAt     DateTime    @default(now())
+
+  user  User?         @relation(fields: [userId], references: [id])
+  agent AgentProfile? @relation(fields: [agentId], references: [id])
+
+  @@index([userId])
+  @@index([agentId])
+  @@index([action])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model InvitationToken {
+  id            String   @id @default(cuid())
+  email         String
+  token         String   @unique
+  providerId    String
+  expiresAt     DateTime
+  usedAt        DateTime?
+  createdAt     DateTime @default(now())
+
+  provider ProviderOnboarding @relation("InvitationProvider", fields: [providerId], references: [id])
+
+  @@index([token])
+  @@index([email])
+  @@index([expiresAt])
+  @@map("invitation_tokens")
 }
 
 enum Role {
   USER
   PROVIDER
+  AGENT
   ADMIN
 }
 
@@ -308,4 +461,60 @@ enum NotificationType {
   REVIEW
   SYSTEM
   APPROVAL
+  ONBOARDING
+}
+
+enum AgentStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  PENDING
+}
+
+enum OnboardingStatus {
+  PROSPECT
+  CONTACTED
+  INTERESTED
+  REGISTERED
+  INVITED
+  ACCOUNT_CLAIMED
+  PROFILE_COMPLETED
+  DOCUMENTS_SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  PUBLISHED
+  REJECTED
+  SUSPENDED
+  INACTIVE
+}
+
+enum ActivityType {
+  PHONE_CALL
+  WHATSAPP
+  SMS
+  EMAIL
+  OFFICE_VISIT
+  MEETING
+  FOLLOW_UP
+  OTHER
+}
+
+enum DocumentType {
+  CAC_CERTIFICATE
+  NATIONAL_ID
+  DRIVER_LICENSE
+  UTILITY_BILL
+  BUSINESS_REGISTRATION
+  TAX_CERTIFICATE
+  OTHER
+}
+
+enum AuditAction {
+  AGENT_REGISTRATION
+  PROVIDER_REGISTRATION
+  STATUS_CHANGE
+  APPROVAL
+  REASSIGNMENT
+  INVITATION
+  DOCUMENT_UPLOAD
 }

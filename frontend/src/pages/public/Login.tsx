@@ -57,6 +57,9 @@ const Login = () => {
           case 'PROVIDER':
             redirectPath = '/provider/dashboard';
             break;
+          case 'AGENT':
+            redirectPath = '/agent/dashboard';
+            break;
           case 'USER':
           default:
             redirectPath = '/dashboard';
@@ -161,6 +164,11 @@ const Login = () => {
             Create one
           </Link>
         </p>
+        <div className="mt-4 pt-4 border-t border-gray-100 text-center">
+          <Link to="/register-agent" className="text-sm text-primary-600 hover:text-primary-700 font-medium">
+            Become an Agent →
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -599,6 +599,11 @@ const Register = () => {
             Sign in
           </Link>
         </p>
+        <div className="mt-4 pt-4 border-t border-gray-100 text-center">
+          <Link to="/register-agent" className="text-sm text-primary-600 hover:text-primary-700 font-medium">
+            Register as an Agent instead →
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -26,6 +26,7 @@ const Navbar = () => {
     switch (user.role) {
       case 'ADMIN': return '/admin/dashboard';
       case 'PROVIDER': return '/provider/dashboard';
+      case 'AGENT': return '/agent/dashboard';
       default: return '/dashboard';
     }
   };
@@ -45,6 +46,7 @@ const Navbar = () => {
             <div className="hidden md:flex items-center gap-6">
               <Link to="/search" className="text-brand-darkText hover:text-primary-600">Search</Link>
               <Link to="/categories" className="text-brand-darkText hover:text-primary-600">Categories</Link>
+              <Link to="/compare" className="text-brand-darkText hover:text-primary-600">Compare</Link>
               <Link to="/events" className="text-brand-darkText hover:text-primary-600">Events</Link>
               <Link to="/about" className="text-brand-darkText hover:text-primary-600">About Us</Link>
             </div>
@@ -123,6 +125,7 @@ const Navbar = () => {
             <div className="space-y-1">
               <Link to="/search" className="block px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-700 rounded-lg text-sm font-medium" onClick={() => setIsOpen(false)}>Search</Link>
               <Link to="/categories" className="block px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-700 rounded-lg text-sm font-medium" onClick={() => setIsOpen(false)}>Categories</Link>
+              <Link to="/compare" className="block px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-700 rounded-lg text-sm font-medium" onClick={() => setIsOpen(false)}>Compare</Link>
               <Link to="/events" className="block px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-700 rounded-lg text-sm font-medium" onClick={() => setIsOpen(false)}>Events</Link>
               <Link to="/about" className="block px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-700 rounded-lg text-sm font-medium" onClick={() => setIsOpen(false)}>About Us</Link>
             </div>

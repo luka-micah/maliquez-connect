@@ -22,6 +22,8 @@ import adRoutes from './routes/adRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
 import eventRegistrationRoutes from './routes/eventRegistrationRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import agentRoutes from './routes/agentRoutes.js';
+import providerOnboardingRoutes from './routes/providerOnboardingRoutes.js';
 
 const app = express();
 
@@ -67,6 +69,8 @@ app.use('/api/v1/ads', adRoutes);
 app.use('/api/v1/events', eventRoutes);
 app.use('/api/v1/event-registrations', eventRegistrationRoutes);
 app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/agents', agentRoutes);
+app.use('/api/v1/provider', providerOnboardingRoutes);
 
 app.use((_req, res) => {
   res.status(404).json({ success: false, message: 'Route not found' });
