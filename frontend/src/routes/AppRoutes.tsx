@@ -18,6 +18,8 @@ import ResetPassword from '../pages/public/ResetPassword';
 import About from '../pages/public/About';
 import CategoryPage from '../pages/public/CategoryPage';
 import Events from '../pages/public/Events';
+import Blog from '../pages/public/Blog';
+import BlogPost from '../pages/public/BlogPost';
 import NotFound from '../pages/public/NotFound';
 
 import UserProfile from '../pages/user/UserProfile';
@@ -40,11 +42,14 @@ import AdminListings from '../pages/admin/AdminListings';
 import AdminCategories from '../pages/admin/AdminCategories';
 import AdminAds from '../pages/admin/AdminAds';
 import AdminEvents from '../pages/admin/AdminEvents';
+import AdminBlogs from '../pages/admin/AdminBlogs';
 import AdminEventRegistrations from '../pages/admin/AdminEventRegistrations';
 import AdminReviews from '../pages/admin/AdminReviews';
 import AdminReports from '../pages/admin/AdminReports';
 import AdminProviderAnalytics from '../pages/admin/AdminProviderAnalytics';
 import AdminLogin from '../pages/admin/AdminLogin';
+import AdminAdmins from '../pages/admin/AdminAdmins';
+import AdminProfile from '../pages/admin/AdminProfile';
 import AgentLeaderboard from '../pages/admin/AgentLeaderboard';
 import AdminAgents from '../pages/admin/AdminAgents';
 import AdminOnboardings from '../pages/admin/AdminOnboardings';
@@ -75,6 +80,8 @@ const AppRoutes = () => (
       <Route path="/reset-password/:token" element={<ResetPassword />} />
       <Route path="/about" element={<About />} />
       <Route path="/events" element={<Events />} />
+      <Route path="/blog" element={<Blog />} />
+      <Route path="/blog/:slug" element={<BlogPost />} />
       <Route path="/admin/login" element={<AdminLogin />} />
     </Route>
 
@@ -89,7 +96,7 @@ const AppRoutes = () => (
       <Route path="/inbox/:id" element={<ChatWindow />} />
     </Route>
 
-    <Route element={<ProtectedRoute roles={['PROVIDER', 'ADMIN']}><ProviderLayout /></ProtectedRoute>}>
+    <Route element={<ProtectedRoute roles={['PROVIDER', 'ADMIN', 'SUPER_ADMIN']}><ProviderLayout /></ProtectedRoute>}>
       <Route path="/provider/dashboard" element={<ProviderDashboard />} />
       <Route path="/provider/listings" element={<ProviderListings />} />
       <Route path="/provider/analytics" element={<ProviderAnalyticsPage />} />
@@ -99,7 +106,7 @@ const AppRoutes = () => (
       <Route path="/provider/inbox/:id" element={<ChatWindow />} />
     </Route>
 
-    <Route element={<ProtectedRoute roles={['AGENT', 'ADMIN']}><AgentLayout /></ProtectedRoute>}>
+    <Route element={<ProtectedRoute roles={['AGENT', 'ADMIN', 'SUPER_ADMIN']}><AgentLayout /></ProtectedRoute>}>
       <Route path="/agent/dashboard" element={<AgentDashboard />} />
       <Route path="/agent/providers" element={<ProviderManagement />} />
       <Route path="/agent/providers/:id" element={<ProviderDetails />} />
@@ -108,21 +115,24 @@ const AppRoutes = () => (
       <Route path="/agent/activities" element={<Activities />} />
     </Route>
 
-    <Route element={<ProtectedRoute roles={['ADMIN']}><AdminLayout /></ProtectedRoute>}>
+    <Route element={<ProtectedRoute roles={['ADMIN', 'SUPER_ADMIN']}><AdminLayout /></ProtectedRoute>}>
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
       <Route path="/admin/users" element={<AdminUsers />} />
+      <Route path="/admin/admins" element={<AdminAdmins />} />
       <Route path="/admin/providers" element={<AdminProviders />} />
       <Route path="/admin/providers/analytics/:id" element={<AdminProviderAnalytics />} />
       <Route path="/admin/listings" element={<AdminListings />} />
       <Route path="/admin/categories" element={<AdminCategories />} />
       <Route path="/admin/ads" element={<AdminAds />} />
       <Route path="/admin/events" element={<AdminEvents />} />
+      <Route path="/admin/blogs" element={<AdminBlogs />} />
       <Route path="/admin/events/registrations" element={<AdminEventRegistrations />} />
       <Route path="/admin/reviews" element={<AdminReviews />} />
       <Route path="/admin/reports" element={<AdminReports />} />
       <Route path="/admin/agents" element={<AdminAgents />} />
       <Route path="/admin/onboardings" element={<AdminOnboardings />} />
       <Route path="/admin/agent-leaderboard" element={<AgentLeaderboard />} />
+      <Route path="/admin/profile" element={<AdminProfile />} />
     </Route>
 
     <Route path="*" element={<NotFound />} />

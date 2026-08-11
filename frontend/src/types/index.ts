@@ -5,7 +5,7 @@ export interface User {
   email: string;
   phone?: string;
   avatar?: string;
-  role: 'USER' | 'PROVIDER' | 'AGENT' | 'ADMIN';
+  role: 'USER' | 'PROVIDER' | 'AGENT' | 'ADMIN' | 'SUPER_ADMIN';
   isVerified: boolean;
   status: 'ACTIVE' | 'SUSPENDED' | 'INACTIVE';
   providerProfile?: ProviderProfile;
@@ -223,6 +223,36 @@ export interface AppEvent {
   status: 'ACTIVE' | 'INACTIVE';
   createdAt: string;
   updatedAt: string;
+}
+
+export interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt?: string;
+  content: string;
+  coverImage?: string;
+  tags: string[];
+  authorId: string;
+  author?: { firstName: string; lastName: string; avatar?: string };
+  status: 'DRAFT' | 'PUBLISHED';
+  publishedAt?: string;
+  likeCount: number;
+  viewCount: number;
+  createdAt: string;
+  updatedAt: string;
+  _count?: { comments: number };
+  liked?: boolean;
+}
+
+export interface BlogComment {
+  id: string;
+  postId: string;
+  userId: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+  user: { id: string; firstName: string; lastName: string; avatar?: string };
 }
 
 export interface Ad {

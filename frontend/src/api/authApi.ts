@@ -15,6 +15,8 @@ import type {
   Ad,
   AppEvent,
   EventRegistration,
+  BlogPost,
+  BlogComment,
   AdminDashboard,
   ProviderAnalytics,
   Conversation,
@@ -45,6 +47,16 @@ export const authApi = {
     api.get('/auth/profile'),
   updateProfile: (data: Partial<User>): Promise<AxiosResponse<ApiResponse<User>>> =>
     api.put('/auth/profile', data),
+  changePassword: (data: { currentPassword: string; newPassword: string }): Promise<AxiosResponse<ApiResponse<null>>> =>
+    api.put('/auth/change-password', data),
+  uploadAvatar: (file: File): Promise<AxiosResponse<ApiResponse<User>>> =>
+    api.post('/auth/avatar', (() => {
+      const fd = new FormData();
+      fd.append('avatar', file);
+      return fd;
+    })(), {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
   forgotPassword: (email: string): Promise<AxiosResponse<ApiResponse<null>>> =>
     api.post('/auth/forgot-password', { email }),
   resetPassword: (data: { token: string; password: string }): Promise<AxiosResponse<ApiResponse<null>>> =>
@@ -204,6 +216,35 @@ export const eventRegistrationApi = {
     api.get(`/event-registrations/${eventId}`, { params }),
 };
 
+export const blogApi = {
+  getPublished: (params?: PaginationParams): Promise<AxiosResponse<ApiResponse<BlogPost[]>>> =>
+    api.get('/blogs/published', { params }),
+  getPublishedBySlug: (slug: string): Promise<AxiosResponse<ApiResponse<BlogPost>>> =>
+    api.get(`/blogs/posts/${slug}`),
+  getComments: (slug: string): Promise<AxiosResponse<ApiResponse<BlogComment[]>>> =>
+    api.get(`/blogs/posts/${slug}/comments`),
+  toggleLike: (postId: string): Promise<AxiosResponse<ApiResponse<{ liked: boolean; likeCount: number }>>> =>
+    api.post(`/blogs/${postId}/like`),
+  addComment: (postId: string, content: string): Promise<AxiosResponse<ApiResponse<BlogComment>>> =>
+    api.post(`/blogs/${postId}/comments`, { content }),
+  deleteComment: (commentId: string): Promise<AxiosResponse<ApiResponse<null>>> =>
+    api.delete(`/blogs/comments/${commentId}`),
+  getAll: (params?: PaginationParams): Promise<AxiosResponse<ApiResponse<BlogPost[]>>> =>
+    api.get('/blogs', { params }),
+  getById: (id: string): Promise<AxiosResponse<ApiResponse<BlogPost>>> =>
+    api.get(`/blogs/admin/${id}`),
+  create: (data: FormData): Promise<AxiosResponse<ApiResponse<BlogPost>>> =>
+    api.post('/blogs/admin', data, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+  update: (id: string, data: FormData): Promise<AxiosResponse<ApiResponse<BlogPost>>> =>
+    api.put(`/blogs/admin/${id}`, data, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+  delete: (id: string): Promise<AxiosResponse<ApiResponse<null>>> =>
+    api.delete(`/blogs/admin/${id}`),
+};
+
 export const adminApi = {
   getDashboard: (): Promise<AxiosResponse<ApiResponse<AdminDashboard>>> =>
     api.get('/admin/dashboard'),
@@ -252,4 +293,11 @@ export const adminApi = {
     api.get('/admin/reports'),
   getAuditLogs: (params?: PaginationParams): Promise<AxiosResponse<ApiResponse<AuditLogEntry[]>>> =>
     api.get('/admin/audit-logs', { params }),
+  // Admin account management (SUPER_ADMIN only)
+  getAdmins: (params?: PaginationParams): Promise<AxiosResponse<ApiResponse<User[]>>> =>
+    api.get('/admin/admins', { params }),
+  createAdmin: (data: { firstName: string; lastName: string; email: string; phone?: string }): Promise<AxiosResponse<ApiResponse<User>>> =>
+    api.post('/admin/admins', data),
+  updateAdminRole: (id: string, role: 'ADMIN' | 'USER'): Promise<AxiosResponse<ApiResponse<User>>> =>
+    api.put(`/admin/admins/${id}/role`, { role }),
 };

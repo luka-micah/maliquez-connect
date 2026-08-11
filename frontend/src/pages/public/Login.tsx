@@ -43,7 +43,7 @@ const Login = () => {
     try {
       const response = await login(data as unknown as LoginInput);
 
-      if (response.data.user.role === 'ADMIN') {
+      if (response.data.user.role === 'ADMIN' || response.data.user.role === 'SUPER_ADMIN') {
         toast.error('Admins must use the Admin Portal to sign in.');
         setSubmitting(false);
         return;

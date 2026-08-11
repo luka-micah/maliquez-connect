@@ -8,7 +8,6 @@ import { FiSearch, FiToggleLeft, FiToggleRight, FiAlertCircle } from 'react-icon
 import toast from 'react-hot-toast';
 import { ApiResponse, User, Pagination as PaginationType } from '../../types';
 
-const roleOptions: string[] = ['', 'USER', 'PROVIDER', 'ADMIN'];
 const statusOptions: string[] = ['', 'ACTIVE', 'SUSPENDED'];
 
 interface AdminUsersQueryResult {
@@ -20,13 +19,12 @@ const AdminUsers = () => {
   const queryClient = useQueryClient();
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState<string>('');
-  const [roleFilter, setRoleFilter] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<string>('');
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ['adminUsers', page, search, roleFilter, statusFilter],
+    queryKey: ['adminUsers', page, search, statusFilter],
     queryFn: () =>
-      adminApi.getUsers({ page, limit: 10, search, role: roleFilter || undefined, status: statusFilter || undefined }),
+      adminApi.getUsers({ page, limit: 10, search, status: statusFilter || undefined }),
   });
 
   const users: User[] = data?.data?.data || [];
@@ -89,16 +87,6 @@ const AdminUsers = () => {
             />
           </div>
           <select
-            value={roleFilter}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => { setRoleFilter(e.target.value); setPage(1); }}
-            className="input-field sm:w-40"
-          >
-            <option value="">All Roles</option>
-            {roleOptions.slice(1).map((r: string) => (
-              <option key={r} value={r}>{r}</option>
-            ))}
-          </select>
-          <select
             value={statusFilter}
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => { setStatusFilter(e.target.value); setPage(1); }}
             className="input-field sm:w-40"
@@ -129,7 +117,6 @@ const AdminUsers = () => {
                   <tr>
                     <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                     <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
                     <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                     <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
                     <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -140,11 +127,6 @@ const AdminUsers = () => {
                     <tr key={user.id} className="hover:bg-gray-50">
                       <td className="px-4 py-3 text-sm font-medium text-gray-900">{`${user.firstName} ${user.lastName}`}</td>
                       <td className="px-4 py-3 text-sm text-gray-500">{user.email}</td>
-                      <td className="px-4 py-3">
-                        <span className={`badge ${user.role === 'ADMIN' ? 'badge-danger' : user.role === 'PROVIDER' ? 'badge-warning' : 'badge-info'}`}>
-                          {user.role}
-                        </span>
-                      </td>
                       <td className="px-4 py-3">
                         <span className={`badge ${user.status === 'ACTIVE' ? 'badge-success' : 'badge-danger'}`}>
                           {user.status}
@@ -189,9 +171,6 @@ const AdminUsers = () => {
                       <p className="text-xs text-gray-500 truncate">{user.email}</p>
                     </div>
                     <div className="flex gap-1.5 flex-shrink-0">
-                      <span className={`badge ${user.role === 'ADMIN' ? 'badge-danger' : user.role === 'PROVIDER' ? 'badge-warning' : 'badge-info'}`}>
-                        {user.role}
-                      </span>
                       <span className={`badge ${user.status === 'ACTIVE' ? 'badge-success' : 'badge-danger'}`}>
                         {user.status}
                       </span>

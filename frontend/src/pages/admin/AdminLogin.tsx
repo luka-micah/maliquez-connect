@@ -44,7 +44,7 @@ const AdminLogin = () => {
       const response = await login(data as unknown as LoginInput);
       const role = response.data.user.role;
 
-      if (role !== 'ADMIN') {
+      if (role !== 'ADMIN' && role !== 'SUPER_ADMIN') {
         toast.error('Access denied. Admin credentials required.');
         setSubmitting(false);
         return;

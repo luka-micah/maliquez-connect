@@ -581,3 +581,59 @@ export const sendReviewModeratedEmail = async ({ email, firstName, status }: Sen
     html: emailLayout(content),
   });
 };
+
+/* ─── Admin credentials ─────────────────────────────── */
+
+interface SendAdminCredentialsEmailParams {
+  email: string;
+  firstName: string;
+  temporaryPassword: string;
+}
+
+export const sendAdminCredentialsEmail = async ({
+  email,
+  firstName,
+  temporaryPassword,
+}: SendAdminCredentialsEmailParams): Promise<void> => {
+  const loginUrl = `${CLIENT_URL}/admin/login`;
+
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;color:#111827;font-weight:600;">You've been granted admin access</h2>
+    <p style="margin:0 0 20px;font-size:14px;color:#6b7280;line-height:1.6;">
+      Hi ${firstName},
+    </p>
+    <p style="margin:0 0 20px;font-size:14px;color:#6b7280;line-height:1.6;">
+      You have been added as an administrator on Maliquez Connect. Use the credentials below to sign in to the admin portal:
+    </p>
+    <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:0 0 20px;background-color:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;">
+      <tr>
+        <td style="padding:12px 16px;">
+          <p style="margin:0 0 8px;font-size:12px;color:#6b7280;">Email</p>
+          <p style="margin:0 0 16px;font-size:14px;color:#111827;font-weight:600;word-break:break-all;">${email}</p>
+          <p style="margin:0 0 8px;font-size:12px;color:#6b7280;">Temporary password</p>
+          <p style="margin:0 0 0;font-size:14px;color:#111827;font-weight:600;">${temporaryPassword}</p>
+        </td>
+      </tr>
+    </table>
+    <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px;">
+      <tr>
+        <td align="center">
+          <a href="${loginUrl}" target="_blank" style="display:inline-block;padding:12px 24px;background-color:#059669;color:#ffffff;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;">
+            Sign In to Admin Portal
+          </a>
+        </td>
+      </tr>
+    </table>
+    <p style="margin:0 0 20px;font-size:14px;color:#6b7280;line-height:1.6;">
+      For security reasons, please change your password after your first sign in. If you were not expecting this email, please contact us immediately.
+    </p>
+    <p style="margin:0 0 0;font-size:14px;color:#6b7280;line-height:1.6;">
+      Maliquez Connect Team
+    </p>`;
+
+  await sendEmail({
+    to: email,
+    subject: "You've been granted admin access to Maliquez Connect",
+    html: emailLayout(content),
+  });
+};

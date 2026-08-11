@@ -1,8 +1,9 @@
 import { Outlet, NavLink } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
-import { FiGrid, FiUsers, FiBriefcase, FiList, FiFolder, FiStar, FiBarChart2, FiImage, FiCalendar, FiClipboard, FiAward, FiMenu, FiX, FiShield, FiUserCheck, FiServer } from 'react-icons/fi';
+import { FiGrid, FiUsers, FiBriefcase, FiList, FiFolder, FiStar, FiBarChart2, FiImage, FiCalendar, FiClipboard, FiAward, FiMenu, FiX, FiShield, FiUserCheck, FiServer, FiEdit3, FiUser } from 'react-icons/fi';
 import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 import type { IconType } from 'react-icons';
 
 interface SidebarLink {
@@ -20,15 +21,25 @@ const sidebarLinks: SidebarLink[] = [
   { to: '/admin/ads', label: 'Ads', icon: FiImage },
   { to: '/admin/events', label: 'Events', icon: FiCalendar },
   { to: '/admin/events/registrations', label: 'Registrations', icon: FiClipboard },
+  { to: '/admin/blogs', label: 'Blog', icon: FiEdit3 },
   { to: '/admin/reviews', label: 'Reviews', icon: FiStar },
   { to: '/admin/reports', label: 'Reports', icon: FiBarChart2 },
   { to: '/admin/agents', label: 'Agents', icon: FiUserCheck },
   { to: '/admin/onboardings', label: 'Onboardings', icon: FiServer },
   { to: '/admin/agent-leaderboard', label: 'Agent Leaders', icon: FiAward },
+  { to: '/admin/profile', label: 'Profile', icon: FiUser },
+];
+
+const superAdminLinks: SidebarLink[] = [
+  { to: '/admin/admins', label: 'Admins', icon: FiShield },
 ];
 
 const AdminLayout = () => {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const { user } = useAuth() as { user: { role?: string } | null };
+  const visibleLinks: SidebarLink[] = user?.role === 'SUPER_ADMIN'
+    ? [...sidebarLinks, ...superAdminLinks]
+    : sidebarLinks;
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -57,7 +68,7 @@ const AdminLayout = () => {
             <div className="w-10 h-1 bg-gray-300 rounded-full" />
           </div>
           <nav className="grid grid-cols-4 gap-1 pb-6 px-3 max-h-[50vh] overflow-y-auto">
-            {sidebarLinks.map((link) => (
+            {visibleLinks.map((link) => (
               <NavLink
                 key={link.to}
                 to={link.to}
@@ -78,7 +89,7 @@ const AdminLayout = () => {
         {/* Desktop sidebar */}
         <aside className="w-64 bg-white border-r border-gray-200 hidden md:block min-w-0">
           <nav className="p-4 space-y-1 sticky top-16">
-            {sidebarLinks.map((link) => (
+            {visibleLinks.map((link) => (
               <NavLink
                 key={link.to}
                 to={link.to}

@@ -13,6 +13,8 @@ interface AuthContextValue {
   register: (data: RegisterInput) => Promise<ApiResponse<{ user: User; accessToken: string; refreshToken: string }>>;
   logout: () => Promise<void>;
   updateProfile: (data: Partial<User>) => Promise<ApiResponse<User>>;
+  changePassword: (data: { currentPassword: string; newPassword: string }) => Promise<ApiResponse<null>>;
+  updateAvatar: (file: File) => Promise<ApiResponse<User>>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -78,8 +80,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return res.data;
   };
 
+  const changePassword = async (data: { currentPassword: string; newPassword: string }): Promise<ApiResponse<null>> => {
+    const res = await authApi.changePassword(data);
+    return res.data;
+  };
+
+  const updateAvatar = async (file: File): Promise<ApiResponse<User>> => {
+    const res = await authApi.uploadAvatar(file);
+    dispatch(setUser(res.data.data));
+    return res.data;
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, loading, login, register, logout, updateProfile }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, loading, login, register, logout, updateProfile, changePassword, updateAvatar }}>
       {children}
     </AuthContext.Provider>
   );

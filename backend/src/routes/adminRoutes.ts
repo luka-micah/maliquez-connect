@@ -7,13 +7,14 @@ import {
   getAgents, updateAgentStatus, reassignProvider,
   approveProvider, rejectProvider, publishProvider,
   getAdminReports, getAuditLogs, resetOnboarding, getAdminAllProviders,
+  getAdmins, createAdmin, updateAdminRole,
 } from '../controllers/adminController.js';
 import { authenticate, authorize } from '../middlewares/auth.js';
 import { ROLES } from '../constants/roles.js';
 
 const router = Router();
 
-router.use(authenticate, authorize(ROLES.ADMIN));
+router.use(authenticate, authorize(ROLES.ADMIN, ROLES.SUPER_ADMIN));
 
 router.get('/dashboard', getAdminDashboard);
 router.get('/users', getUsers);
@@ -38,5 +39,10 @@ router.put('/onboardings/:id/reset', resetOnboarding);
 router.get('/onboardings', getAdminAllProviders);
 router.get('/reports', getAdminReports);
 router.get('/audit-logs', getAuditLogs);
+
+router.use(authorize(ROLES.SUPER_ADMIN));
+router.get('/admins', getAdmins);
+router.post('/admins', createAdmin);
+router.put('/admins/:id/role', updateAdminRole);
 
 export default router;

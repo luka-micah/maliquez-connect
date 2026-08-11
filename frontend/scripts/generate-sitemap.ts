@@ -21,6 +21,12 @@ interface Listing {
   status: string;
 }
 
+interface BlogPost {
+  id: string;
+  slug: string;
+  updatedAt: string;
+}
+
 interface ApiResponse<T> {
   success: boolean;
   data: T;
@@ -98,6 +104,8 @@ const generateSitemap = async () => {
     { loc: '/search', priority: '0.8', changefreq: 'daily' },
     { loc: '/categories', priority: '0.8', changefreq: 'weekly' },
     { loc: '/compare', priority: '0.6', changefreq: 'monthly' },
+    { loc: '/events', priority: '0.6', changefreq: 'weekly' },
+    { loc: '/blog', priority: '0.7', changefreq: 'daily' },
   ];
 
   for (const page of staticPages) {
@@ -130,6 +138,17 @@ const generateSitemap = async () => {
     <lastmod>${listing.updatedAt ? listing.updatedAt.split('T')[0] : now}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+  </url>`);
+  }
+
+  // Published blog posts
+  const blogPosts = await fetchAllPages<BlogPost>(`${API_URL}/blogs/published`);
+  for (const post of blogPosts) {
+    urls.push(`  <url>
+    <loc>${BASE_URL}/blog/${escapeXml(post.slug)}</loc>
+    <lastmod>${post.updatedAt ? post.updatedAt.split('T')[0] : now}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>`);
   }
 

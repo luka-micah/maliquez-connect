@@ -83,7 +83,7 @@ interface SeedUser {
   lastName: string;
   email: string;
   password: string;
-  role: 'USER' | 'PROVIDER' | 'ADMIN';
+  role: 'USER' | 'PROVIDER' | 'ADMIN' | 'SUPER_ADMIN';
   isVerified: boolean;
 }
 
@@ -131,7 +131,7 @@ interface SeedListing {
 const users: SeedUser[] = [
   {
     firstName: 'Admin', lastName: 'User', email: 'admin@seed.dev',
-    password: 'admin123', role: 'ADMIN', isVerified: true,
+    password: 'admin123', role: 'SUPER_ADMIN', isVerified: true,
   },
   {
     firstName: 'Sarah', lastName: 'Okafor', email: 'academy@seed.dev',

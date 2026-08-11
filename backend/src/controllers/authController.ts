@@ -8,6 +8,7 @@ import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '.
 import { hashPassword, comparePassword } from '../utils/password.js';
 import { ROLES } from '../constants/roles.js';
 import { sendPasswordResetEmail, sendWelcomeEmail } from '../services/emailService.js';
+import { deleteAvatarFolder, uploadAvatarToCloudinary } from '../services/cloudinaryService.js';
 import type { AuthRequest } from '../types/index.js';
 
 const generateTokens = (userId: string, role: string) => ({
@@ -169,9 +170,9 @@ export const updateProfile = async (req: AuthRequest, res: Response, next: NextF
 
     const updateData: Record<string, unknown> = {};
 
-    if (updates.firstName) updateData.firstName = updates.firstName;
-    if (updates.lastName) updateData.lastName = updates.lastName;
-    if (updates.phone) updateData.phone = updates.phone;
+    if (updates.firstName) updateData.firstName = String(updates.firstName).trim();
+    if (updates.lastName) updateData.lastName = String(updates.lastName).trim();
+    if ('phone' in updates) updateData.phone = updates.phone ? String(updates.phone).trim() : null;
     if (updates.avatar) updateData.avatar = updates.avatar;
 
     if (updates.providerProfile && user.role === ROLES.PROVIDER) {
@@ -190,6 +191,68 @@ export const updateProfile = async (req: AuthRequest, res: Response, next: NextF
     const { password: _, refreshToken: __, passwordResetToken: ___, passwordResetExpires: ____, ...safeUser } = updatedUser;
 
     res.json(ApiResponse.success(safeUser, 'Profile updated successfully'));
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const changePassword = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || typeof currentPassword !== 'string') {
+      throw ApiError.badRequest('Current password is required');
+    }
+    if (!newPassword || typeof newPassword !== 'string') {
+      throw ApiError.badRequest('New password is required');
+    }
+    if (newPassword.length < 6) {
+      throw ApiError.badRequest('New password must be at least 6 characters');
+    }
+
+    const user = await prisma.user.findUnique({ where: { id: req.userId } });
+    if (!user) {
+      throw ApiError.notFound('User not found');
+    }
+
+    if (!(await comparePassword(currentPassword, user.password))) {
+      throw ApiError.badRequest('Current password is incorrect');
+    }
+
+    const hashedPassword = await hashPassword(newPassword);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { password: hashedPassword, refreshToken: null },
+    });
+
+    res.json(ApiResponse.success(null, 'Password changed successfully'));
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const uploadAvatar = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const user = await prisma.user.findUnique({ where: { id: req.userId } });
+    if (!user) {
+      throw ApiError.notFound('User not found');
+    }
+    if (!req.file) {
+      throw ApiError.badRequest('Avatar image is required');
+    }
+
+    await deleteAvatarFolder(req.userId!);
+    const uploaded = await uploadAvatarToCloudinary(req.file, req.userId!);
+
+    const updatedUser = await prisma.user.update({
+      where: { id: user.id },
+      data: { avatar: uploaded.url },
+    });
+
+    const { password: _, refreshToken: __, passwordResetToken: ___, passwordResetExpires: ____, ...safeUser } = updatedUser;
+
+    res.json(ApiResponse.success(safeUser, 'Avatar updated successfully'));
   } catch (error) {
     next(error);
   }

@@ -1,8 +1,10 @@
 import { Prisma, Role, UserStatus, ListingStatus, Sector, ReviewStatus } from '@prisma/client';
+import { randomBytes } from 'crypto';
 import { Response, NextFunction } from 'express';
 import prisma from '../config/prisma.js';
 import ApiResponse from '../utils/ApiResponse.js';
 import ApiError from '../utils/ApiError.js';
+import { hashPassword } from '../utils/password.js';
 import { calculatePagination, parsePagination } from '../utils/helpers.js';
 import { LISTING_STATUS, REVIEW_STATUS } from '../constants/listingStatus.js';
 import { ROLES } from '../constants/roles.js';
@@ -10,6 +12,7 @@ import { invalidateCache } from '../config/redis.js';
 import {
   sendListingApprovedEmail,
   sendListingSuspendedEmail,
+  sendAdminCredentialsEmail,
 } from '../services/emailService.js';
 import type { AuthRequest } from '../types/index.js';
 
@@ -18,9 +21,7 @@ export const getUsers = async (req: AuthRequest, res: Response, next: NextFuncti
     const { role, status, search } = req.query;
     const { page, limit, skip } = parsePagination(req.query as { page?: string; limit?: string });
 
-    const where: Prisma.UserWhereInput = {};
-
-    if (role) where.role = role as Role;
+    const where: Prisma.UserWhereInput = { role: (role as Role) || ROLES.USER };
     if (status) where.status = status as UserStatus;
     if (search) {
       where.OR = [
@@ -193,6 +194,15 @@ export const updateUserStatus = async (req: AuthRequest, res: Response, next: Ne
     const existingUser = await prisma.user.findUnique({ where: { id: req.params.id } });
     if (!existingUser) {
       throw ApiError.notFound('User not found');
+    }
+
+    if (existingUser.role === ROLES.ADMIN || existingUser.role === ROLES.SUPER_ADMIN) {
+      if (req.userRole !== ROLES.SUPER_ADMIN) {
+        throw ApiError.forbidden('Only the main admin can change admin account status');
+      }
+      if (existingUser.role === ROLES.SUPER_ADMIN) {
+        throw ApiError.forbidden('The main admin account cannot be suspended');
+      }
     }
 
     const user = await prisma.user.update({
@@ -818,6 +828,139 @@ export const getProviderAnalytics = async (req: AuthRequest, res: Response, next
         },
       })
     );
+  } catch (error) {
+    next(error);
+  }
+};
+
+/* ─── Admin account management (SUPER_ADMIN only) ─────── */
+
+export const getAdmins = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { search } = req.query;
+    const { page, limit, skip } = parsePagination(req.query as { page?: string; limit?: string });
+
+    const where: Prisma.UserWhereInput = { role: { in: [ROLES.ADMIN, ROLES.SUPER_ADMIN] } };
+    if (search) {
+      where.OR = [
+        { firstName: { contains: search as string, mode: 'insensitive' } },
+        { lastName: { contains: search as string, mode: 'insensitive' } },
+        { email: { contains: search as string, mode: 'insensitive' } },
+      ];
+    }
+
+    const total = await prisma.user.count({ where });
+    const admins = await prisma.user.findMany({
+      where,
+      orderBy: { createdAt: 'asc' },
+      skip,
+      take: limit,
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        phone: true,
+        avatar: true,
+        role: true,
+        status: true,
+        createdAt: true,
+        isVerified: true,
+      },
+    });
+
+    const pagination = calculatePagination(page, limit, total);
+    res.json(ApiResponse.paginated(admins, pagination));
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createAdmin = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { firstName, lastName, email, phone } = req.body;
+
+    if (!firstName || !lastName || !email) {
+      throw ApiError.badRequest('First name, last name, and email are required');
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).trim())) {
+      throw ApiError.badRequest('Invalid email address');
+    }
+
+    const existing = await prisma.user.findUnique({ where: { email: String(email).trim().toLowerCase() } });
+    if (existing) {
+      throw ApiError.conflict('A user with this email already exists');
+    }
+
+    const temporaryPassword = randomBytes(10).toString('hex');
+    const hashedPassword = await hashPassword(temporaryPassword);
+
+    const admin = await prisma.user.create({
+      data: {
+        firstName: String(firstName).trim(),
+        lastName: String(lastName).trim(),
+        email: String(email).trim().toLowerCase(),
+        phone: phone ? String(phone).trim() : null,
+        password: hashedPassword,
+        role: ROLES.ADMIN,
+        isVerified: true,
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        phone: true,
+        role: true,
+        status: true,
+        createdAt: true,
+      },
+    });
+
+    sendAdminCredentialsEmail({
+      email: admin.email,
+      firstName: admin.firstName,
+      temporaryPassword,
+    }).catch(() => {});
+
+    res.status(201).json(ApiResponse.created(admin, 'Admin account created. Login credentials sent by email.'));
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateAdminRole = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { role } = req.body;
+    if (role !== ROLES.ADMIN && role !== ROLES.USER) {
+      throw ApiError.badRequest('Role must be ADMIN or USER');
+    }
+
+    const target = await prisma.user.findUnique({ where: { id: req.params.id } });
+    if (!target) {
+      throw ApiError.notFound('User not found');
+    }
+    if (target.role !== ROLES.ADMIN && target.role !== ROLES.USER) {
+      throw ApiError.badRequest('Only admin or regular accounts can change roles');
+    }
+    if (target.id === req.userId) {
+      throw ApiError.badRequest('You cannot change your own role');
+    }
+
+    const user = await prisma.user.update({
+      where: { id: target.id },
+      data: { role },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        role: true,
+        status: true,
+      },
+    });
+
+    res.json(ApiResponse.success(user, role === ROLES.ADMIN ? 'User promoted to admin' : 'Admin access revoked'));
   } catch (error) {
     next(error);
   }

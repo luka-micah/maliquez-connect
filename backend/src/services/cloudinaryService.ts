@@ -11,12 +11,13 @@ export interface ImageMeta {
 }
 
 const folderPath = (listingId: string): string => `maliquez/listings/${listingId}`;
+const blogFolderPath = (postId: string): string => `maliquez/blog/${postId}`;
 
 const uploadBuffer = (
   buffer: Buffer,
   mimeType: string,
-  listingId: string,
-  index: number,
+  folder: string,
+  publicId: string,
 ): Promise<UploadApiResponse> =>
   new Promise((resolve, reject) => {
     const base64 = buffer.toString('base64');
@@ -25,8 +26,8 @@ const uploadBuffer = (
     cloudinary.uploader.upload(
       dataUri,
       {
-        folder: folderPath(listingId),
-        public_id: `image-${index}`,
+        folder,
+        public_id: publicId,
         quality: 'auto',
         transformation: [{ width: 1200, height: 1200, crop: 'limit', quality: 'auto' }],
       },
@@ -50,7 +51,7 @@ export const uploadImagesToCloudinary = async (
   if (files.length === 0) return [];
 
   const results = await Promise.allSettled(
-    files.map((file, i) => uploadBuffer(file.buffer, file.mimetype, listingId, i)),
+    files.map((file, i) => uploadBuffer(file.buffer, file.mimetype, folderPath(listingId), `image-${i}`)),
   );
 
   const uploaded: ImageMeta[] = [];
@@ -107,5 +108,58 @@ export const deleteListingFolder = async (listingId: string): Promise<void> => {
     console.log(`[CLOUDINARY] Deleted resources for listing ${listingId}`);
   } catch (error) {
     console.error(`[CLOUDINARY] Failed to delete folder for listing ${listingId}:`, error);
+  }
+};
+
+export const uploadBlogCoverToCloudinary = async (
+  file: Express.Multer.File,
+  postId: string,
+): Promise<ImageMeta> => {
+  const result = await uploadBuffer(file.buffer, file.mimetype, blogFolderPath(postId), 'cover');
+  return {
+    url: result.secure_url,
+    publicId: result.public_id,
+    width: result.width,
+    height: result.height,
+    format: result.format,
+  };
+};
+
+export const deleteBlogCoverFromCloudinary = async (publicId: string): Promise<void> => {
+  if (!publicId) return;
+  await deleteCloudinaryImages([publicId]);
+};
+
+export const deleteBlogCoverFolder = async (postId: string): Promise<void> => {
+  try {
+    await cloudinary.api.delete_resources_by_prefix(`${blogFolderPath(postId)}/`);
+    console.log(`[CLOUDINARY] Deleted resources for blog post ${postId}`);
+  } catch (error) {
+    console.error(`[CLOUDINARY] Failed to delete folder for blog post ${postId}:`, error);
+  }
+};
+
+const avatarFolderPath = (userId: string): string => `maliquez/avatars/${userId}`;
+
+export const uploadAvatarToCloudinary = async (
+  file: Express.Multer.File,
+  userId: string,
+): Promise<ImageMeta> => {
+  const result = await uploadBuffer(file.buffer, file.mimetype, avatarFolderPath(userId), 'avatar');
+  return {
+    url: result.secure_url,
+    publicId: result.public_id,
+    width: result.width,
+    height: result.height,
+    format: result.format,
+  };
+};
+
+export const deleteAvatarFolder = async (userId: string): Promise<void> => {
+  try {
+    await cloudinary.api.delete_resources_by_prefix(`${avatarFolderPath(userId)}/`);
+    console.log(`[CLOUDINARY] Deleted resources for avatar of user ${userId}`);
+  } catch (error) {
+    console.error(`[CLOUDINARY] Failed to delete avatar folder for user ${userId}:`, error);
   }
 };

@@ -31,6 +31,24 @@ export const authenticate = async (req: AuthRequest, _res: Response, next: NextF
   }
 };
 
+export const optionalAuth = async (req: AuthRequest, _res: Response, next: NextFunction) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.split(' ')[1];
+      const decoded = verifyAccessToken(token) as { id: string; role: string };
+      const user = await prisma.user.findUnique({ where: { id: decoded.id } });
+      if (user && user.status === 'ACTIVE') {
+        req.userId = user.id;
+        req.userRole = user.role;
+      }
+    }
+    next();
+  } catch {
+    next();
+  }
+};
+
 export const authorize = (...roles: string[]) => {
   return (req: AuthRequest, _res: Response, next: NextFunction) => {
     if (!req.userId) {
