@@ -3,14 +3,13 @@ import SeoHead from '../../components/seo/SeoHead';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 import { eventApi } from '../../api/authApi';
-import { FiPlus, FiEdit2, FiTrash2, FiAlertCircle, FiExternalLink, FiCalendar, FiMapPin } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiAlertCircle, FiExternalLink, FiCalendar, FiMapPin, FiUpload } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { ApiResponse, AppEvent } from '../../types';
 
 interface EventFormState {
   title: string;
   description: string;
-  image: string;
   date: string;
   time: string;
   location: string;
@@ -19,7 +18,7 @@ interface EventFormState {
 }
 
 const initialForm: EventFormState = {
-  title: '', description: '', image: '', date: '', time: '', location: '', linkUrl: '', status: 'ACTIVE',
+  title: '', description: '', date: '', time: '', location: '', linkUrl: '', status: 'ACTIVE',
 };
 
 const AdminEvents = () => {
@@ -27,6 +26,8 @@ const AdminEvents = () => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [editing, setEditing] = useState<AppEvent | null>(null);
   const [form, setForm] = useState<EventFormState>(initialForm);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [removeImage, setRemoveImage] = useState<boolean>(false);
   const [deleteConfirm, setDeleteConfirm] = useState<AppEvent | null>(null);
 
   const { data, isLoading, error } = useQuery({
@@ -36,8 +37,26 @@ const AdminEvents = () => {
 
   const events: AppEvent[] = data?.data?.data || [];
 
+  const buildFormData = (body: EventFormState): FormData => {
+    const fd = new FormData();
+    fd.append('title', body.title);
+    if (body.description) fd.append('description', body.description);
+    if (imageFile) {
+      fd.append('image', imageFile);
+    }
+    if (body.date) fd.append('date', body.date);
+    if (body.time) fd.append('time', body.time);
+    if (body.location) fd.append('location', body.location);
+    if (body.linkUrl) fd.append('linkUrl', body.linkUrl);
+    fd.append('status', body.status);
+    if (editing && removeImage) {
+      fd.append('removeImage', 'true');
+    }
+    return fd;
+  };
+
   const createMutation = useMutation<any, any, EventFormState>({
-    mutationFn: (body: EventFormState) => eventApi.create(body),
+    mutationFn: (body: EventFormState) => eventApi.create(buildFormData(body)),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['events'] });
       toast.success('Event created successfully');
@@ -50,7 +69,7 @@ const AdminEvents = () => {
   });
 
   const updateMutation = useMutation<any, any, { id: string; body: EventFormState }>({
-    mutationFn: ({ id, body }: { id: string; body: EventFormState }) => eventApi.update(id, body),
+    mutationFn: ({ id, body }: { id: string; body: EventFormState }) => eventApi.update(id, buildFormData(body)),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['events'] });
       toast.success('Event updated successfully');
@@ -78,6 +97,8 @@ const AdminEvents = () => {
   const openCreate = () => {
     setEditing(null);
     setForm(initialForm);
+    setImageFile(null);
+    setRemoveImage(false);
     setModalOpen(true);
   };
 
@@ -86,13 +107,14 @@ const AdminEvents = () => {
     setForm({
       title: ev.title,
       description: ev.description || '',
-      image: ev.image || '',
       date: ev.date ? ev.date.slice(0, 16) : '',
       time: ev.time || '',
       location: ev.location || '',
       linkUrl: ev.linkUrl || '',
       status: ev.status,
     });
+    setImageFile(null);
+    setRemoveImage(false);
     setModalOpen(true);
   };
 
@@ -100,10 +122,32 @@ const AdminEvents = () => {
     setModalOpen(false);
     setEditing(null);
     setForm(initialForm);
+    setImageFile(null);
+    setRemoveImage(false);
   };
+
+  const handleImageSelect = (file: File | undefined) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File size exceeds the 5MB limit');
+      return;
+    }
+    setImageFile(file);
+    setRemoveImage(false);
+  };
+
+  const currentImageUrl = imageFile ? URL.createObjectURL(imageFile) : null;
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!form.title.trim()) {
+      toast.error('Title is required');
+      return;
+    }
     if (editing) {
       updateMutation.mutate({ id: editing.id, body: form });
     } else {
@@ -268,16 +312,33 @@ const AdminEvents = () => {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Image URL</label>
-                <input
-                  type="url"
-                  value={form.image}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, image: e.target.value })}
-                  className="input-field text-sm"
-                  placeholder="https://example.com/image.jpg"
-                />
-                {form.image && (
-                  <img src={form.image} alt="Preview" className="mt-1 h-16 object-cover rounded" />
+                <label className="block text-xs font-medium text-gray-700 mb-1">Image (optional)</label>
+                <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary-400 hover:bg-primary-50 transition-colors">
+                  <FiUpload className="w-4 h-4 text-gray-400" />
+                  <span className="text-xs text-gray-600">
+                    {imageFile ? imageFile.name : editing ? 'Replace image (optional)' : 'Upload image'}
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="hidden"
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleImageSelect(e.target.files?.[0])}
+                  />
+                </label>
+                {imageFile && currentImageUrl ? (
+                  <img src={currentImageUrl} alt="Preview" className="mt-1 h-16 object-cover rounded" />
+                ) : !imageFile && editing?.image && !removeImage ? (
+                  <img src={editing.image} alt="Preview" className="mt-1 h-16 object-cover rounded" />
+                ) : null}
+                {editing?.image && !removeImage && !imageFile && (
+                  <label className="flex items-center gap-1.5 mt-1 text-xs text-red-600 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={removeImage}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRemoveImage(e.target.checked)}
+                    />
+                    Remove image
+                  </label>
                 )}
               </div>
               <div className="grid grid-cols-2 gap-3">

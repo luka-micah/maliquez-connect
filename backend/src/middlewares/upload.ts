@@ -98,3 +98,26 @@ export const uploadAvatar = (req: Request, res: Response, next: NextFunction): v
     next();
   });
 };
+
+const rawSingleImageMiddleware = upload.single('image');
+
+export const uploadSingleImage = (req: Request, res: Response, next: NextFunction): void => {
+  rawSingleImageMiddleware(req, res, (err: unknown) => {
+    if (err instanceof multer.MulterError) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return next(ApiError.badRequest('File size exceeds the 5MB limit'));
+      }
+      if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+        return next(ApiError.badRequest('Unexpected file field'));
+      }
+      return next(ApiError.badRequest(err.message));
+    }
+    if (err instanceof ApiError) {
+      return next(err);
+    }
+    if (err) {
+      return next(ApiError.badRequest('File upload failed'));
+    }
+    next();
+  });
+};

@@ -5,6 +5,11 @@ import ApiError from '../utils/ApiError.js';
 import ApiResponse from '../utils/ApiResponse.js';
 import { invalidateCache } from '../config/redis.js';
 import { calculatePagination, parsePagination } from '../utils/helpers.js';
+import {
+  uploadAdImageToCloudinary,
+  deleteImageFromCloudinary,
+  deleteAdFolder,
+} from '../services/cloudinaryService.js';
 import type { AuthRequest } from '../types/index.js';
 
 export const getActiveAds = async (_req: AuthRequest, res: Response, next: NextFunction) => {
@@ -65,10 +70,14 @@ export const createAd = async (req: AuthRequest, res: Response, next: NextFuncti
   try {
     const data = req.body;
 
+    if (!req.file && !data.image) {
+      throw ApiError.badRequest('Ad image is required (upload an image or provide a URL)');
+    }
+
     const ad = await prisma.ad.create({
       data: {
         title: data.title,
-        image: data.image,
+        image: data.image || '',
         linkUrl: data.linkUrl || null,
         status: data.status || 'ACTIVE',
         startDate: data.startDate ? new Date(data.startDate) : null,
@@ -76,9 +85,24 @@ export const createAd = async (req: AuthRequest, res: Response, next: NextFuncti
       },
     });
 
+    if (req.file) {
+      try {
+        const uploaded = await uploadAdImageToCloudinary(req.file, ad.id);
+        await prisma.ad.update({
+          where: { id: ad.id },
+          data: { image: uploaded.url, imagePublicId: uploaded.publicId },
+        });
+      } catch (error) {
+        await prisma.ad.delete({ where: { id: ad.id } });
+        return next(error);
+      }
+    }
+
+    const created = await prisma.ad.findUnique({ where: { id: ad.id } });
+
     await invalidateCache('ads:*');
 
-    res.status(201).json(ApiResponse.created(ad, 'Ad created'));
+    res.status(201).json(ApiResponse.created(created, 'Ad created'));
   } catch (error) {
     next(error);
   }
@@ -88,17 +112,36 @@ export const updateAd = async (req: AuthRequest, res: Response, next: NextFuncti
   try {
     const data = req.body;
 
+    const existing = await prisma.ad.findUnique({ where: { id: req.params.id } });
+    if (!existing) {
+      throw ApiError.notFound('Ad not found');
+    }
+
+    const updateData: Prisma.AdUpdateInput = {
+      ...(data.title !== undefined && { title: data.title }),
+      ...(data.linkUrl !== undefined && { linkUrl: data.linkUrl }),
+      ...(data.status !== undefined && { status: data.status }),
+      ...(data.startDate !== undefined && { startDate: data.startDate ? new Date(data.startDate) : null }),
+      ...(data.endDate !== undefined && { endDate: data.endDate ? new Date(data.endDate) : null }),
+    };
+
+    if (req.file) {
+      const uploaded = await uploadAdImageToCloudinary(req.file, existing.id);
+      updateData.image = uploaded.url;
+      updateData.imagePublicId = uploaded.publicId;
+    } else if (data.image !== undefined) {
+      updateData.image = data.image;
+      updateData.imagePublicId = null;
+    }
+
     const ad = await prisma.ad.update({
-      where: { id: req.params.id },
-      data: {
-        ...(data.title !== undefined && { title: data.title }),
-        ...(data.image !== undefined && { image: data.image }),
-        ...(data.linkUrl !== undefined && { linkUrl: data.linkUrl }),
-        ...(data.status !== undefined && { status: data.status }),
-        ...(data.startDate !== undefined && { startDate: data.startDate ? new Date(data.startDate) : null }),
-        ...(data.endDate !== undefined && { endDate: data.endDate ? new Date(data.endDate) : null }),
-      },
+      where: { id: existing.id },
+      data: updateData,
     });
+
+    if (req.file && existing.imagePublicId) {
+      await deleteImageFromCloudinary(existing.imagePublicId);
+    }
 
     await invalidateCache('ads:*');
 
@@ -113,7 +156,22 @@ export const updateAd = async (req: AuthRequest, res: Response, next: NextFuncti
 
 export const deleteAd = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    await prisma.ad.delete({ where: { id: req.params.id } });
+    const existing = await prisma.ad.findUnique({
+      where: { id: req.params.id },
+      select: { id: true, imagePublicId: true },
+    });
+
+    if (!existing) {
+      throw ApiError.notFound('Ad not found');
+    }
+
+    await prisma.ad.delete({ where: { id: existing.id } });
+
+    if (existing.imagePublicId) {
+      await deleteImageFromCloudinary(existing.imagePublicId);
+    } else {
+      await deleteAdFolder(existing.id);
+    }
 
     await invalidateCache('ads:*');
 

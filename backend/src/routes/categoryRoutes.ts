@@ -10,8 +10,8 @@ const router = Router();
 
 router.get('/', getCategories);
 router.get('/:id', getCategory);
-router.post('/', authenticate, authorize(ROLES.ADMIN), createCategory);
-router.put('/:id', authenticate, authorize(ROLES.ADMIN), updateCategory);
-router.delete('/:id', authenticate, authorize(ROLES.ADMIN), deleteCategory);
+router.post('/', authenticate, authorize(ROLES.ADMIN, ROLES.SUPER_ADMIN), createCategory);
+router.put('/:id', authenticate, authorize(ROLES.ADMIN, ROLES.SUPER_ADMIN), updateCategory);
+router.delete('/:id', authenticate, authorize(ROLES.ADMIN, ROLES.SUPER_ADMIN), deleteCategory);
 
 export default router;

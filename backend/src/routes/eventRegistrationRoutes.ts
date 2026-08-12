@@ -10,7 +10,7 @@ import { ROLES } from '../constants/roles.js';
 const router = Router();
 
 router.post('/', registerForEvent);
-router.get('/', authenticate, authorize(ROLES.ADMIN), getAllRegistrations);
-router.get('/:eventId', authenticate, authorize(ROLES.ADMIN), getEventRegistrations);
+router.get('/', authenticate, authorize(ROLES.ADMIN, ROLES.SUPER_ADMIN), getAllRegistrations);
+router.get('/:eventId', authenticate, authorize(ROLES.ADMIN, ROLES.SUPER_ADMIN), getEventRegistrations);
 
 export default router;

@@ -14,7 +14,7 @@ const router = Router();
 
 const ensureAgentProfile = async (req: AuthRequest, _res: Response, next: NextFunction) => {
   try {
-    if (req.userRole === ROLES.ADMIN) return next();
+    if (req.userRole === ROLES.ADMIN || req.userRole === ROLES.SUPER_ADMIN) return next();
     let agent = await prisma.agentProfile.findUnique({ where: { userId: req.userId } });
     if (!agent) {
       const user = await prisma.user.findUnique({ where: { id: req.userId } });
@@ -43,7 +43,7 @@ const ensureAgentProfile = async (req: AuthRequest, _res: Response, next: NextFu
   }
 };
 
-router.use(authenticate, authorize(ROLES.AGENT, ROLES.ADMIN), ensureAgentProfile);
+router.use(authenticate, authorize(ROLES.AGENT, ROLES.ADMIN, ROLES.SUPER_ADMIN), ensureAgentProfile);
 
 router.get('/profile', getAgentProfile);
 router.put('/profile', updateAgentProfile);

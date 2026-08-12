@@ -26,10 +26,10 @@ router.post('/:id/like', authenticate, toggleLike);
 router.post('/:id/comments', authenticate, addComment);
 router.delete('/comments/:id', authenticate, deleteComment);
 
-router.get('/', authenticate, authorize(ROLES.ADMIN), getAllPosts);
-router.get('/admin/:id', authenticate, authorize(ROLES.ADMIN), getPost);
-router.post('/admin', authenticate, authorize(ROLES.ADMIN), uploadBlogCover, createPost);
-router.put('/admin/:id', authenticate, authorize(ROLES.ADMIN), uploadBlogCover, updatePost);
-router.delete('/admin/:id', authenticate, authorize(ROLES.ADMIN), deletePost);
+router.get('/', authenticate, authorize(ROLES.ADMIN, ROLES.SUPER_ADMIN), getAllPosts);
+router.get('/admin/:id', authenticate, authorize(ROLES.ADMIN, ROLES.SUPER_ADMIN), getPost);
+router.post('/admin', authenticate, authorize(ROLES.ADMIN, ROLES.SUPER_ADMIN), uploadBlogCover, createPost);
+router.put('/admin/:id', authenticate, authorize(ROLES.ADMIN, ROLES.SUPER_ADMIN), uploadBlogCover, updatePost);
+router.delete('/admin/:id', authenticate, authorize(ROLES.ADMIN, ROLES.SUPER_ADMIN), deletePost);
 
 export default router;

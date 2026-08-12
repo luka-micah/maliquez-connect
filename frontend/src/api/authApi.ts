@@ -184,10 +184,14 @@ export const adApi = {
     api.get('/ads', { params }),
   getById: (id: string): Promise<AxiosResponse<ApiResponse<Ad>>> =>
     api.get(`/ads/${id}`),
-  create: (data: Partial<Ad>): Promise<AxiosResponse<ApiResponse<Ad>>> =>
-    api.post('/ads', data),
-  update: (id: string, data: Partial<Ad>): Promise<AxiosResponse<ApiResponse<Ad>>> =>
-    api.put(`/ads/${id}`, data),
+  create: (data: FormData): Promise<AxiosResponse<ApiResponse<Ad>>> =>
+    api.post('/ads', data, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+  update: (id: string, data: FormData): Promise<AxiosResponse<ApiResponse<Ad>>> =>
+    api.put(`/ads/${id}`, data, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
   delete: (id: string): Promise<AxiosResponse<ApiResponse<null>>> =>
     api.delete(`/ads/${id}`),
 };
@@ -199,10 +203,14 @@ export const eventApi = {
     api.get('/events', { params }),
   getById: (id: string): Promise<AxiosResponse<ApiResponse<AppEvent>>> =>
     api.get(`/events/${id}`),
-  create: (data: Partial<AppEvent>): Promise<AxiosResponse<ApiResponse<AppEvent>>> =>
-    api.post('/events', data),
-  update: (id: string, data: Partial<AppEvent>): Promise<AxiosResponse<ApiResponse<AppEvent>>> =>
-    api.put(`/events/${id}`, data),
+  create: (data: FormData): Promise<AxiosResponse<ApiResponse<AppEvent>>> =>
+    api.post('/events', data, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+  update: (id: string, data: FormData): Promise<AxiosResponse<ApiResponse<AppEvent>>> =>
+    api.put(`/events/${id}`, data, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
   delete: (id: string): Promise<AxiosResponse<ApiResponse<null>>> =>
     api.delete(`/events/${id}`),
 };

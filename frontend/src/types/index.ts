@@ -216,6 +216,7 @@ export interface AppEvent {
   title: string;
   description?: string;
   image?: string;
+  imagePublicId?: string;
   date?: string;
   time?: string;
   location?: string;
@@ -259,6 +260,7 @@ export interface Ad {
   id: string;
   title: string;
   image: string;
+  imagePublicId?: string;
   linkUrl?: string;
   status: 'ACTIVE' | 'INACTIVE';
   startDate?: string;

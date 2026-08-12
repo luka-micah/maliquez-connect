@@ -12,6 +12,8 @@ export interface ImageMeta {
 
 const folderPath = (listingId: string): string => `maliquez/listings/${listingId}`;
 const blogFolderPath = (postId: string): string => `maliquez/blog/${postId}`;
+const adFolderPath = (adId: string): string => `maliquez/ads/${adId}`;
+const eventFolderPath = (eventId: string): string => `maliquez/events/${eventId}`;
 
 const uploadBuffer = (
   buffer: Buffer,
@@ -161,5 +163,52 @@ export const deleteAvatarFolder = async (userId: string): Promise<void> => {
     console.log(`[CLOUDINARY] Deleted resources for avatar of user ${userId}`);
   } catch (error) {
     console.error(`[CLOUDINARY] Failed to delete avatar folder for user ${userId}:`, error);
+  }
+};
+
+const uploadSingleImage = async (
+  file: Express.Multer.File,
+  folder: string,
+): Promise<ImageMeta> => {
+  const result = await uploadBuffer(file.buffer, file.mimetype, folder, 'image');
+  return {
+    url: result.secure_url,
+    publicId: result.public_id,
+    width: result.width,
+    height: result.height,
+    format: result.format,
+  };
+};
+
+export const uploadAdImageToCloudinary = async (
+  file: Express.Multer.File,
+  adId: string,
+): Promise<ImageMeta> => uploadSingleImage(file, adFolderPath(adId));
+
+export const uploadEventImageToCloudinary = async (
+  file: Express.Multer.File,
+  eventId: string,
+): Promise<ImageMeta> => uploadSingleImage(file, eventFolderPath(eventId));
+
+export const deleteImageFromCloudinary = async (publicId: string): Promise<void> => {
+  if (!publicId) return;
+  await deleteCloudinaryImages([publicId]);
+};
+
+export const deleteAdFolder = async (adId: string): Promise<void> => {
+  try {
+    await cloudinary.api.delete_resources_by_prefix(`${adFolderPath(adId)}/`);
+    console.log(`[CLOUDINARY] Deleted resources for ad ${adId}`);
+  } catch (error) {
+    console.error(`[CLOUDINARY] Failed to delete folder for ad ${adId}:`, error);
+  }
+};
+
+export const deleteEventFolder = async (eventId: string): Promise<void> => {
+  try {
+    await cloudinary.api.delete_resources_by_prefix(`${eventFolderPath(eventId)}/`);
+    console.log(`[CLOUDINARY] Deleted resources for event ${eventId}`);
+  } catch (error) {
+    console.error(`[CLOUDINARY] Failed to delete folder for event ${eventId}:`, error);
   }
 };

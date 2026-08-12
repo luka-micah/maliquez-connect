@@ -3,13 +3,12 @@ import SeoHead from '../../components/seo/SeoHead';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 import { adApi } from '../../api/authApi';
-import { FiPlus, FiEdit2, FiTrash2, FiAlertCircle, FiExternalLink } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiAlertCircle, FiExternalLink, FiUpload } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { ApiResponse, Ad } from '../../types';
 
 interface AdFormState {
   title: string;
-  image: string;
   linkUrl: string;
   status: 'ACTIVE' | 'INACTIVE';
   startDate: string;
@@ -17,7 +16,7 @@ interface AdFormState {
 }
 
 const initialForm: AdFormState = {
-  title: '', image: '', linkUrl: '', status: 'ACTIVE', startDate: '', endDate: '',
+  title: '', linkUrl: '', status: 'ACTIVE', startDate: '', endDate: '',
 };
 
 const AdminAds = () => {
@@ -25,6 +24,7 @@ const AdminAds = () => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [editing, setEditing] = useState<Ad | null>(null);
   const [form, setForm] = useState<AdFormState>(initialForm);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<Ad | null>(null);
 
   const { data, isLoading, error } = useQuery({
@@ -34,8 +34,21 @@ const AdminAds = () => {
 
   const ads: Ad[] = data?.data?.data || [];
 
+  const buildFormData = (body: AdFormState): FormData => {
+    const fd = new FormData();
+    fd.append('title', body.title);
+    if (imageFile) {
+      fd.append('image', imageFile);
+    }
+    if (body.linkUrl) fd.append('linkUrl', body.linkUrl);
+    fd.append('status', body.status);
+    if (body.startDate) fd.append('startDate', body.startDate);
+    if (body.endDate) fd.append('endDate', body.endDate);
+    return fd;
+  };
+
   const createMutation = useMutation<any, any, AdFormState>({
-    mutationFn: (body: AdFormState) => adApi.create(body),
+    mutationFn: (body: AdFormState) => adApi.create(buildFormData(body)),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ads'] });
       toast.success('Ad created successfully');
@@ -48,7 +61,7 @@ const AdminAds = () => {
   });
 
   const updateMutation = useMutation<any, any, { id: string; body: AdFormState }>({
-    mutationFn: ({ id, body }: { id: string; body: AdFormState }) => adApi.update(id, body),
+    mutationFn: ({ id, body }: { id: string; body: AdFormState }) => adApi.update(id, buildFormData(body)),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ads'] });
       toast.success('Ad updated successfully');
@@ -76,6 +89,7 @@ const AdminAds = () => {
   const openCreate = () => {
     setEditing(null);
     setForm(initialForm);
+    setImageFile(null);
     setModalOpen(true);
   };
 
@@ -83,12 +97,12 @@ const AdminAds = () => {
     setEditing(ad);
     setForm({
       title: ad.title,
-      image: ad.image,
       linkUrl: ad.linkUrl || '',
       status: ad.status,
       startDate: ad.startDate ? ad.startDate.slice(0, 16) : '',
       endDate: ad.endDate ? ad.endDate.slice(0, 16) : '',
     });
+    setImageFile(null);
     setModalOpen(true);
   };
 
@@ -96,10 +110,34 @@ const AdminAds = () => {
     setModalOpen(false);
     setEditing(null);
     setForm(initialForm);
+    setImageFile(null);
   };
+
+  const handleImageSelect = (file: File | undefined) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File size exceeds the 5MB limit');
+      return;
+    }
+    setImageFile(file);
+  };
+
+  const currentImageUrl = imageFile ? URL.createObjectURL(imageFile) : null;
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!form.title.trim()) {
+      toast.error('Title is required');
+      return;
+    }
+    if (!editing && !imageFile) {
+      toast.error('Ad image is required');
+      return;
+    }
     if (editing) {
       updateMutation.mutate({ id: editing.id, body: form });
     } else {
@@ -256,17 +294,24 @@ const AdminAds = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-                <input
-                  type="url"
-                  value={form.image}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, image: e.target.value })}
-                  className="input-field"
-                  required
-                  placeholder="https://example.com/image.jpg"
-                />
-                {form.image && (
-                  <img src={form.image} alt="Preview" className="mt-2 h-20 object-cover rounded" />
+                <label className="block text-sm font-medium text-gray-700 mb-1">Image</label>
+                <label className="flex items-center gap-2 px-4 py-2.5 border border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary-400 hover:bg-primary-50 transition-colors">
+                  <FiUpload className="w-4 h-4 text-gray-400" />
+                  <span className="text-sm text-gray-600">
+                    {imageFile ? imageFile.name : editing ? 'Replace image (optional)' : 'Upload image'}
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="hidden"
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleImageSelect(e.target.files?.[0])}
+                  />
+                </label>
+                {imageFile && currentImageUrl && (
+                  <img src={currentImageUrl} alt="Preview" className="mt-2 h-20 object-cover rounded" />
+                )}
+                {!imageFile && editing && (
+                  <img src={editing.image} alt="Preview" className="mt-2 h-20 object-cover rounded" />
                 )}
               </div>
               <div>

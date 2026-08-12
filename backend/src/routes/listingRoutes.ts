@@ -12,8 +12,8 @@ const router = Router();
 router.get('/', getListings);
 router.get('/mine', authenticate, getMyListings);
 router.get('/:id', getListing);
-router.post('/', authenticate, authorize(ROLES.PROVIDER, ROLES.ADMIN), uploadListingImages, createListing);
-router.put('/:id', authenticate, authorize(ROLES.PROVIDER, ROLES.ADMIN), uploadListingImages, updateListing);
-router.delete('/:id', authenticate, authorize(ROLES.PROVIDER, ROLES.ADMIN), deleteListing);
+router.post('/', authenticate, authorize(ROLES.PROVIDER, ROLES.ADMIN, ROLES.SUPER_ADMIN), uploadListingImages, createListing);
+router.put('/:id', authenticate, authorize(ROLES.PROVIDER, ROLES.ADMIN, ROLES.SUPER_ADMIN), uploadListingImages, updateListing);
+router.delete('/:id', authenticate, authorize(ROLES.PROVIDER, ROLES.ADMIN, ROLES.SUPER_ADMIN), deleteListing);
 
 export default router;
