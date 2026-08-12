@@ -136,6 +136,23 @@
     opacity: 1;
     transform: translateX(0);
   }
+
+  .animate-marquee-vertical {
+    animation-name: marquee-vertical;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    will-change: transform;
+  }
+
+  .animate-marquee-vertical:hover {
+    animation-play-state: paused;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-marquee-vertical {
+      animation: none;
+    }
+  }
 }
 
 @keyframes fade-in-up {
@@ -198,6 +215,15 @@
   }
   100% {
     background-position: 0% 50%;
+  }
+}
+
+@keyframes marquee-vertical {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
   }
 }
 

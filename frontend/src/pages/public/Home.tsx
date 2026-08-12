@@ -9,11 +9,11 @@ import SeoHead from '../../components/seo/SeoHead';
 import { OrganizationJsonLd } from '../../components/seo/JsonLd';
 import {
   FiSearch, FiBookOpen, FiHeart, FiHome, FiTruck,
-  FiStar, FiTrendingUp, FiShield, FiThumbsUp, FiUsers, FiAward,
-  FiBarChart2, FiArrowUp, FiArrowRight, FiCheckCircle, FiZap,
+  FiStar, FiTrendingUp, FiShield, FiUsers, FiAward,
+  FiArrowUp, FiArrowRight, FiCheckCircle, FiZap,
   FiCompass, FiRefreshCw, FiX,
 } from 'react-icons/fi';
-import { ApiResponse, Listing, RecommendationListing, Ad } from '../../types';
+import { ApiResponse, Category, Listing, RecommendationListing, Ad } from '../../types';
 
 interface RootState {
   auth: {
@@ -129,10 +129,15 @@ const sectors: Sector[] = [
   },
 ];
 
-const steps = [
-  { icon: FiSearch, title: 'Search', description: 'Browse thousands of verified service providers in your area' },
-  { icon: FiBarChart2, title: 'Compare', description: 'Compare ratings, pricing, and features side by side' },
-  { icon: FiThumbsUp, title: 'Decide', description: 'Make confident choices backed by real user reviews' },
+const marketingHighlights = [
+  { icon: FiShield, title: '100% Verified Providers', description: 'Every listing is vetted before going live' },
+  { icon: FiStar, title: '4,200+ Real Reviews', description: 'Honest feedback from real users you can trust' },
+  { icon: FiUsers, title: '12,500+ Active Users', description: 'Join a growing community making smart decisions' },
+  { icon: FiTrendingUp, title: '890+ Top Listings', description: 'Curated providers across 4 key sectors' },
+  { icon: FiZap, title: 'AI-Powered Matches', description: 'Personalized recommendations in seconds' },
+  { icon: FiAward, title: '98% Satisfaction Rate', description: 'Quality assured, trust guaranteed' },
+  { icon: FiCompass, title: '4 Key Sectors', description: 'Education · Healthcare · Hospitality · Logistics' },
+  { icon: FiCheckCircle, title: 'Free to Get Started', description: 'List your business at no cost today' },
 ];
 
 const features = [
@@ -233,6 +238,71 @@ const Home = () => {
     if (activeAds.length === 0) return null;
     return activeAds[Math.floor(Math.random() * activeAds.length)];
   }, [activeAds]);
+
+  const marqueeItems = useMemo(() => {
+    const items: React.ReactNode[] = [];
+    const topListings = trending.slice(0, 8);
+
+    for (let i = 0; i < Math.max(topListings.length, marketingHighlights.length); i++) {
+      if (i < topListings.length) {
+        const listing = topListings[i];
+        items.push(
+          <Link
+            key={listing.id}
+            to={`/listings/${listing.id}`}
+            className="flex items-center gap-3 bg-white/10 hover:bg-white/20 border border-white/15 rounded-md p-2.5 md:p-3 transition-colors group"
+          >
+            <img
+              src={listing.images?.[0] || 'https://via.placeholder.com/96x96?text=No+Image'}
+              alt={listing.title}
+              className="w-11 h-11 md:w-12 md:h-12 rounded-md object-cover flex-shrink-0"
+            />
+            <div className="min-w-0 flex-1">
+              <div className="text-white text-xs md:text-sm font-semibold truncate group-hover:text-primary-200 transition-colors">
+                {listing.title}
+              </div>
+              <div className="text-gray-300 text-[11px] md:text-xs truncate">
+                {(listing.category as Category)?.name || listing.sector}
+                {listing.location?.city ? ` · ${listing.location.city}` : ''}
+              </div>
+            </div>
+            <div className="flex items-center gap-1 text-[#F4B400] text-xs flex-shrink-0">
+              <FiStar className="w-3 h-3 fill-current" />
+              {listing.averageRating?.toFixed(1) || '0.0'}
+            </div>
+          </Link>,
+        );
+      }
+
+      if (i < marketingHighlights.length) {
+        const highlight = marketingHighlights[i];
+        items.push(
+          <div
+            key={`hl-${highlight.title}`}
+            className="flex items-center gap-3 bg-gradient-to-r from-primary-600/30 to-primary-500/10 border border-primary-400/20 rounded-md p-2.5 md:p-3"
+          >
+            <div className="w-9 h-9 md:w-10 md:h-10 bg-primary-500/80 text-white rounded-md flex items-center justify-center flex-shrink-0">
+              <highlight.icon className="w-4 h-4 md:w-5 md:h-5" />
+            </div>
+            <div className="min-w-0">
+              <div className="text-white text-xs md:text-sm font-semibold truncate">{highlight.title}</div>
+              <div className="text-gray-300 text-[11px] md:text-xs leading-snug">{highlight.description}</div>
+            </div>
+          </div>,
+        );
+      }
+    }
+
+    if (items.length === 0) {
+      items.push(
+        <div key="empty" className="text-gray-300 text-sm text-center py-6">
+          Be the first to list your business
+        </div>,
+      );
+    }
+
+    return items;
+  }, [trending]);
 
   useEffect(() => {
     if (randomAd && !sessionStorage.getItem('ad_shown')) {
@@ -350,23 +420,31 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Right: How It Works */}
+            {/* Right: Top Listings Marquee */}
             <div className="animate-fade-in-up hidden lg:flex" style={{ animationDelay: '0.5s' }}>
-              <div className="flex-1 bg-white/15 backdrop-blur-md rounded-md border border-white/20 p-5 md:p-10 flex flex-col shadow-lg">
-                <div className="flex-1 flex flex-col gap-3 md:gap-4 md:justify-evenly">
-                  {steps.map((step, i) => (
-                    <div key={step.title} className="flex items-start gap-3 md:gap-4 group">
-                      <div className="flex-shrink-0 w-9 h-9 md:w-12 md:h-12 bg-primary-500 text-white rounded-md flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
-                        <step.icon className="w-4 h-5 md:w-6 md:h-6" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="mb-0.5 md:mb-1">
-                          <h4 className="text-white font-semibold text-sm md:text-base">{step.title}</h4>
-                        </div>
-                        <p className="text-gray-300 text-xs md:text-sm leading-relaxed">{step.description}</p>
-                      </div>
-                    </div>
-                  ))}
+              <div className="flex-1 w-full self-center max-h-[65vh] bg-white/15 backdrop-blur-md rounded-md border border-white/20 p-4 md:p-6 flex flex-col shadow-lg overflow-hidden">
+                <div className="flex items-center justify-between mb-3 md:mb-4 flex-shrink-0">
+                  <div className="flex items-center gap-2">
+                    <span className="relative flex w-2.5 h-2.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                      <span className="relative inline-flex rounded-full w-2.5 h-2.5 bg-emerald-500" />
+                    </span>
+                    <h4 className="text-white font-semibold text-sm md:text-base">Top Listings</h4>
+                  </div>
+                  <span className="text-gray-300 text-xs font-medium">Trending now</span>
+                </div>
+
+                <div className="relative flex-1 min-h-0 overflow-hidden">
+                  <div className="absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-black/30 to-transparent z-10 pointer-events-none" />
+                  <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/30 to-transparent z-10 pointer-events-none" />
+                  <div
+                    className="animate-marquee-vertical flex flex-col gap-3"
+                    style={{ animationDuration: `${Math.min(Math.max(marqueeItems.length * 3.5, 20), 90)}s` }}
+                  >
+                    {[...marqueeItems, ...marqueeItems].map((item, i) => (
+                      <div key={i} className="flex-shrink-0">{item}</div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
