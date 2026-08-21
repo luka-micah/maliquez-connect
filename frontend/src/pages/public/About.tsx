@@ -1,9 +1,67 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FiTarget, FiEye, FiHeart, FiShield, FiUsers, FiAward, FiMail, FiPhone, FiMapPin } from 'react-icons/fi';
+import { FiTarget, FiEye, FiHeart, FiShield, FiUsers, FiAward, FiMail, FiPhone, FiMapPin, FiCheck, FiZap } from 'react-icons/fi';
 import SeoHead from '../../components/seo/SeoHead';
 import { OrganizationJsonLd } from '../../components/seo/JsonLd';
 
-const About = () => (
+const pricingPlans = [
+  {
+    name: 'Free',
+    price: { monthly: 0, yearly: 0 },
+    tagline: 'Get discovered with a basic business listing',
+    features: [
+      'Standard business listing',
+      'Up to 3 photos',
+      'Contact & direct messaging',
+      'Appear in search results',
+      'Public profile page',
+    ],
+    cta: 'Start for Free',
+    ctaLink: '/register',
+    highlighted: false,
+  },
+  {
+    name: 'Growth',
+    price: { monthly: 10000, yearly: 96000 },
+    tagline: 'Stand out and grow with enhanced visibility',
+    features: [
+      'Everything in Free',
+      'Verified provider badge',
+      'Up to 10 photos & gallery',
+      'Boosted search placement',
+      'Review & rating analytics',
+      'Respond to customer reviews',
+      'AI recommendation boost',
+    ],
+    cta: 'Get Started',
+    ctaLink: '/register',
+    highlighted: true,
+  },
+  {
+    name: 'Enterprise',
+    price: { monthly: 25000, yearly: 240000 },
+    tagline: 'Maximum exposure for established businesses',
+    features: [
+      'Everything in Growth',
+      'Featured homepage placement',
+      'Exclusive banner ads',
+      'Multi-location listings',
+      'Priority customer support',
+      'Dedicated account manager',
+    ],
+    cta: 'Contact Sales',
+    ctaLink: 'mailto:info@maliquez.com',
+    highlighted: false,
+  },
+];
+
+const formatPrice = (amount: number): string =>
+  amount === 0 ? 'Free' : `₦${amount.toLocaleString()}`;
+
+const About = () => {
+  const [billing, setBilling] = useState<'monthly' | 'yearly'>('monthly');
+
+  return (
   <div>
     <SeoHead
       title="About Us"
@@ -90,6 +148,133 @@ const About = () => (
       </div>
     </section>
 
+    {/* ─── PRICING ─── */}
+    <section className="py-20 bg-gray-50">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="text-center mb-16">
+          <span className="text-primary-600 font-semibold text-sm tracking-wider uppercase animate-fade-in-up">Pricing</span>
+          <h2 className="text-3xl md:text-4xl font-bold text-brand-darkText mt-3 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+            Plans for Every Provider
+          </h2>
+          <p className="text-gray-500 mt-3 max-w-xl mx-auto animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+            Simple, transparent pricing built to help your business get discovered and grow.
+          </p>
+          <div className="inline-flex items-center gap-1 p-1 bg-white border border-gray-200 rounded-full mt-8 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+            <button
+              onClick={() => setBilling('monthly')}
+              className={`px-5 py-2 rounded-full text-sm font-semibold transition-colors ${billing === 'monthly' ? 'bg-primary-600 text-white shadow' : 'text-gray-500 hover:text-primary-600'}`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setBilling('yearly')}
+              className={`px-5 py-2 rounded-full text-sm font-semibold transition-colors flex items-center gap-1.5 ${billing === 'yearly' ? 'bg-primary-600 text-white shadow' : 'text-gray-500 hover:text-primary-600'}`}
+            >
+              Yearly
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${billing === 'yearly' ? 'bg-white/20' : 'bg-green-100 text-green-700'}`}>
+                2 months free
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+          {pricingPlans.map((plan) => {
+            const price = billing === 'yearly' ? plan.price.yearly / 12 : plan.price.monthly;
+            return (
+              <div
+                key={plan.name}
+                className={`relative flex flex-col rounded-2xl p-8 animate-fade-in-up transition-all duration-300 ${
+                  plan.highlighted
+                    ? 'bg-gradient-to-b from-primary-700 via-primary-600 to-primary-700 text-white shadow-2xl md:-translate-y-4 md:scale-[1.02]'
+                    : 'bg-white border border-gray-100 hover:shadow-xl hover:-translate-y-1'
+                }`}
+              >
+                {plan.highlighted && (
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-brand-highlight text-primary-800 text-xs font-bold px-4 py-1 rounded-full shadow">
+                    Most Popular
+                  </span>
+                )}
+                <div className="flex items-center gap-2 mb-2">
+                  <h3 className={`text-xl font-bold ${plan.highlighted ? 'text-white' : 'text-brand-darkText'}`}>{plan.name}</h3>
+                  {plan.highlighted && <FiZap className="w-5 h-5 text-primary-200" />}
+                </div>
+                <p className={`text-sm mb-6 ${plan.highlighted ? 'text-primary-100/90' : 'text-gray-500'}`}>{plan.tagline}</p>
+
+                <div className="mb-6">
+                  <div className="flex items-baseline gap-1">
+                    <span className={`text-4xl font-extrabold ${plan.highlighted ? 'text-white' : 'text-brand-darkText'}`}>
+                      {formatPrice(price)}
+                    </span>
+                    {plan.price.monthly > 0 && (
+                      <span className={`text-sm ${plan.highlighted ? 'text-primary-100/90' : 'text-gray-400'}`}>/month</span>
+                    )}
+                  </div>
+                  {billing === 'yearly' && plan.price.yearly > 0 && (
+                    <p className={`text-xs mt-1 ${plan.highlighted ? 'text-primary-200' : 'text-gray-400'}`}>
+                      Billed annually · ₦{plan.price.yearly.toLocaleString()}/year
+                    </p>
+                  )}
+                </div>
+
+                <ul className="flex-1 space-y-2.5 mb-8">
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex items-start gap-2.5 text-sm">
+                      {plan.highlighted ? (
+                        <FiCheck className="w-4 h-4 mt-0.5 text-primary-200 flex-shrink-0" />
+                      ) : (
+                        <FiCheck className="w-4 h-4 mt-0.5 text-primary-600 flex-shrink-0" />
+                      )}
+                      <span className={plan.highlighted ? 'text-primary-50' : 'text-gray-600'}>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {plan.ctaLink.startsWith('mailto') ? (
+                  <a
+                    href={plan.ctaLink}
+                    className={`w-full text-center px-6 py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 ${
+                      plan.highlighted
+                        ? 'bg-white text-primary-700 hover:bg-primary-50'
+                        : 'bg-primary-600 text-white hover:bg-primary-700'
+                    }`}
+                  >
+                    {plan.cta}
+                  </a>
+                ) : (
+                  <Link
+                    to={plan.ctaLink}
+                    className={`w-full text-center px-6 py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 ${
+                      plan.highlighted
+                        ? 'bg-white text-primary-700 hover:bg-primary-50'
+                        : 'bg-primary-600 text-white hover:bg-primary-700'
+                    }`}
+                  >
+                    {plan.cta}
+                  </Link>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 mt-14 text-sm text-gray-500">
+          <span className="flex items-center gap-2">
+            <FiCheck className="w-4 h-4 text-primary-600" /> No hidden fees
+          </span>
+          <span className="flex items-center gap-2">
+            <FiCheck className="w-4 h-4 text-primary-600" /> Cancel anytime
+          </span>
+          <span className="flex items-center gap-2">
+            <FiCheck className="w-4 h-4 text-primary-600" /> Secure payments
+          </span>
+          <span className="flex items-center gap-2">
+            <FiCheck className="w-4 h-4 text-primary-600" /> Upgrade or downgrade anytime
+          </span>
+        </div>
+      </div>
+    </section>
+
     <section className="py-20 bg-white">
       <div className="max-w-6xl mx-auto px-4">
         <div className="text-center mb-16">
@@ -144,6 +329,7 @@ const About = () => (
       </div>
     </section>
   </div>
-);
+  );
+};
 
 export default About;

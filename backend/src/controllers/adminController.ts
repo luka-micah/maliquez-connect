@@ -356,6 +356,162 @@ export const updateProviderVerification = async (req: AuthRequest, res: Response
   }
 };
 
+export const getUserById = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.params.id },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        phone: true,
+        avatar: true,
+        role: true,
+        status: true,
+        isVerified: true,
+        createdAt: true,
+        updatedAt: true,
+        providerProfile: true,
+        _count: {
+          select: {
+            listings: true,
+            reviews: true,
+            favorites: true,
+            notifications: true,
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      throw ApiError.notFound('User not found');
+    }
+
+    res.json(ApiResponse.success(user));
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getProviderById = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const provider = await prisma.user.findUnique({
+      where: { id: req.params.id, role: 'PROVIDER' },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        phone: true,
+        avatar: true,
+        role: true,
+        status: true,
+        isVerified: true,
+        createdAt: true,
+        updatedAt: true,
+        providerProfile: true,
+        _count: {
+          select: {
+            listings: true,
+            reviews: true,
+            favorites: true,
+            notifications: true,
+          },
+        },
+      },
+    });
+
+    if (!provider) {
+      throw ApiError.notFound('Provider not found');
+    }
+
+    const listings = await prisma.listing.findMany({
+      where: { ownerId: provider.id },
+      select: {
+        id: true,
+        title: true,
+        status: true,
+        category: { select: { name: true } },
+        averageRating: true,
+        reviewCount: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const reviews = await prisma.review.findMany({
+      where: { userId: provider.id },
+      select: {
+        id: true,
+        rating: true,
+        review: true,
+        status: true,
+        listing: { select: { id: true, title: true } },
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+    });
+
+    res.json(ApiResponse.success({ ...provider, listings, recentReviews: reviews }));
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAgentById = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const agent = await prisma.agentProfile.findUnique({
+      where: { id: req.params.id },
+      include: {
+        user: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            phone: true,
+            avatar: true,
+            status: true,
+            createdAt: true,
+            isVerified: true,
+          },
+        },
+        _count: {
+          select: {
+            providerOnboardings: true,
+            outreachActivities: true,
+          },
+        },
+      },
+    });
+
+    if (!agent) {
+      throw ApiError.notFound('Agent not found');
+    }
+
+    const recentOnboardings = await prisma.providerOnboarding.findMany({
+      where: { agentId: agent.id },
+      include: {
+        provider: { select: { id: true, firstName: true, lastName: true, email: true, status: true } },
+      },
+      orderBy: { updatedAt: 'desc' },
+      take: 10,
+    });
+
+    const recentActivities = await prisma.outreachActivity.findMany({
+      where: { agentId: agent.id },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+    });
+
+    res.json(ApiResponse.success({ ...agent, recentOnboardings, recentActivities }));
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getAgents = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { page, limit, skip } = parsePagination(req.query as { page?: string; limit?: string });

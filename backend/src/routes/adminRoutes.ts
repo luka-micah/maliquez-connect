@@ -8,6 +8,7 @@ import {
   approveProvider, rejectProvider, publishProvider,
   getAdminReports, getAuditLogs, resetOnboarding, getAdminAllProviders,
   getAdmins, createAdmin, updateAdminRole,
+  getUserById, getProviderById, getAgentById,
 } from '../controllers/adminController.js';
 import { authenticate, authorize } from '../middlewares/auth.js';
 import { ROLES } from '../constants/roles.js';
@@ -18,7 +19,9 @@ router.use(authenticate, authorize(ROLES.ADMIN, ROLES.SUPER_ADMIN));
 
 router.get('/dashboard', getAdminDashboard);
 router.get('/users', getUsers);
+router.get('/users/:id', getUserById);
 router.get('/providers', getProviders);
+router.get('/providers/:id', getProviderById);
 router.get('/listings', getAdminListings);
 router.get('/listings/pending', getPendingListings);
 router.put('/listings/:id/approve', approveListing);
@@ -30,6 +33,7 @@ router.put('/reviews/:id/moderate', moderateReview);
 router.get('/providers/:id/analytics', getProviderAnalytics);
 
 router.get('/agents', getAgents);
+router.get('/agents/:id', getAgentById);
 router.put('/agents/:id/status', updateAgentStatus);
 router.put('/onboardings/:id/reassign', reassignProvider);
 router.put('/onboardings/:id/approve', approveProvider);

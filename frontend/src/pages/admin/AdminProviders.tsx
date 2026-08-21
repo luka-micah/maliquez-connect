@@ -7,6 +7,7 @@ import { adminApi } from '../../api/authApi';
 import Pagination from '../../components/common/Pagination';
 import { FiEye, FiAlertCircle, FiCheckCircle, FiXCircle, FiClock } from 'react-icons/fi';
 import { ApiResponse, User, Pagination as PaginationType } from '../../types';
+import ProfileDetailModal from '../../components/admin/ProfileDetailModal';
 
 const verificationOptions: string[] = ['', 'PENDING', 'VERIFIED', 'REJECTED'];
 
@@ -30,6 +31,8 @@ const AdminProviders = () => {
   const [selectedProviderId, setSelectedProviderId] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [selectedProviderIdForProfile, setSelectedProviderIdForProfile] = useState<string | null>(null);
+  const [showProfileModal, setShowProfileModal] = useState(false);
   
   const queryClient = useQueryClient();
 
@@ -165,12 +168,20 @@ const AdminProviders = () => {
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-500">{formatDate(provider.createdAt)}</td>
                       <td className="px-4 py-3 text-right">
-                        <Link
-                          to={`/admin/providers/analytics/${provider.id}`}
-                          className="btn-sm inline-flex items-center gap-1 text-primary-600 hover:text-primary-800"
-                        >
-                          <FiEye className="w-4 h-4" /> View Analytics
-                        </Link>
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => { setSelectedProviderIdForProfile(provider.id); setShowProfileModal(true); }}
+                            className="btn-sm inline-flex items-center gap-1 text-primary-600 hover:text-primary-800"
+                          >
+                            <FiEye className="w-4 h-4" /> View Profile
+                          </button>
+                          <Link
+                            to={`/admin/providers/analytics/${provider.id}`}
+                            className="btn-sm inline-flex items-center gap-1 text-primary-600 hover:text-primary-800"
+                          >
+                            <FiEye className="w-4 h-4" /> Analytics
+                          </Link>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -202,12 +213,20 @@ const AdminProviders = () => {
                   <p className="text-xs text-gray-500 truncate">{provider.email}</p>
                   <div className="flex items-center justify-between pt-1">
                     <span className="text-xs text-gray-400">{formatDate(provider.createdAt)}</span>
-                    <Link
-                      to={`/admin/providers/analytics/${provider.id}`}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-primary-600 bg-primary-50 hover:bg-primary-100 transition-colors"
-                    >
-                      <FiEye className="w-3.5 h-3.5" /> View Analytics
-                    </Link>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => { setSelectedProviderIdForProfile(provider.id); setShowProfileModal(true); }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-primary-600 bg-primary-50 hover:bg-primary-100 transition-colors"
+                      >
+                        <FiEye className="w-3.5 h-3.5" /> View Profile
+                      </button>
+                      <Link
+                        to={`/admin/providers/analytics/${provider.id}`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-primary-600 bg-primary-50 hover:bg-primary-100 transition-colors"
+                      >
+                        <FiEye className="w-3.5 h-3.5" /> Analytics
+                      </Link>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -263,6 +282,13 @@ const AdminProviders = () => {
           </div>
         </div>
       )}
+
+      <ProfileDetailModal
+        isOpen={showProfileModal}
+        onClose={() => { setShowProfileModal(false); setSelectedProviderIdForProfile(null); }}
+        type="provider"
+        id={selectedProviderIdForProfile || ''}
+      />
     </div>
   );
 };

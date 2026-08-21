@@ -308,4 +308,11 @@ export const adminApi = {
     api.post('/admin/admins', data),
   updateAdminRole: (id: string, role: 'ADMIN' | 'USER'): Promise<AxiosResponse<ApiResponse<User>>> =>
     api.put(`/admin/admins/${id}/role`, { role }),
+  // View individual profiles
+  getUserById: (id: string): Promise<AxiosResponse<ApiResponse<User & { _count: { listings: number; reviews: number; favorites: number; notifications: number }; listings?: Listing[]; recentReviews?: Review[] }>>> =>
+    api.get(`/admin/users/${id}`),
+  getProviderById: (id: string): Promise<AxiosResponse<ApiResponse<User & { _count: { listings: number; reviews: number; favorites: number; notifications: number }; listings?: Listing[]; recentReviews?: Review[] }>>> =>
+    api.get(`/admin/providers/${id}`),
+  getAgentById: (id: string): Promise<AxiosResponse<ApiResponse<AgentProfile & { recentOnboardings: ProviderOnboarding[]; recentActivities: any[] }>>> =>
+    api.get(`/admin/agents/${id}`),
 };

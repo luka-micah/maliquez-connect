@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminApi } from '../../api/authApi';
 import Pagination from '../../components/common/Pagination';
-import { FiSearch, FiCheckCircle, FiXCircle, FiAlertCircle } from 'react-icons/fi';
+import { FiSearch, FiCheckCircle, FiXCircle, FiAlertCircle, FiEye } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import ProfileDetailModal from '../../components/admin/ProfileDetailModal';
 
 const statusOptions = ['', 'PENDING', 'ACTIVE', 'SUSPENDED', 'INACTIVE'];
 
@@ -12,6 +13,8 @@ const AdminAgents = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['adminAgents', page, search, statusFilter],
@@ -112,6 +115,12 @@ const AdminAgents = () => {
                       </td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => { setSelectedAgentId(agent.id); setShowProfileModal(true); }}
+                            className="btn-sm inline-flex items-center gap-1 text-primary-600 hover:text-primary-800"
+                          >
+                            <FiEye className="w-4 h-4" /> View
+                          </button>
                           {agent.status === 'PENDING' && (
                             <>
                               <button
@@ -171,8 +180,14 @@ const AdminAgents = () => {
                     <span>{agent.referralCode} · {agent._count?.providerOnboardings || 0} providers</span>
                     <span>{new Date(agent.createdAt).toLocaleDateString()}</span>
                   </div>
-                  <div className="flex gap-2 pt-1">
-                    {agent.status === 'PENDING' && (
+<div className="flex gap-2 pt-1">
+                      <button
+                        onClick={() => { setSelectedAgentId(agent.id); setShowProfileModal(true); }}
+                        className="flex-1 px-3 py-1.5 text-xs font-medium rounded-lg text-primary-600 bg-primary-50 hover:bg-primary-100"
+                      >
+                        View Profile
+                      </button>
+                      {agent.status === 'PENDING' && (
                       <>
                         <button onClick={() => updateStatusMutation.mutate({ id: agent.id, status: 'ACTIVE' })}
                           className="flex-1 px-3 py-1.5 text-xs font-medium rounded-lg bg-green-50 text-green-700">Approve</button>
@@ -197,6 +212,13 @@ const AdminAgents = () => {
       </div>
 
       <Pagination pagination={pagination} onPageChange={setPage} />
+
+      <ProfileDetailModal
+        isOpen={showProfileModal}
+        onClose={() => { setShowProfileModal(false); setSelectedAgentId(null); }}
+        type="agent"
+        id={selectedAgentId || ''}
+      />
     </div>
   );
 };

@@ -4,9 +4,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 import { adminApi } from '../../api/authApi';
 import Pagination from '../../components/common/Pagination';
-import { FiSearch, FiToggleLeft, FiToggleRight, FiAlertCircle } from 'react-icons/fi';
+import { FiSearch, FiToggleLeft, FiToggleRight, FiAlertCircle, FiEye } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { ApiResponse, User, Pagination as PaginationType } from '../../types';
+import ProfileDetailModal from '../../components/admin/ProfileDetailModal';
 
 const statusOptions: string[] = ['', 'ACTIVE', 'SUSPENDED'];
 
@@ -20,6 +21,8 @@ const AdminUsers = () => {
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<string>('');
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['adminUsers', page, search, statusFilter],
@@ -134,26 +137,34 @@ const AdminUsers = () => {
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-500">{formatDate(user.createdAt)}</td>
                       <td className="px-4 py-3 text-right">
-                        <button
-                          onClick={() =>
-                            updateStatusMutation.mutate({
-                              id: user.id,
-                              status: user.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE',
-                            })
-                          }
-                          disabled={updateStatusMutation.isPending}
-                          className={`btn-sm flex items-center gap-1 ml-auto ${
-                            user.status === 'ACTIVE'
-                              ? 'text-red-600 hover:text-red-800'
-                              : 'text-green-600 hover:text-green-800'
-                          }`}
-                        >
-                          {user.status === 'ACTIVE' ? (
-                            <><FiToggleLeft className="w-4 h-4" /> Suspend</>
-                          ) : (
-                            <><FiToggleRight className="w-4 h-4" /> Activate</>
-                          )}
-                        </button>
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => { setSelectedUserId(user.id); setShowProfileModal(true); }}
+                            className="btn-sm inline-flex items-center gap-1 text-primary-600 hover:text-primary-800"
+                          >
+                            <FiEye className="w-4 h-4" /> View
+                          </button>
+                          <button
+                            onClick={() =>
+                              updateStatusMutation.mutate({
+                                id: user.id,
+                                status: user.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE',
+                              })
+                            }
+                            disabled={updateStatusMutation.isPending}
+                            className={`btn-sm flex items-center gap-1 ml-auto ${
+                              user.status === 'ACTIVE'
+                                ? 'text-red-600 hover:text-red-800'
+                                : 'text-green-600 hover:text-green-800'
+                            }`}
+                          >
+                            {user.status === 'ACTIVE' ? (
+                              <><FiToggleLeft className="w-4 h-4" /> Suspend</>
+                            ) : (
+                              <><FiToggleRight className="w-4 h-4" /> Activate</>
+                            )}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -178,26 +189,34 @@ const AdminUsers = () => {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-gray-400">{formatDate(user.createdAt)}</span>
-                    <button
-                      onClick={() =>
-                        updateStatusMutation.mutate({
-                          id: user.id,
-                          status: user.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE',
-                        })
-                      }
-                      disabled={updateStatusMutation.isPending}
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                        user.status === 'ACTIVE'
-                          ? 'text-red-600 bg-red-50 hover:bg-red-100'
-                          : 'text-green-600 bg-green-50 hover:bg-green-100'
-                      }`}
-                    >
-                      {user.status === 'ACTIVE' ? (
-                        <><FiToggleLeft className="w-3.5 h-3.5" /> Suspend</>
-                      ) : (
-                        <><FiToggleRight className="w-3.5 h-3.5" /> Activate</>
-                      )}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => { setSelectedUserId(user.id); setShowProfileModal(true); }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-primary-600 bg-primary-50 hover:bg-primary-100 transition-colors"
+                      >
+                        <FiEye className="w-3.5 h-3.5" /> View
+                      </button>
+                      <button
+                        onClick={() =>
+                          updateStatusMutation.mutate({
+                            id: user.id,
+                            status: user.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE',
+                          })
+                        }
+                        disabled={updateStatusMutation.isPending}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                          user.status === 'ACTIVE'
+                            ? 'text-red-600 bg-red-50 hover:bg-red-100'
+                            : 'text-green-600 bg-green-50 hover:bg-green-100'
+                        }`}
+                      >
+                        {user.status === 'ACTIVE' ? (
+                          <><FiToggleLeft className="w-3.5 h-3.5" /> Suspend</>
+                        ) : (
+                          <><FiToggleRight className="w-3.5 h-3.5" /> Activate</>
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -207,6 +226,13 @@ const AdminUsers = () => {
       </div>
 
       <Pagination pagination={pagination} onPageChange={setPage} />
+
+      <ProfileDetailModal
+        isOpen={showProfileModal}
+        onClose={() => { setShowProfileModal(false); setSelectedUserId(null); }}
+        type="user"
+        id={selectedUserId || ''}
+      />
     </div>
   );
 };
